@@ -2,7 +2,6 @@ import asyncio, time
 
 from nonebot.rule import to_me
 from nonebot.plugin import on_fullmatch
-from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 from .utils import run
@@ -10,9 +9,7 @@ from .utils import run
 
 
 _fsds = on_fullmatch("fsds", to_me(), priority=5, block=True)
-_fsds_ = on_fullmatch("/fsds", priority=5, block=True, permission=SUPERUSER)
 
-@_fsds_.handle()
 @_fsds.handle([Cooldown(1800, prompt="慢...慢一..点❤")])
 async def _(bot: Bot):
     await _fsds.send("Loading......")
