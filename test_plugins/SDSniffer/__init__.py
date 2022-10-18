@@ -8,7 +8,7 @@ from .utils import run
 
 
 
-_fsds = on_fullmatch("fsds", to_me(), priority=5, block=True)
+_fsds = on_fullmatch("/fsds", to_me(), priority=5, block=True)
 
 @_fsds.handle([Cooldown(1800, prompt="慢...慢一..点❤")])
 async def _(bot: Bot):
