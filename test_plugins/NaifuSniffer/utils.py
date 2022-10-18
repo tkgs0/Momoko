@@ -5,17 +5,17 @@
 @File    :   naifu_free.py
 @Time    :   2022/10/11 16:13:34
 @Author  :   Ayatale 
-@Version :   1.5-diy1
+@Version :   1.5
 @Contact :   ayatale@qq.com
 @Github  :   https://github.com/brx86/
 @Desc    :   白嫖 Naifu（也有概率是Stable Diffusion）
 '''
 
 # 设置并发数，建议不要超过50
-POOL = 200
+POOL = 20
 
 
-import asyncio, httpx, random
+import asyncio, httpx, random, time
 
 # 协程池，限制并发数量
 async def sem_gather(task_list, sem_num):
@@ -67,3 +67,21 @@ async def run():
     task_list = [check_html(n) for n in range(start, end)]
     url_list = list(filter(None, await sem_gather(task_list, POOL)))
     return '\n' + '\n'.join(url_list)
+
+
+def sniff():
+    start_time = time.time()
+    try:
+        msg = asyncio.run(run())
+    except KeyboardInterrupt:
+        print("Exiting...")
+        exit(0)
+    except Exception as e:
+        msg = "\n"+repr(e)
+    msg += f"\nCosts: {time.time()-start_time:.2f}s"
+    print("\n\033[1;35mComplete\033[0m")
+    return msg
+
+
+if __name__ == "__main__":
+    sniff()

@@ -5,7 +5,7 @@
 @File    :   free_stable_diffusion.py
 @Time    :   2022/10/09 12:41:12
 @Author  :   Ayatale 
-@Version :   1.3-diy2
+@Version :   1.3
 @Contact :   ayatale@qq.com
 @Github  :   https://github.com/brx86/
 @Desc    :   白嫖 Stable Diffusion
@@ -52,7 +52,7 @@ async def run():
     end = start + 300
     print(f"\033[1;35mScan from {start} to {end}\033[0m")
     task_list = [check_html(n) for n in range(start, end)]
-    url_list = list(filter(None, await sem_gather(task_list, 50)))
+    url_list = list(filter(None, await sem_gather(task_list, 15)))
     return '\n' + '\n'.join(url_list)
 
 
