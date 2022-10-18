@@ -29,7 +29,7 @@ async def _(bot: Bot, event: MessageEvent):
         msg = "\n"+str(repr(e))
     msg += f"\nCosts: {time.time()-st:.2f}s"
     print("\n\033[1;35mComplete\033[0m")
-    result = await _fnfs.finish(msg, at_sender=True)
+    result = await _fnfs.send(msg, at_sender=True)
 
     loop = asyncio.get_running_loop()
     loop.call_later(
