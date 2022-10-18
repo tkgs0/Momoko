@@ -1,10 +1,10 @@
-import asyncio
+import asyncio, time
 
 from nonebot.rule import to_me
 from nonebot.plugin import on_fullmatch
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.helpers import Cooldown
-from .utils import sniff
+from .utils import run
 
 
 
@@ -13,7 +13,16 @@ _fsds = on_fullmatch("/fsds", to_me(), priority=5, block=True)
 @_fsds.handle([Cooldown(1800, prompt="慢...慢一..点❤")])
 async def _(bot: Bot):
     await _fsds.send("Loading......")
-    msg = sniff()
+    start_time = time.time()
+    try:
+        msg = await run()
+    except KeyboardInterrupt:
+        print("Exiting...")
+        exit(0)
+    except Exception as e:
+        msg = "\n"+repr(e)
+    msg += f"\nCosts: {time.time()-start_time:.2f}s"
+    print("\033[1;35mComplete\033[0m")
     result = await _fsds.send(msg, at_sender=True)
 
     loop = asyncio.get_running_loop()

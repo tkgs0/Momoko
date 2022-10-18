@@ -56,19 +56,14 @@ async def run():
     return '\n' + '\n'.join(url_list)
 
 
-def sniff():
+if __name__ == "__main__":
     start_time = time.time()
     try:
-        msg = asyncio.run(run())
+        asyncio.run(run())
+        print(f"Costs: {time.time()-start_time:.2f}s")
     except KeyboardInterrupt:
         print("Exiting...")
+        print(f"Costs: {time.time()-start_time:.2f}s")
         exit(0)
     except Exception as e:
-        msg = "\n"+repr(e)
-    msg += f"\nCosts: {time.time()-start_time:.2f}s"
-    print("\033[1;35mComplete\033[0m")
-    return msg
-
-
-if __name__ == "__main__":
-    sniff()
+        print(repr(e))
