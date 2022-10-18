@@ -12,7 +12,7 @@
 '''
 
 # 设置并发数，建议不要超过50
-POOL = 500
+POOL = 200
 
 
 import asyncio, httpx, random
@@ -51,13 +51,12 @@ async def check_html(n):
                     return
         except (httpx.RemoteProtocolError, httpx.ConnectError):
             print(f'\033[1;33m{n}:\033[0m empty', end='\r', flush=True)
-            pass
+            return
         except (httpx.ReadTimeout, httpx.ConnectTimeout):
             print(f'\033[1;33m{n}:\033[0m timeout', end='\r', flush=True)
             pass
         except Exception as e:
             print(f'\033[1;33m{n}:\033[1;31m {e.__class__.__name__}\033[0m')
-            pass
 
 
 # 创建任务，随机获取网页
