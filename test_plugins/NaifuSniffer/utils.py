@@ -50,7 +50,7 @@ async def check_html(n):
                     print(f'\033[1;33m{n}:\033[0m unknown', end='\r', flush=True)
                     return
         except (httpx.RemoteProtocolError, httpx.ConnectError):
-            print(f'\033[1;33m{n}:\033[0m empty', end='\r', flush=True)
+            print(f'\033[1;33m{n}:\033[0m empty  ', end='\r', flush=True)
             return
         except (httpx.ReadTimeout, httpx.ConnectTimeout):
             print(f'\033[1;33m{n}:\033[0m timeout', end='\r', flush=True)

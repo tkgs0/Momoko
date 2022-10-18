@@ -12,7 +12,7 @@
 """
 
 
-import asyncio, httpx, random
+import asyncio, httpx, random, time
 
 # 协程池，限制并发数量
 async def sem_gather(task_list, sem_num):
@@ -55,3 +55,20 @@ async def run():
     url_list = list(filter(None, await sem_gather(task_list, 50)))
     return '\n' + '\n'.join(url_list)
 
+
+def sniff():
+    start_time = time.time()
+    try:
+        msg = asyncio.run(run())
+    except KeyboardInterrupt:
+        print("Exiting...")
+        exit(0)
+    except Exception as e:
+        msg = "\n"+repr(e)
+    msg += f"\nCosts: {time.time()-start_time:.2f}s"
+    print("\033[1;35mComplete\033[0m")
+    return msg
+
+
+if __name__ == "__main__":
+    sniff()
