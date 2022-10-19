@@ -35,7 +35,7 @@ async def _(bot: Bot):
         universal_newlines=True
     ).communicate()
 
-    msg = f"\n{content[0]}"
+    msg = f"\n{content[0]}执行完毕."
     result = await _fsds.send(msg, at_sender=True)
     
     loop = asyncio.get_running_loop()
