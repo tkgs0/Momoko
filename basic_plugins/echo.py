@@ -1,5 +1,5 @@
 from nonebot.rule import to_me
-from nonebot.adapters.onebot.v11 import Message
+from nonebot.adapters.onebot.v11 import Message, MessageSegment
 from nonebot.params import CommandArg
 from nonebot.plugin import on_command
 from nonebot.permission import SUPERUSER
@@ -20,6 +20,6 @@ _snapshot = on_command("/快照", priority=5, block=True, permission=SUPERUSER)
 async def _(message: Message = CommandArg()):
     url = str(message)
     try:
-        await _snapshot.finish(Message(f"[CQ:image,file=https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}]"))
+        await _snapshot.finish(MessageSegment.image(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"))
     except Exception as e:
         await _snapshot.finish(repr(e))
