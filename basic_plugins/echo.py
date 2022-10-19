@@ -22,4 +22,4 @@ async def _(message: Message = CommandArg()):
     try:
         await _snapshot.finish(Message(f"[CQ:image,file=https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}]"))
     except Exception as e:
-        await _snapshot.finish('url不正确, 或者帐号被风控')
+        await _snapshot.finish(message=e.__class__.__name__)
