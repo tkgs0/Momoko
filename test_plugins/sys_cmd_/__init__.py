@@ -1,14 +1,12 @@
 import os
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE
 from random import choice
 from nonebot import on_command
 from nonebot.permission import SUPERUSER
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, ArgPlainText
 from nonebot.adapters.onebot.v11 import (
-    MessageEvent,
     Message,
-    MessageSegment,
     unescape
 )
 from nonebot.adapters.onebot.v11.helpers import Cooldown
@@ -40,8 +38,7 @@ async def _sys_cmd(matcher: Matcher, args: Message = CommandArg()):
 
 
 @sys_cmd.got("opt", prompt="请输入命令内容\n获取帮助：>cmd.help")
-async def _(event: MessageEvent, opt: str = ArgPlainText("opt")):
-    user_id = event.get_user_id()
+async def _(opt: str = ArgPlainText("opt")):
 
     # 拯救傻瓜用户
     if opt.startswith(">cmd.help"):
@@ -51,7 +48,7 @@ async def _(event: MessageEvent, opt: str = ArgPlainText("opt")):
         opt = opt.replace('-s','',1)
         if (opt.startswith(' ') or opt.startswith('\n')) and (opt := opt.lstrip().lstrip('\n')) != '':
             content = os.system(unescape(opt))
-            await sys_cmd.finish(MessageSegment.at(user_id)+"\n执行完毕: "+str(content))
+            await sys_cmd.finish("\n执行完毕: "+str(content), at_sender=True)
         else:
             await sys_cmd.finish("格式错误, 发送 >cmd.help 获取帮助")
 
@@ -73,7 +70,7 @@ async def _(event: MessageEvent, opt: str = ArgPlainText("opt")):
         msg = f"\nstderr:\n{content[1]}"
     else :
         msg = f"\nstdout:\n{content[0]}\nstderr:\n{content[1]}\n>执行完毕"
-    await sys_cmd.finish(MessageSegment.at(user_id)+msg)
+    await sys_cmd.finish(msg, at_sender=True)
 
 
 sys_cmd_helper = on_command('>cmd.help', priority=5, block=True)
