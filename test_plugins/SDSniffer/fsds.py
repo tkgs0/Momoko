@@ -38,9 +38,11 @@ async def check_html(n):
         else:
             return
     if "auth_required" in r.text:
-        print(f"Locked:  {url}")
+        # print(f"Locked:  {url}")
+        return
     elif "Stable Diffusion" in r.text:
-        print(f"\033[1;32mSuccess: \033[4;34m{url}\033[0m")
+        # print(f"Success: {url}")
+        print(url)
         return url
     else:
         return
@@ -50,7 +52,7 @@ async def check_html(n):
 async def run():
     start = random.randint(10000, 24800)
     end = start + 300
-    print(f"\033[1;35mScan from {start} to {end}\033[0m")
+    print(f"Scan from {start} to {end}")
     task_list = [check_html(n) for n in range(start, end)]
     url_list = list(filter(None, await sem_gather(task_list, 15)))
     return '\n' + '\n'.join(url_list)

@@ -12,7 +12,7 @@
 '''
 
 # 设置并发数，建议不要超过50
-POOL = 20
+POOL = 100
 
 
 import asyncio, httpx, random, time
@@ -38,32 +38,29 @@ async def check_html(n):
             async with httpx.AsyncClient() as client:
                 r = await client.get(url := f'http://bore.pub:{n}')
                 if 'auth_required' in r.text:
-                    print(f'Lock:  {url}')
+                    # print(f'Lock:  {url}')
                     return
                 elif 'NAIFU' in r.text and 'novelai' in r.text:
-                    print(f'\033[1;32mNaifu: \033[4;34m{url}\033[0m')
+                    print(f'Naifu: {url}')
                     return f'Naifu: {url}'
                 elif 'Stable Diffusion' in r.text:
-                    print(f'\033[1;32mSD:    \033[4;34m{url}\033[0m')
+                    print(f'SD:    {url}')
                     return f'SD: {url}'
                 else:
-                    print(f'\033[1;33m{n}:\033[0m unknown', end='\r', flush=True)
                     return
         except (httpx.RemoteProtocolError, httpx.ConnectError):
-            print(f'\033[1;33m{n}:\033[0m empty  ', end='\r', flush=True)
             return
         except (httpx.ReadTimeout, httpx.ConnectTimeout):
-            print(f'\033[1;33m{n}:\033[0m timeout', end='\r', flush=True)
             pass
-        except Exception as e:
-            print(f'\033[1;33m{n}:\033[1;31m {e.__class__.__name__}\033[0m')
+        except Exception:
+            pass
 
 
 # 创建任务，随机获取网页
 async def run():
     start = random.randint(33000, 42000)
     end = start + 1000
-    print(f'\033[1;35mScan from {start} to {end}\033[0m')
+    print(f'Scan from {start} to {end}')
     task_list = [check_html(n) for n in range(start, end)]
     url_list = list(filter(None, await sem_gather(task_list, POOL)))
     return '\n' + '\n'.join(url_list)
