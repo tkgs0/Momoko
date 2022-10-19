@@ -20,6 +20,6 @@ _snapshot = on_command("/快照", priority=5, block=True, permission=SUPERUSER)
 async def _(message: Message = CommandArg()):
     url = str(message)
     try:
-        await _snapshot.finish(MessageSegment.image(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"))
+        await _snapshot.send(MessageSegment.image(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"))
     except Exception as e:
         await _snapshot.finish(repr(e))
