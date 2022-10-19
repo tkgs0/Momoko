@@ -12,7 +12,7 @@
 '''
 
 # 设置并发数，建议不要超过50
-POOL = 100
+POOL = 200
 
 
 import asyncio, httpx, random, time

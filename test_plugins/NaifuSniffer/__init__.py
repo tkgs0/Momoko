@@ -1,12 +1,15 @@
 from pathlib import Path
 from random import choice
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE
 
 from nonebot import on_command
+from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.helpers import (
     Cooldown,
     CooldownIsolateLevel
 )
+
+import asyncio
 
 
 _flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
@@ -19,9 +22,10 @@ _fnfs = on_command('>fnfs', priority=5, block=True)
     prompt=_flmt_notice,
     isolate_level=CooldownIsolateLevel.GLOBAL
 )])
-async def _():
-    opt = "python " + str(file_path)
+async def _(bot: Bot):
+    await _fnfs.send("Loading......")
 
+    opt = "python " + str(file_path)
     content = Popen(
         opt,
         stdin=PIPE,
@@ -31,5 +35,14 @@ async def _():
         universal_newlines=True
     ).communicate()
 
-    msg = f"\nstdout:\n{content[0]}"
-    await _fnfs.finish(msg, at_sender=True)
+    msg = f"\n{content[0]}"
+    result = await _fnfs.send(msg, at_sender=True)
+    
+    loop = asyncio.get_running_loop()
+    loop.call_later(
+        90,  # 消息撤回等待时间 单位秒
+        lambda: asyncio.ensure_future(
+            bot.delete_msg(message_id=result["message_id"])
+        ),
+    )
+
