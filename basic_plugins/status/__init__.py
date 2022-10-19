@@ -21,5 +21,5 @@ async def _():
     await status.finish(msg)
 
 
-info_msg = "桃桃世界第一可爱！"
+info_msg = "アトリは高性能ですから！"
 

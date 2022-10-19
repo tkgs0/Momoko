@@ -53,7 +53,7 @@ class Status():
         except:
             return "Failed to get status."
 
-        msg = "桃桃世界第一可爱！"
+        msg = "アトリは、高性能ですから！"
         if cpu > 90:  # type: ignore
             msg = "咱感觉有些头晕..."
             is_ok = False
