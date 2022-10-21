@@ -144,7 +144,7 @@ check_userlist = on_command("查看用户黑名单", permission=SUPERUSER, prior
 
 @check_userlist.handle()
 async def check_user_list():
-    await check_userlist.finish(f"当前已屏蔽用户: {', '.join(blacklist['userlist'])}")
+    await check_userlist.finish(f"当前已屏蔽{len(blacklist['userlist'])}个用户: {', '.join(blacklist['userlist'])}")
 
 
 
@@ -152,7 +152,7 @@ check_grouplist = on_command("查看群聊黑名单", permission=SUPERUSER, prio
 
 @check_grouplist.handle()
 async def check_group_list():
-    await check_grouplist.finish(f"当前已屏蔽群聊: {', '.join(blacklist['grouplist'])}")
+    await check_grouplist.finish(f"当前已屏蔽{len(blacklist['grouplist'])}个群聊: {', '.join(blacklist['grouplist'])}")
 
 
 
