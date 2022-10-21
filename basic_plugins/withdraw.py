@@ -1,10 +1,10 @@
-from nonebot import on_command
+from nonebot import on_fullmatch
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.typing import T_State
 from nonebot.permission import SUPERUSER
 import re
 
-withdraw_msg = on_command("撤回", priority=5, block=True, permission=SUPERUSER)
+withdraw_msg = on_fullmatch("撤回", priority=5, block=True, permission=SUPERUSER)
 
 @withdraw_msg.handle()
 async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
