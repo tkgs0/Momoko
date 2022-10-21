@@ -11,7 +11,7 @@ driver = nonebot.get_driver()
 driver.register_adapter(ONEBOT_V11Adapter)
 nonebot.load_plugins("basic_plugins")
 nonebot.load_plugins("plugins")
-nonebot.load_plugins("test_plugins")
+nonebot.load_plugins("other_plugins")
 
 
 if __name__ == "__main__":
