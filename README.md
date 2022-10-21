@@ -37,7 +37,7 @@ SAUCENAO_API_KEY=xxx
 抄自 [KafCoppelia佬](https://github.com/MinatoAquaCrews) 的 [AntiFlash](https://github.com/MinatoAquaCrews/nonebot_plugin_antiflash)  
 
 <details>
-  <summary>使用方法</summary>
+  <summary>使用方法(点击展开)</summary>
   
 .  
 在`.env.dev`内设置：
@@ -62,7 +62,7 @@ ANTI_FLASH_PATH="your-path-to-config.json"  # 配置文件路径，默认同插�
 </details>
 
 
-### anti_recall 反撤回
+### anti_recall  反撤回
 移植自 [摸佬](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)  
 将检测到的撤回消息转发给超级用户
 
@@ -76,7 +76,7 @@ ANTI_FLASH_PATH="your-path-to-config.json"  # 配置文件路径，默认同插�
 抄自 [wq佬](https://github.com/MeetWq) 的 [caiyunai](https://github.com/noneplugin/nonebot-plugin-caiyunai)  
 
 <details>
-  <summary>使用方法</summary>
+  <summary>使用方法(点击展开)</summary>
   
 .  
 **配置:**
@@ -123,7 +123,7 @@ apikey获取：
 ```
 
 
-### fake_msg 伪造合并转发消息
+### fake_msg  伪造合并转发消息
 移植自 [摸佬](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)  
 **使用方法:**  
 ```
@@ -156,7 +156,7 @@ qq号-昵称-消息内容
 如果需要开放给所有用户使用的话，请将`plugins/mockingbird/__init__.py`第78行的`permission=SUPERUSER,`删掉
 
 <details>
-  <summary>其他操作</summary>
+  <summary>其他操作(点击展开)</summary>
   
 .  
 ```
@@ -176,7 +176,7 @@ qq号-昵称-消息内容
   
 
 <details>
-  <summary>使用方法</summary>
+  <summary>使用方法(点击展开)</summary>
 
 .  
 
@@ -204,7 +204,7 @@ qq号-昵称-消息内容
 
 ### rss  订阅
 抄自 [Quan666](https://github.com/Quan666) 的 [ELF_RSS](https://github.com/Quan666/ELF_RSS)  
-[▶使用方法️️](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)  
+**使用方法:** [▶传送门](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)  
 
 
 ### simplemusic  点歌
@@ -234,6 +234,11 @@ qq号-昵称-消息内容
 ```
 @机器人 抽塔罗牌
 ```
+
+
+### wordbank2  你问我答
+抄自 [kexue佬](https://github.com/kexue-z) 的 [wordbank2](https://github.com/kexue-z/nonebot-plugin-word-bank2)
+**使用方法:** [▶传送门](https://github.com/kexue-z/nonebot-plugin-word-bank2#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8)
 
 
 ### withdraw  撤回
