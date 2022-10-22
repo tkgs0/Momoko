@@ -46,7 +46,7 @@ async def _(opt: str = ArgPlainText("opt")):
 
     if opt.startswith('-s'):
         opt = opt.replace('-s','',1)
-        if opt[0] in [' ', '\n'] and (opt := opt.lstrip().lstrip('\n')) != '':
+        if (opt.startswith(' ') or opt.startswith('\n')) and (opt := opt.lstrip().lstrip('\n')) != '':
             content = os.system(unescape(opt))
             await sys_cmd.finish("\n执行完毕: "+str(content), at_sender=True)
         else:
