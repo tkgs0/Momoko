@@ -2,7 +2,7 @@ from random import choice
 from nonebot import on_command
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, ArgPlainText
-from nonebot.adapters.onebot.v11 import MessageEvent, Message, unescape
+from nonebot.adapters.onebot.v11 import Message, unescape
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
 from .data_source import CodeRunner
@@ -26,14 +26,13 @@ async def _code_runner(matcher: Matcher, args: Message = CommandArg()):
 
 
 @code_runner.got("opt", prompt="需要运行的语言及代码？\n获取帮助：>code.help")
-async def _(event: MessageEvent, opt: str = ArgPlainText("opt")):
-    user_id = event.get_user_id()
+async def _(opt: str = ArgPlainText("opt")):
 
     # 拯救傻瓜用户
     if opt == ">code.help":
         await code_runner.finish(CodeRunner().help())
 
-    content = '\n' + str(await CodeRunner().runner(unescape(opt)))
+    content = str(await CodeRunner().runner(unescape(opt)))
     await code_runner.finish(Message(content), at_sender=True)
 
 
