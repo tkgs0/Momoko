@@ -86,4 +86,4 @@ async def handler(matcher: Matcher, msg: Message = CommandArg()):
         await matcher.finish("找不到相关的歌曲")
 
 
-on_command("点歌", rule=to_me(), block=True, priority=12).append_handler(handler)
+on_command("点歌", block=True, priority=12).append_handler(handler)
