@@ -16,7 +16,7 @@ _fake_flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~
 fake_msg = on_command("/fakemsg", priority=5, block=True, permission=SUPERUSER)
 
 
-@fake_msg.handle([Cooldown(60, prompt=_fake_flmt_notice)])
+@fake_msg.handle([Cooldown(15, prompt=_fake_flmt_notice)])
 async def _ready_fake(matcher: Matcher, args: Message = CommandArg()):
     msg = args.extract_plain_text()
     if msg:
