@@ -41,7 +41,8 @@ class CodeRunner():
             "{代码}\n"
             "For example:\n"
             ">code python\n"
-            "print('hello world')"
+            "print('hello world')\n\n"
+            "发送 >code.list 查看支持的语言"
         )
 
     @staticmethod
