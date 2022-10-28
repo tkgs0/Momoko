@@ -20,7 +20,7 @@ superusers = get_driver().config.superusers
 
 curse_list = Path(__file__).parent / "curse.json"
 curse = json.load(open(curse_list))
-curse = set(curse["curse"])
+curse = set(curse)
 
 blacklist = list()
 
