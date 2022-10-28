@@ -33,7 +33,7 @@ def handle_namelist(uid):
 
 
 
-anti_abuse = on_keyword(curse, rule=to_me(), priority=5, block=True)
+anti_abuse = on_keyword(curse, rule=to_me(), priority=15, block=True)
 
 @anti_abuse.handle()
 async def _(bot: Bot, event: MessageEvent):

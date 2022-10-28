@@ -13,10 +13,10 @@ from .utils import *
 
 
 
-help = on_command("help", rule=to_me(), aliases={"帮助","menu","菜单"}, priority=2, block=True)
+help = on_command("help", rule=to_me(), aliases={"帮助","menu","菜单"}, priority=5, block=True)
 
 @help.handle()
-async def _help(event: MessageEvent):
+async def _help():
     await help.finish("没有帮助菜单")
 
 
