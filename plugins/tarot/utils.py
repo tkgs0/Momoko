@@ -10,7 +10,6 @@ resource = Path(__file__).parent /  "resource"
 
 
 Major_Arcana = json.loads((resource / "Major_Arcana.json").read_text("utf-8"))
-
 Unusual = json.loads((resource / "Unusual.json").read_text("utf-8"))
 
 Major_list = ["愚人", "魔术师", "女祭司", "女皇", "皇帝", "教皇", "恋人", "战车", "力量", "隐士", "命运之轮", "正义", "倒吊人", "死神", "节制", "恶魔", "高塔", "星星", "月亮", "太阳", "审判", "世界", "草莓", "礼物", "启明", "飞猪", "白日梦", "迷你象"]
