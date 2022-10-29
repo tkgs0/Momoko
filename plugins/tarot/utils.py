@@ -1,29 +1,36 @@
 from pathlib import Path
-import os
-import random
+from random import randint, choice
 try:
     import ujson as json
 except ModuleNotFoundError:
     import json
 
-resource = os.path.join(os.path.dirname(__file__), "resource")
 
-Major_Arcana = json.load(open(Path(resource) / "Major_Arcana.json", "r", encoding="utf8"))
-Unusual = json.load(open(Path(resource) / "Unusual.json", "r", encoding="utf8"))
+resource = Path(__file__).parent /  "resource"
+
+
+Major_Arcana = json.loads((resource / "Major_Arcana.json").read_text("utf-8"))
+
+Unusual = json.loads((resource / "Unusual.json").read_text("utf-8"))
+
 Major_list = ["愚人", "魔术师", "女祭司", "女皇", "皇帝", "教皇", "恋人", "战车", "力量", "隐士", "命运之轮", "正义", "倒吊人", "死神", "节制", "恶魔", "高塔", "星星", "月亮", "太阳", "审判", "世界", "草莓", "礼物", "启明", "飞猪", "白日梦", "迷你象"]
 
-Wands = json.load(open(Path(resource) / "Minor_Arcana" / "Wands.json", "r", encoding="utf8"))
-Pentacles = json.load(open(Path(resource) / "Minor_Arcana" / "Pentacles.json", "r", encoding="utf8"))
-Cups = json.load(open(Path(resource) / "Minor_Arcana" / "Cups.json", "r", encoding="utf8"))
-Swords = json.load(open(Path(resource) / "Minor_Arcana" / "Swords.json", "r", encoding="utf8"))
 
+Minor_Arcana = resource / "Minor_Arcana"
+
+Wands = json.loads((Minor_Arcana / "Wands.json").read_text("utf-8"))
+Pentacles = json.loads((Minor_Arcana / "Pentacles.json").read_text("utf-8"))
+Cups = json.loads((Minor_Arcana / "Cups.json").read_text("utf-8"))
+Swords = json.loads((Minor_Arcana / "Swords.json").read_text("utf-8"))
 
 Minor_list = ["Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Page", "Knight", "Queen", "King"]
 
+
+
 class Tarot():
     @staticmethod
-    def get_tarot():
-        mj = random.randint(0,len(Major_list)-1)
+    def get_tarot(uid, name):
+        mj = randint(0,len(Major_list)-1)
         major = None
         img = None
         if mj < 22: 
@@ -32,10 +39,10 @@ class Tarot():
         else:
             major = Unusual[Major_list[mj]]
             img = Path(resource) / "image" / "22.png"
-        wand = Wands[random.choice(Minor_list)]
-        pentacle = Pentacles[random.choice(Minor_list)]
-        cup = Cups[random.choice(Minor_list)]
-        sword = Swords[random.choice(Minor_list)]
+        wand = Wands[choice(Minor_list)]
+        pentacle = Pentacles[choice(Minor_list)]
+        cup = Cups[choice(Minor_list)]
+        sword = Swords[choice(Minor_list)]
         content = [
             "锵锵锵，塔罗牌的预言是~",
             f"{major['title']}\n[CQ:image,file=file:///{img}]\n{wand['title']}\n{pentacle['title']}\n{cup['title']}\n{sword['title']}",
@@ -46,16 +53,16 @@ class Tarot():
             f"{cup['title']}\n{cup['analysis']}",
             f"{sword['title']}\n{sword['analysis']}"
         ]
-        node = list()
-        for i in content:
-            dic = {
+        node = [
+            {
                 "type": "node",
                 "data": {
-                    "user_id": "2854200812",
-                    "nickname": "灯塔",
-                    "content": i
+                    "name": name,
+                    "uin": str(uid),
+                    "content": msg
                 }
             }
-            node.append(dic)
+            for msg in content
+        ]
         return node
         
