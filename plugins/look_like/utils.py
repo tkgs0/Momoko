@@ -1,4 +1,4 @@
-import random
+from random import choice
 
 class Look():
     @staticmethod
@@ -17,19 +17,19 @@ class Look():
         l_list = ["大高个","小胖墩儿","瘦小","普通","健硕","巨人","矮人"];
         m_list = ["内向","元气","阴郁","病娇","迷糊","笨蛋","知性","色欲","傲娇","暴躁","分裂型","理智","憨厚","怯懦","疯狂"];
         n_list = ["修女","女仆","护士","学生","人偶","天使","兽娘","恶魔","精灵","亡灵","法师","史莱姆","OL","萝莉","御姐","雇佣兵","律师","囚犯","算命先生","教师","清洁工","宿管阿姨","农民","剑灵","奴隶","坐台小姐","工人","水手","总统","包租婆"];
-        a = random.choice(a_list)
-        b = random.choice(b_list)
-        c = random.choice(c_list)
-        d = random.choice(d_list)
-        e = random.choice(e_list)
-        f = random.choice(f_list)
-        g = random.choice(g_list)
-        h = random.choice(h_list)
-        i = random.choice(i_list)
-        j = random.choice(j_list)
-        k = random.choice(k_list)
-        l = random.choice(l_list)
-        m = random.choice(m_list)
-        n = random.choice(n_list)
+        a = choice(a_list)
+        b = choice(b_list)
+        c = choice(c_list)
+        d = choice(d_list)
+        e = choice(e_list)
+        f = choice(f_list)
+        g = choice(g_list)
+        h = choice(h_list)
+        i = choice(i_list)
+        j = choice(j_list)
+        k = choice(k_list)
+        l = choice(l_list)
+        m = choice(m_list)
+        n = choice(n_list)
         return f"像一个戴着{d}上身{a}下身{b+c}手上拿着{e}的{f+g+h+i}瞳孔{j}cup{k}皮肤{l}体型的{m+n}。"
         

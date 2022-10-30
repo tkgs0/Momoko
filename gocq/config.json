@@ -1,0 +1,15 @@
+{
+    ".not": {
+        ".or": [
+            {
+                "message_type": "guild"
+            },
+            {
+                "message_type": "group",
+                "anonymous": {
+                    ".neq": null
+                }
+            }
+        ]
+    }
+}

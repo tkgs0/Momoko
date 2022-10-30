@@ -61,7 +61,7 @@ default-middlewares: &default
   # 访问密钥, 强烈推荐在公网的服务器设置
   access-token: ''
   # 事件过滤器文件目录
-  filter: ''
+  filter: './config.json'
   # API限速设置
   # 该设置为全局生效
   # 原 cqhttp 虽然启用了 rate_limit 后缀, 但是基本没插件适配
