@@ -6,7 +6,7 @@ from nonebot.permission import SUPERUSER
 
 
 
-echo = on_command("：", to_me(), priority=5, block=True, permission=SUPERUSER)
+echo = on_command("：", aliases={":", "曰"}, rule=to_me(), priority=5, block=True, permission=SUPERUSER)
 
 @echo.handle()
 async def echo_escape(message: Message = CommandArg()):
