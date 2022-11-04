@@ -59,7 +59,7 @@ output:
 # 默认中间件锚点
 default-middlewares: &default
   # 访问密钥, 强烈推荐在公网的服务器设置
-  access-token: ''
+  access-token: 'KEJWwj5N5pqwSQBbgrxKCX3eaC63Zjxr'
   # 事件过滤器文件目录
   filter: './config.json'
   # API限速设置
