@@ -19,7 +19,6 @@ upload_group_file = on_command(
     aliases={"uploadfile"},
     rule=to_me(),
     priority=5,
-    block=True,
 )
 
 

@@ -1,8 +1,6 @@
 import re
 import sqlite3
-from contextlib import suppress
 from difflib import SequenceMatcher
-from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List
 
 import arrow
@@ -19,7 +17,7 @@ from .cache_manage import (
     insert_into_cache_db,
     write_item,
 )
-from .check_update import check_update
+from .check_update import check_update, get_item_date
 from .download_torrent import down_torrent, pikpak_offline
 from .handle_html_tag import handle_html_tag
 from .handle_images import handle_img
@@ -39,7 +37,7 @@ async def handle_check_update(rss: Rss, state: Dict[str, Any]):
 
 
 # 判断是否满足推送条件
-@ParsingBase.append_before_handler(priority=11)
+@ParsingBase.append_before_handler(priority=11)  # type: ignore
 async def handle_check_update(rss: Rss, state: Dict[str, Any]):
     change_data = state.get("change_data")
     db = state.get("tinydb")
@@ -78,7 +76,7 @@ async def handle_check_update(rss: Rss, state: Dict[str, Any]):
 
 
 # 如果启用了去重模式，对推送列表进行过滤
-@ParsingBase.append_before_handler(priority=12)
+@ParsingBase.append_before_handler(priority=12)  # type: ignore
 async def handle_check_update(rss: Rss, state: Dict[str, Any]):
     change_data = state.get("change_data")
     conn = state.get("conn")
@@ -179,7 +177,7 @@ async def handle_summary(
 
 
 # 处理正文 处理网页 tag
-@ParsingBase.append_handler(parsing_type="summary", priority=10)
+@ParsingBase.append_handler(parsing_type="summary", priority=10)  # type: ignore
 async def handle_summary(
     rss: Rss,
     state: Dict[str, Any],
@@ -196,7 +194,7 @@ async def handle_summary(
 
 
 # 处理正文 移除指定内容
-@ParsingBase.append_handler(parsing_type="summary", priority=11)
+@ParsingBase.append_handler(parsing_type="summary", priority=11)  # type: ignore
 async def handle_summary(
     rss: Rss,
     state: Dict[str, Any],
@@ -217,7 +215,7 @@ async def handle_summary(
 
 
 # 处理正文 翻译
-@ParsingBase.append_handler(parsing_type="summary", priority=12)
+@ParsingBase.append_handler(parsing_type="summary", priority=12)  # type: ignore
 async def handle_summary(
     rss: Rss,
     state: Dict[str, Any],
@@ -325,12 +323,8 @@ async def handle_date(
     tmp: str,
     tmp_state: Dict[str, Any],
 ) -> str:
-    if date := item.get("published", item.get("updated")):
-        with suppress(Exception):
-            date = parsedate_to_datetime(date)
-        date = arrow.get(date).to("Asia/Shanghai")
-    else:
-        date = arrow.now()
+    date = get_item_date(item)
+    date = date.replace(tzinfo="local") if date > arrow.now() else date.to("local")
     return f"日期：{date.format('YYYY年MM月DD日 HH:mm:ss')}"
 
 

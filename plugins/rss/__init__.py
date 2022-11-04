@@ -11,15 +11,16 @@ from .config import DATA_PATH
 from .rss_class import Rss
 from .utils import send_message_to_admin
 
-VERSION = "2.6.11"
+require("nonebot_plugin_apscheduler")
+from nonebot_plugin_apscheduler import scheduler  # noqa
+
+VERSION = "2.6.12"
 __plugin_meta__ = PluginMetadata(
     name="ELF_RSS",
     description="QQ机器人 RSS订阅 插件，订阅源建议选择 RSSHub",
     usage="https://github.com/Quan666/ELF_RSS",
     extra={"author": "Quan666 <i@Rori.eMail>", "version": VERSION},
 )
-
-scheduler = require("nonebot_plugin_apscheduler").scheduler
 
 
 async def check_first_connect(_: LifecycleMetaEvent) -> bool:

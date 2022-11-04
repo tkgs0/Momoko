@@ -16,8 +16,7 @@ RSS_SHOW = on_command(
     aliases={"查看订阅"},
     rule=to_me(),
     priority=5,
-    block=True,
-    permission=SUPERUSER,   # GROUP_ADMIN | GROUP_OWNER | GUILD_SUPERUSER | 
+    permission=GROUP_ADMIN | GROUP_OWNER | GUILD_SUPERUSER | SUPERUSER,
 )
 
 

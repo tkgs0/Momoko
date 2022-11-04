@@ -2,7 +2,6 @@ import re
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
-from nonebot.log import logger
 from tinydb import Query, TinyDB
 from tinydb.operations import set as tinydb_set
 from yarl import URL
@@ -23,6 +22,7 @@ class Rss:
         self.only_title: bool = False  # 仅标题
         self.only_pic: bool = False  # 仅图片
         self.only_has_pic: bool = False  # 仅含有图片
+        self.download_pic: bool = False  # 是否要下载图片
         self.cookies: Dict[str, str] = {}
         self.down_torrent: bool = False  # 是否下载种子
         self.down_torrent_keyword: str = ""  # 过滤关键字，支持正则
@@ -192,26 +192,16 @@ class Rss:
         rss_old = Rss.read_rss()
         return [rss for rss in rss_old if user in rss.user_id]
 
-    def set_cookies(self, cookies_str: str) -> bool:
-        try:
-            cookies = {}
-            for line in cookies_str.split(";"):
-                if "=" in line:
-                    key, value = line.strip().split("=", 1)
-                    cookies[key] = value
-            self.cookies = cookies
-            with TinyDB(
-                JSON_PATH,
-                encoding="utf-8",
-                sort_keys=True,
-                indent=4,
-                ensure_ascii=False,
-            ) as db:
-                db.update(tinydb_set("cookies", cookies), Query().name == self.name)  # type: ignore
-            return True
-        except Exception:
-            logger.exception(f"{self.name} 的 Cookies 设置时出错！")
-            return False
+    def set_cookies(self, cookies: str) -> None:
+        self.cookies = cookies
+        with TinyDB(
+            JSON_PATH,
+            encoding="utf-8",
+            sort_keys=True,
+            indent=4,
+            ensure_ascii=False,
+        ) as db:
+            db.update(tinydb_set("cookies", cookies), Query().name == self.name)  # type: ignore
 
     def upsert(self, old_name: Optional[str] = None) -> None:
         with TinyDB(
@@ -246,6 +236,7 @@ class Rss:
             f"翻译：{self.translation}" if self.translation else "",
             f"仅标题：{self.only_title}" if self.only_title else "",
             f"仅图片：{self.only_pic}" if self.only_pic else "",
+            f"下载图片：{self.download_pic}" if self.download_pic else "",
             f"仅含有图片：{self.only_has_pic}" if self.only_has_pic else "",
             f"白名单关键词：{self.down_torrent_keyword}" if self.down_torrent_keyword else "",
             f"黑名单关键词：{self.black_keyword}" if self.black_keyword else "",
