@@ -186,8 +186,8 @@ add_group = on_command('/静默', permission=SUPERUSER, priority=1, block=True)
 
 @add_group.handle()
 async def add_group_(event: GroupMessageEvent):
-    msg = handle_blacklist([f'{event.group_id}'], 'add', 'grouplist')
-    await add_group.finish(msg)
+    handle_blacklist([f'{event.group_id}'], 'add', 'grouplist')
+    await add_group.finish('那我先去睡觉了...')
 
 
 
@@ -195,8 +195,8 @@ del_group = on_command('/响应', permission=SUPERUSER, priority=1, block=True)
 
 @del_group.handle()
 async def del_group_(event: GroupMessageEvent):
-    msg = handle_blacklist([f'{event.group_id}'], 'del', 'grouplist')
-    await del_group.finish(msg)
+    handle_blacklist([f'{event.group_id}'], 'del', 'grouplist')
+    await del_group.finish('呜......醒来力...')
 
 
 
