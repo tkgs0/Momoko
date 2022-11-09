@@ -200,7 +200,7 @@ async def del_group_(event: GroupMessageEvent):
 
 
 
-add_all_group = on_command('/拉黑所有群', aliases={'/屏蔽所有群'}, permission=SUPERUSER, priority=1, block=True)
+add_all_group = on_command('拉黑所有群', aliases={'屏蔽所有群'}, permission=SUPERUSER, priority=1, block=True)
 
 @add_all_group.handle()
 async def add_all_group_(bot: Bot):
@@ -211,7 +211,7 @@ async def add_all_group_(bot: Bot):
 
 
 
-del_all_group = on_command('/解禁所有群', aliases={'/解封所有群'}, permission=SUPERUSER, priority=1, block=True)
+del_all_group = on_command('解禁所有群', aliases={'解封所有群'}, permission=SUPERUSER, priority=1, block=True)
 
 @del_all_group.handle()
 async def del_all_group_(bot: Bot):
@@ -222,7 +222,7 @@ async def del_all_group_(bot: Bot):
 
 
 
-add_all_friend = on_command('/拉黑所有好友', aliases={'/屏蔽所有好友'}, permission=SUPERUSER, priority=1, block=True)
+add_all_friend = on_command('拉黑所有好友', aliases={'屏蔽所有好友'}, permission=SUPERUSER, priority=1, block=True)
 
 @add_all_friend.handle()
 async def add_all_friend_(bot: Bot):
@@ -233,7 +233,7 @@ async def add_all_friend_(bot: Bot):
 
 
 
-del_all_friend = on_command('/解禁所有好友', aliases={'/解封所有好友'}, permission=SUPERUSER, priority=1, block=True)
+del_all_friend = on_command('解禁所有好友', aliases={'解封所有好友'}, permission=SUPERUSER, priority=1, block=True)
 
 @del_all_friend.handle()
 async def del_all_friend_(bot: Bot):
@@ -247,7 +247,7 @@ async def del_all_friend_(bot: Bot):
 
 
 
-reset_blacklist = on_command('/重置黑名单', aliases={'/清空黑名单'}, permission=SUPERUSER, priority=1, block=True)
+reset_blacklist = on_command('重置黑名单', aliases={'清空黑名单'}, permission=SUPERUSER, priority=1, block=True)
 
 @reset_blacklist.got('flag', prompt='确定重置黑名单? (Y/n)')
 async def reset_list(flag: str = ArgStr('flag')):
