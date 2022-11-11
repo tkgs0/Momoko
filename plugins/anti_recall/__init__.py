@@ -35,7 +35,7 @@ async def _(bot: Bot, event: FriendRecallNoticeEvent):
             m = repo
         else:
             return
-    msg = f"咱拿到了一条撤回信息!\n{user}@[私聊]\n撤回了\n{m}"
+    msg = f"{user}@[私聊]\n撤回了\n{m}"
     for superuser in bot.config.superusers:
         await bot.send_private_msg(user_id=int(superuser), message=Message(msg))
 
@@ -63,6 +63,6 @@ async def _(bot: Bot, event: GroupRecallNoticeEvent):
             m = repo
         else:
             return
-    msg = f"咱拿到了一条撤回信息!\n{user}@[群聊:{group}]\n撤回了\n{m}"
+    msg = f"{user}@[群聊:{group}]\n撤回了\n{m}"
     for superuser in bot.config.superusers:
         await bot.send_private_msg(user_id=int(superuser), message=Message(msg))
