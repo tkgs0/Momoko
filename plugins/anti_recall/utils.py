@@ -24,7 +24,7 @@ def recall_msg_dealer(message: Union[dict, str]) -> str:
         elif _type == "face":
             cache_list.append(MessageSegment.face(_data["id"]))
         else:
-            cache_list.append(f"[未知类型信息: {_data}]")
+            cache_list.append(f"[�: {_data}]")
 
     return str().join(map(str, cache_list))
 
