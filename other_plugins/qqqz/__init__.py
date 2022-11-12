@@ -16,7 +16,7 @@ _flmt_notice = choice(['慢...慢一..点❤', '冷静1下', '歇会歇会~~'])
 
 qqqz = on_command('查权重', priority=5, block=True)
 
-@qqqz.handle([Cooldown(30, prompt=_flmt_notice)])
+@qqqz.handle([Cooldown(10, prompt=_flmt_notice)])
 async def _(event: MessageEvent, arg: Message = CommandArg()):
     msg = _check(event, arg)
     await qqqz.finish(msg)
