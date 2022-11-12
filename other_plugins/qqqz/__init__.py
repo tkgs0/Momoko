@@ -8,7 +8,7 @@ import requests
 
 
 
-url = 'http://tfkapi.top/API/qqqz.php?qq='
+url = 'http://tfkapi.top/API/qqqz.php?type=json&qq='
 
 _flmt_notice = choice(['慢...慢一..点❤', '冷静1下', '歇会歇会~~'])
 
@@ -28,8 +28,11 @@ def _check(event, arg):
     msg1 = arg.extract_plain_text()
 
     if msg1 == '自己':
-        res = requests.post(url=f'{url}{event.user_id}').text
-        return res
+        try:
+            res = int(requests.post(url=f'{url}{event.user_id}').json()['qz'])
+            return f'查询结果: {res}'
+        except:
+            return '查询失败'
 
     uids = [at.data['qq'] for at in msg['at']]
 
@@ -43,8 +46,15 @@ def _check(event, arg):
         if not is_number(uid):
             return '格式错误, id必须为纯数字'
 
-    res = [f'{uid} {requests.post(url=url+uid).text}' for uid in uids]
-    return '\n'.join(res)
+    result = list()
+    for uid in uids:
+        
+        try:
+            res = int(requests.post(url=url+uid).json()['qz'])
+            result.append(f'{uid} 查询结果: {res}')
+        except:
+            result.append(f'{uid} 查询失败')
+    return '\n'.join(result)
 
 
 
