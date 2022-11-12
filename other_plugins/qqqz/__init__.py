@@ -31,12 +31,12 @@ def _check(event, arg):
         if not uids:
             return "用法:\n查权重 qq qq1 qq2 ..."
 
+    uids = list(set(uids))
     for uid in uids:
         if not is_number(uid):
-            return '格式错误, id必须为数字'
+            return '格式错误, id必须为纯数字'
 
-    uids = list(set(uids))
-    res = [uid+requests.post(url=f'{url}{uid}').text for uid in uids]
+    res = [f"{uid} {requests.post(url=url+uid).text}" for uid in uids]
     return '\n'.join(res)
 
 
