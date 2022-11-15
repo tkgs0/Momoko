@@ -12,7 +12,7 @@ _help = """
 * Copyright © 2021 - 2022 tkgs0. All Rights Reserved.
 * 项目地址: https://github.com/tkgs0/Momoko
 * 使用帮助: https://deja-vu.eu.org/2022/11/15/momoko
-"""
+""".strip()
 
 help = on_command("help", rule=to_me(), aliases={"帮助","menu","菜单"}, priority=5, block=True)
 
