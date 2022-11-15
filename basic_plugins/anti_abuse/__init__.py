@@ -150,11 +150,15 @@ def namelist_processor_poke(event: PokeNotifyEvent):
 
 
 
-namelist_del = on_command("解除屏蔽", permission=SUPERUSER, priority=1, block=True)
+namelist_del = on_command("解除屏蔽", aliases={"摘口球"}, permission=SUPERUSER, priority=1, block=True)
 
 @namelist_del.handle()
 async def _(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
-    uids = arg.extract_plain_text().strip().split()
+    uids = (
+        [at.data['qq'] for at in event.get_message()['at']]
+        if event.get_message()['at']
+        else arg.extract_plain_text().strip().split()
+    )
     if not uids:
         await namelist_del.finish("用法: \n解除屏蔽 qq qq1 qq2 ...")
     for uid in uids:
