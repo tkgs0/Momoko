@@ -1,16 +1,39 @@
-![maven](https://img.shields.io/badge/python-3.9%2B-blue)
-![maven](https://img.shields.io/badge/nonebot-2.0.0-yellow)
-![maven](https://img.shields.io/badge/go--cqhttp-1.0.0-red)
 
 # 桃桃Bot  
 此项目是基于 [Nonebot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人  
 借(chao)鉴(xi)了大佬们的代码，实现了一些对群友的娱乐功能和实用功能（大概  
 
+<div>
 
-# Nonebot2
-<img style="height: 100px;width: 100px;" src="https://camo.githubusercontent.com/0ef71e86056da694c540790aa4a4e314396884d6c4fdb95362a7538b27a1b034/68747470733a2f2f76322e6e6f6e65626f742e6465762f6c6f676f2e706e67">
+<a href="https://https://v2.nonebot.dev">
+    <img src="https://img.shields.io/badge/nonebot-2.0.0-red.svg" alt="NoneBot">
+</a>
+<a href="https://onebot.adapters.nonebot.dev">
+    <img src="https://img.shields.io/badge/onebot-v11-black.svg" alt="OneBot">
+</a>
+<a href="https://github.com/Mrs4s/go-cqhttp">
+    <img src="https://img.shields.io/badge/gocq-1.0.0-blueviolet.svg" alt="go-cqhttp">
+</a>
+<a href="./LICENSE">
+    <img src="https://img.shields.io/github/license/tkgs0/Momoko.svg" alt="license">
+</a>
+<a href="https://www.python.org">
+    <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="python">
+</a>
 
-非常 [ **[NICE](https://github.com/nonebot/nonebot2)** ] 的OneBot框架
+</div>
+
+
+# NoneBot2
+
+<div>
+<a href="https://v2.nonebot.dev">
+    <img style="height: 150px;width: 150px;" src="https://camo.githubusercontent.com/0ef71e86056da694c540790aa4a4e314396884d6c4fdb95362a7538b27a1b034/68747470733a2f2f76322e6e6f6e65626f742e6465762f6c6f676f2e706e67" alt="NoneBot">
+</a>
+
+非常 [ **[NICE](https://github.com/nonebot/nonebot2)** ] 的Bot框架
+
+</div>
 
 
 ## 声明
