@@ -128,8 +128,7 @@ add_userlist = on_command('拉黑用户', aliases={'屏蔽用户'}, permission=S
 
 @add_userlist.handle()
 async def add_user_list(event: MessageEvent, arg: Message = CommandArg()):
-    if (msg := event.get_message())['at']:
-        uids = [at.data['qq'] for at in msg['at']]
+    if uids := [at.data['qq'] for at in event.get_message()['at']]:
         msg = handle_blacklist(uids, 'add', 'userlist')
         await add_userlist.finish(msg)
     msg = handle_msg(arg, 'add', 'userlist')
