@@ -6,6 +6,22 @@ from nonebot.permission import SUPERUSER
 
 
 
+_help = """
+= 🍑 Momoko 开源 Project =
+* OneBot + NoneBot + Python
+* Copyright © 2021 - 2022 tkgs0. All Rights Reserved.
+* 项目地址: https://github.com/tkgs0/Momoko
+* 使用帮助: https://deja-vu.eu.org/2022/11/15/momoko
+"""
+
+help = on_command("help", rule=to_me(), aliases={"帮助","menu","菜单"}, priority=5, block=True)
+
+@help.handle()
+async def _():
+    await help.finish(_help)
+
+
+
 echo = on_command("：", aliases={":", "曰"}, rule=to_me(), priority=5, block=True, permission=SUPERUSER)
 
 @echo.handle()

@@ -22,12 +22,12 @@ hello__reply = [
 ]
 
 # 从字典里返还消息, 抄(借鉴)的zhenxun-bot
-async def get_chat_result(text: str, nickname: str) -> str:
+async def get_chat_result(text: str):
     if len(text) < 7:
         keys = AnimeThesaurus.keys()
         for key in keys:
             if text.find(key) != -1:
-                return random.choice(AnimeThesaurus[key]) # .replace("你", nickname)
+                return random.choice(AnimeThesaurus[key])
 
 # 从ownthink_api拿到消息
 async def get_reply(url):

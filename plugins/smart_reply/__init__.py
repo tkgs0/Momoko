@@ -1,8 +1,6 @@
-import nonebot
-from nonebot.plugin.on import on_message, on_command, on_notice
+from nonebot.plugin.on import on_message, on_notice
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import (
-    GroupMessageEvent,
     Message,
     MessageEvent,
     PokeNotifyEvent,
@@ -12,20 +10,10 @@ from .utils import *
 
 
 
-
-help = on_command("help", rule=to_me(), aliases={"帮助","menu","菜单"}, priority=5, block=True)
-
-@help.handle()
-async def _help():
-    await help.finish("没有帮助菜单")
-
-
-
-
 poke_ = on_notice(priority=99, block=False)
 
 @poke_.handle()
-async def _poke_event(event: PokeNotifyEvent):
+async def _(event: PokeNotifyEvent):
     if event.self_id == event.target_id:
         # await poke_.finish(f"请不要戳{Bot_NICKNAME}>_<")
         await poke_.finish(MessageSegment("poke", {"qq": event.user_id}))
@@ -54,13 +42,8 @@ async def _(event: MessageEvent):
         "在",
     ]:
         await ai.finish(Message(random.choice(hello__reply)))
-    # 获取用户nickname
-    if isinstance(event, GroupMessageEvent):
-        nickname = event.sender.card or event.sender.nickname
-    else:
-        nickname = event.sender.nickname
     # 从字典里获取结果
-    result = await get_chat_result(msg, nickname)
+    result = await get_chat_result(msg)
     # 如果词库没有结果，则调用ownthink获取智能回复
     if result == None:
         url = f"https://api.ownthink.com/bot?appid=xiaosi&userid=user&spoken={msg}"
