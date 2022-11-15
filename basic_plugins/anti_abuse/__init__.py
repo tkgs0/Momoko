@@ -131,7 +131,7 @@ def namelist_processor(event: MessageEvent):
     uid = str(event.user_id)
     if uid in superusers:
         return
-    if uid in blacklist:
+    if uid in blacklist['user']:
         logger.debug(f"用户 {uid} 在临时黑名单中, 忽略本次消息")
         raise IgnoredException("黑名单用户")
 
@@ -141,7 +141,7 @@ def namelist_processor_poke(event: PokeNotifyEvent):
     uid = str(event.user_id)
     if uid in superusers:
         return
-    if uid in blacklist:
+    if uid in blacklist['user']:
         logger.debug(f"用户 {uid} 在临时黑名单中, 忽略本次消息")
         raise IgnoredException("黑名单用户")
 
