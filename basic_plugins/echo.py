@@ -7,7 +7,7 @@ from nonebot.permission import SUPERUSER
 
 
 _help = """
-= 🍑 Momoko 开源 Project =
+⛦ 🍑 Momoko 开源 Project ⛥
 * OneBot + NoneBot + Python
 * Copyright © 2021 - 2022 tkgs0. All Rights Reserved.
 * 项目地址: https://github.com/tkgs0/Momoko
