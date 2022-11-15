@@ -127,7 +127,11 @@ def handle_blacklist(
 add_userlist = on_command('拉黑用户', aliases={'屏蔽用户'}, permission=SUPERUSER, priority=1, block=True)
 
 @add_userlist.handle()
-async def add_user_list(arg: Message = CommandArg()):
+async def add_user_list(event: MessageEvent, arg: Message = CommandArg()):
+    if (msg := event.get_message())['at']:
+        uids = [at.data['qq'] for at in msg['at']]
+        msg = handle_blacklist(uids, 'add', 'userlist')
+        await add_userlist.finish(msg)
     msg = handle_msg(arg, 'add', 'userlist')
     await add_userlist.finish(msg)
 
@@ -145,7 +149,11 @@ async def add_group_list(arg: Message = CommandArg()):
 del_userlist = on_command('解禁用户', aliases={'解封用户'}, permission=SUPERUSER, priority=1, block=True)
 
 @del_userlist.handle()
-async def del_user_list(arg: Message = CommandArg()):
+async def del_user_list(event: MessageEvent, arg: Message = CommandArg()):
+    if (msg := event.get_message())['at']:
+        uids = [at.data['qq'] for at in msg['at']]
+        msg = handle_blacklist(uids, 'del', 'userlist')
+        await del_userlist.finish(msg)
     msg = handle_msg(arg, 'del', 'userlist')
     await del_userlist.finish(msg)
 
