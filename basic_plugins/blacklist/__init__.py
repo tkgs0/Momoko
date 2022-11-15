@@ -149,8 +149,7 @@ del_userlist = on_command('解禁用户', aliases={'解封用户'}, permission=S
 
 @del_userlist.handle()
 async def del_user_list(event: MessageEvent, arg: Message = CommandArg()):
-    if (msg := event.get_message())['at']:
-        uids = [at.data['qq'] for at in msg['at']]
+    if uids := [at.data['qq'] for at in event.get_message()['at']]:
         msg = handle_blacklist(uids, 'del', 'userlist')
         await del_userlist.finish(msg)
     msg = handle_msg(arg, 'del', 'userlist')
