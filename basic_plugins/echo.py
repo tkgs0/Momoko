@@ -1,5 +1,9 @@
 from nonebot.rule import to_me
-from nonebot.adapters.onebot.v11 import Message, MessageSegment
+from nonebot.adapters.onebot.v11 import (
+    Message,
+    MessageSegment,
+    unescape
+)
 from nonebot.params import CommandArg
 from nonebot.plugin import on_command
 from nonebot.permission import SUPERUSER
@@ -38,7 +42,8 @@ echo = on_command(
 
 @echo.handle()
 async def echo_escape(arg: Message = CommandArg()):
-    await echo.finish(Message(arg.extract_plain_text()))
+    msg = unescape(str(arg))
+    await echo.finish(Message(msg))
 
 
 
