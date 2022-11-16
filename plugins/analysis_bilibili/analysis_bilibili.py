@@ -144,8 +144,8 @@ async def video_detail(
             pubdate = strftime("%Y-%m-%d %H:%M:%S", localtime(res["pubdate"]))
             tname = f"类型：{res['tname']} | UP：{res['owner']['name']} | 日期：{pubdate}\n"
             stat = f"播放：{handle_num(res['stat']['view'])} | 弹幕：{handle_num(res['stat']['danmaku'])} | 收藏：{handle_num(res['stat']['favorite'])}\n"
-            stat += f"点赞：{handle_num(res['stat']['like'])} | 硬币：{handle_num(res['stat']['coin'])} | 评论：{handle_num(res['stat']['reply'])}\n"
-            # desc = f"简介：{res['desc']}"
+            stat += f"点赞：{handle_num(res['stat']['like'])} | 硬币：{handle_num(res['stat']['coin'])} | 评论：{handle_num(res['stat']['reply'])}"
+            # desc = f"\n简介：{res['desc']}"
             # desc = "\n".join(i for i in desc.split("\n") if i)
             # desc_list = desc.split("\n")
             # if len(desc_list) > 4:
@@ -170,8 +170,8 @@ async def bangumi_detail(
             desc = f"{res['newest_ep']['desc']}\n"
             index_title = ""
             style = "".join(f"{i}," for i in res["style"])
-            style = f"类型：{style[:-1]}\n"
-            # evaluate = f"简介：{res['evaluate']}\n"
+            style = f"类型：{style[:-1]}"
+            # evaluate = f"\n简介：{res['evaluate']}\n"
             if "season_id" in url:
                 vurl = f"https://www.bilibili.com/bangumi/play/ss{res['season_id']}"
             elif "media_id" in url:
