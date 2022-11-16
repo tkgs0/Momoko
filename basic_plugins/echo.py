@@ -14,7 +14,12 @@ _help = """
 * 使用帮助: https://deja-vu.eu.org/2022/11/15/momoko
 """.strip()
 
-help = on_command("help", rule=to_me(), aliases={"帮助","menu","菜单"}, priority=5, block=True)
+help = on_command(
+    "help",
+    rule=to_me(),
+    aliases={"帮助","menu","菜单"},
+    priority=5, block=True
+)
 
 @help.handle()
 async def _():
@@ -22,15 +27,27 @@ async def _():
 
 
 
-echo = on_command("：", aliases={":", "曰"}, rule=to_me(), priority=5, block=True, permission=SUPERUSER)
+echo = on_command(
+    "：",
+    aliases={":", "曰"},
+    rule=to_me(),
+    priority=5,
+    block=True,
+    permission=SUPERUSER
+)
 
 @echo.handle()
-async def echo_escape(message: Message = CommandArg()):
-    await echo.finish(message=message)
+async def echo_escape(arg: Message = CommandArg()):
+    await echo.finish(Message(arg.extract_plain_text()))
 
 
 
-_snapshot = on_command("/快照", priority=5, block=True, permission=SUPERUSER)
+_snapshot = on_command(
+    "/快照",
+    priority=5,
+    block=True,
+    permission=SUPERUSER
+)
 
 @_snapshot.handle()
 async def _(message: Message = CommandArg()):
