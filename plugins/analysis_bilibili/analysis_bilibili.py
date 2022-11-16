@@ -145,12 +145,12 @@ async def video_detail(
             tname = f"类型：{res['tname']} | UP：{res['owner']['name']} | 日期：{pubdate}\n"
             stat = f"播放：{handle_num(res['stat']['view'])} | 弹幕：{handle_num(res['stat']['danmaku'])} | 收藏：{handle_num(res['stat']['favorite'])}\n"
             stat += f"点赞：{handle_num(res['stat']['like'])} | 硬币：{handle_num(res['stat']['coin'])} | 评论：{handle_num(res['stat']['reply'])}\n"
-            desc = f"简介：{res['desc']}"
-            desc = "\n".join(i for i in desc.split("\n") if i)
-            desc_list = desc.split("\n")
-            if len(desc_list) > 4:
-                desc = "\n".join(desc_list[:3]) + "……"
-            msg = Message([title, cover, f"\n{vurl}\n", tname, stat, desc])  # type: ignore
+            # desc = f"简介：{res['desc']}"
+            # desc = "\n".join(i for i in desc.split("\n") if i)
+            # desc_list = desc.split("\n")
+            # if len(desc_list) > 4:
+            #     desc = "\n".join(desc_list[:3]) + "……"
+            msg = Message([title, cover, f"\n{vurl}\n", tname, stat])  # type: ignore
             return msg, vurl
     except Exception:
         logger.exception("视频解析出错")
@@ -171,7 +171,7 @@ async def bangumi_detail(
             index_title = ""
             style = "".join(f"{i}," for i in res["style"])
             style = f"类型：{style[:-1]}\n"
-            evaluate = f"简介：{res['evaluate']}\n"
+            # evaluate = f"简介：{res['evaluate']}\n"
             if "season_id" in url:
                 vurl = f"https://www.bilibili.com/bangumi/play/ss{res['season_id']}"
             elif "media_id" in url:
@@ -186,7 +186,7 @@ async def bangumi_detail(
             if time:
                 time_str = time[0].replace("&amp;", "&")[3:]
                 vurl += f"?t={time_str}"
-            msg = Message([title, cover, f"{vurl}\n", index_title, desc, style, evaluate])  # type: ignore
+            msg = Message([title, cover, f"{vurl}\n", index_title, desc, style])  # type: ignore
             return msg, vurl
     except Exception:
         logger.exception("番剧解析出错")
