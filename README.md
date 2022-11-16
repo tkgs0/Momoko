@@ -5,6 +5,12 @@
 
 <div>
 
+<a href="./LICENSE">
+    <img src="https://img.shields.io/github/license/tkgs0/Momoko.svg" alt="license">
+</a>
+<a href="https://www.python.org">
+    <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="python">
+</a>
 <a href="https://https://v2.nonebot.dev">
     <img src="https://img.shields.io/badge/nonebot-2.0.0-red.svg" alt="NoneBot">
 </a>
@@ -13,12 +19,6 @@
 </a>
 <a href="https://github.com/Mrs4s/go-cqhttp">
     <img src="https://img.shields.io/badge/gocq-1.0.0-blueviolet.svg" alt="go-cqhttp">
-</a>
-<a href="./LICENSE">
-    <img src="https://img.shields.io/github/license/tkgs0/Momoko.svg" alt="license">
-</a>
-<a href="https://www.python.org">
-    <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="python">
 </a>
 
 </div>
