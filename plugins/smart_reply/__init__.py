@@ -45,12 +45,24 @@ async def _(event: MessageEvent):
         "你好",
         "在",
     ]:
-        await ai.finish(Message(random.choice(hello__reply)), reply_message=True)
+        await ai.finish(
+            Message(random.choice(hello__reply)),
+            at_sender=True,
+            reply_message=True
+        )
     # 从字典里获取结果
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用ownthink获取智能回复
     if result == None:
         url = f"https://api.ownthink.com/bot?appid=xiaosi&userid=user&spoken={msg}"
         message = await get_reply(url)
-        await ai.finish(message=message, reply_message=True)
-    await ai.finish(Message(result), reply_message=True)
+        await ai.finish(
+            message=message,
+            at_sender=True,
+            reply_message=True
+        )
+    await ai.finish(
+        Message(result),
+        at_sender=True,
+        reply_message=True
+    )
