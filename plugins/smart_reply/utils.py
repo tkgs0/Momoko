@@ -18,7 +18,7 @@ AnimeThesaurus = json.load(open(Path(os.path.join(os.path.dirname(
 
 # hello之类的回复
 hello__reply = [
-    f"{Bot_NICKNAME}不在呢。",
+    'ʕ  •ᴥ•ʔ ?',
 ]
 
 # 从字典里返还消息, 抄(借鉴)的zhenxun-bot

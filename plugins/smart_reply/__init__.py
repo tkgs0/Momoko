@@ -3,9 +3,8 @@ from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import (
     Message,
     MessageEvent,
-    GroupMessageEvent,
     PokeNotifyEvent,
-    MessageSegment,
+    MessageSegment
 )
 import asyncio
 from .utils import *
@@ -22,21 +21,17 @@ async def _(event: PokeNotifyEvent):
 
 
 
-
 # 优先级99, 条件: 艾特bot就触发
 ai = on_message(rule=to_me(), priority=99,block=False)
 
 @ai.handle()
 async def _(event: MessageEvent):
-
-    _at = isinstance(event, GroupMessageEvent)
-
     # 获取消息文本
     msg = str(event.get_message())
     # 去掉带中括号的内容(去除cq码)
     msg = re.sub(r"\[.*?\]", "", msg)
 
-    await asyncio.sleep(random.randint(3,9))
+    await asyncio.sleep(random.randint(2,10))
 
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
     if (not msg) or msg.isspace() or msg in [
@@ -49,24 +44,12 @@ async def _(event: MessageEvent):
         "你好",
         "在",
     ]:
-        await ai.finish(
-            Message(random.choice(hello__reply)),
-            at_sender=_at,
-            reply_message=_at
-        )
+        await ai.finish(Message(random.choice(hello__reply)))
     # 从字典里获取结果
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用ownthink获取智能回复
     if result == None:
         url = f"https://api.ownthink.com/bot?appid=xiaosi&userid=user&spoken={msg}"
-        message = await get_reply(url)
-        await ai.finish(
-            message=message,
-            at_sender=_at,
-            reply_message=_at
-        )
-    await ai.finish(
-        Message(result),
-        at_sender=_at,
-        reply_message=_at
-    )
+        content = await get_reply(url)
+        await ai.finish(content)
+    await ai.finish(Message(result))
