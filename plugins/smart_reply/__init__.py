@@ -6,6 +6,7 @@ from nonebot.adapters.onebot.v11 import (
     PokeNotifyEvent,
     MessageSegment,
 )
+import asyncio
 from .utils import *
 
 
@@ -30,6 +31,9 @@ async def _(event: MessageEvent):
     msg = str(event.get_message())
     # 去掉带中括号的内容(去除cq码)
     msg = re.sub(r"\[.*?\]", "", msg)
+
+    await asyncio.sleep(random.randint(3,15))
+
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
     if (not msg) or msg.isspace() or msg in [
         "你好啊",
@@ -41,12 +45,12 @@ async def _(event: MessageEvent):
         "你好",
         "在",
     ]:
-        await ai.finish(Message(random.choice(hello__reply)))
+        await ai.finish(Message(random.choice(hello__reply)), reply_message=True)
     # 从字典里获取结果
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用ownthink获取智能回复
     if result == None:
         url = f"https://api.ownthink.com/bot?appid=xiaosi&userid=user&spoken={msg}"
         message = await get_reply(url)
-        await ai.finish(message=message)
-    await ai.finish(Message(result))
+        await ai.finish(message=message, reply_message=True)
+    await ai.finish(Message(result), reply_message=True)
