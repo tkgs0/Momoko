@@ -14,7 +14,7 @@ from yarl import URL
 from .config import config
 
 DEFAULT_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; en-US) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 YaBrowser/23.7.7.77.77 SA/3 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36"
 }
 
 
@@ -78,22 +78,24 @@ def handle_reply_msg(message_id: int) -> str:
 
 
 async def get_source(url: str) -> str:
-    source = ""
-    async with ClientSession(headers=DEFAULT_HEADERS) as session:
-        if URL(url).host in ["danbooru.donmai.us", "gelbooru.com"]:
-            async with session.get(url, proxy=config.proxy) as resp:
-                if resp.status == 200:
-                    html = await resp.text()
-                    source = PyQuery(html)(".image-container").attr(
-                        "data-normalized-source"
-                    )
-        elif URL(url).host in ["yande.re", "konachan.com"]:
-            async with session.get(url, proxy=config.proxy) as resp:
-                if resp.status == 200:
-                    html = await resp.text()
-                    source = PyQuery(html)("#post_source").attr("value")
-                if not source:
-                    source = PyQuery(html)('a[href^="/pool/show/"]').text()
+    source = url
+    if host := URL(url).host:
+        async with ClientSession(headers=DEFAULT_HEADERS) as session:
+            if host in ["danbooru.donmai.us", "gelbooru.com"]:
+                async with session.get(url, proxy=config.proxy) as resp:
+                    if resp.status == 200:
+                        html = await resp.text()
+                        source = PyQuery(html)(".image-container").attr(
+                            "data-normalized-source"
+                        )
+            elif host in ["yande.re", "konachan.com"]:
+                async with session.get(url, proxy=config.proxy) as resp:
+                    if resp.status == 200:
+                        html = await resp.text()
+                        source = PyQuery(html)("#post_source").attr("value")
+                    if not source:
+                        source = PyQuery(html)('a[href^="/pool/show/"]').text()
+
     return source or ""
 
 
