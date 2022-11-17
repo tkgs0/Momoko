@@ -63,7 +63,7 @@ async def _(event: MessageEvent, bot: Bot, arg: Message = CommandArg()):
     if gids:
         for gid in gids:
             if not is_number(gid):
-                await del_group.finish(f"群号必须为数字", at_sender=True)
+                await del_group.finish("群号必须为数字", at_sender=True)
         msg = ''
         for gid in gids:
             try:
@@ -71,19 +71,22 @@ async def _(event: MessageEvent, bot: Bot, arg: Message = CommandArg()):
                 logger.info(f"退出群聊 {gid} 成功")
                 msg += f"\n退出群聊 {gid} 成功"
             except Exception as e:
-                logger.info(f"退出群聊 {gid} 失败 e:{e}")
-                msg += f"\n退出群聊 {gid} 失败 e:{e}"
-        await del_group.finish(msg, at_sender=True)
+                logger.info(f"退出群聊 {gid} 失败\n{repr(e)}")
+                msg += f"\n退出群聊 {gid} 失败 {e.__class__.__name__}"
+        await del_group.send('', at_sender=True)
+        await del_group.finish(msg.lstrip())
 
     elif isinstance(event, GroupMessageEvent):
         group_id = event.group_id
+        msg = ''
         try:
             await bot.set_group_leave(group_id=group_id)
             logger.info(f"退出群聊 {group_id} 成功")
-            await bot.send_private_msg(user_id=event.user_id, message=f"退出群聊 {group_id} 成功")
+            msg += f"退出群聊 {group_id} 成功"
         except Exception as e:
-            logger.info(f"退出群聊 {group_id} 失败 e:{e}")
-            await del_group.finish(f"退出群聊失败 e:{e}", at_sender=True)
+            logger.info(f"退出群聊 {group_id} 失败\n{repr(e)}")
+            msg += f"退出群聊 {group_id} 失败\n{repr(e)}"
+        await bot.send_private_msg(user_id=event.user_id, message=msg)
 
     else:
         await del_group.finish(f"需要群号", at_sender=True)
