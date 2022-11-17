@@ -3,6 +3,7 @@ from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import (
     Message,
     MessageEvent,
+    GroupMessageEvent,
     PokeNotifyEvent,
     MessageSegment,
 )
@@ -27,6 +28,9 @@ ai = on_message(rule=to_me(), priority=99,block=False)
 
 @ai.handle()
 async def _(event: MessageEvent):
+
+    _at = isinstance(event, GroupMessageEvent)
+
     # 获取消息文本
     msg = str(event.get_message())
     # 去掉带中括号的内容(去除cq码)
@@ -47,8 +51,8 @@ async def _(event: MessageEvent):
     ]:
         await ai.finish(
             Message(random.choice(hello__reply)),
-            at_sender=True,
-            reply_message=True
+            at_sender=_at,
+            reply_message=_at
         )
     # 从字典里获取结果
     result = await get_chat_result(msg)
@@ -58,11 +62,11 @@ async def _(event: MessageEvent):
         message = await get_reply(url)
         await ai.finish(
             message=message,
-            at_sender=True,
-            reply_message=True
+            at_sender=_at,
+            reply_message=_at
         )
     await ai.finish(
         Message(result),
-        at_sender=True,
-        reply_message=True
+        at_sender=_at,
+        reply_message=_at
     )
