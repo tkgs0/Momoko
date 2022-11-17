@@ -38,7 +38,7 @@ async def get_reply(url):
             res = re.sub(u"\\{.*?\\}", "", res)
             return res
         else:
-            pass
+            return 'ʕ  •ᴥ•ʔ……'
         
         
 
