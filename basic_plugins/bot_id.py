@@ -33,7 +33,7 @@ async def start(bot: Bot) -> None:
     friends = ["{user_id}".format_map(g) for g in gl]
     for superuser in superusers:
         if not superuser in friends:
-            raise KeyboardInterrupt("存在非bot好友的超级用户, 请先添加Bot为好友!")
+            raise KeyboardInterrupt("\033[40;33;1m存在非bot好友的超级用户, 请先添加Bot为好友!\033[0m")
 
     for superuser in superusers:
         await bot.send_private_msg(
