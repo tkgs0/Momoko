@@ -31,7 +31,7 @@ async def _(event: MessageEvent):
     # 去掉带中括号的内容(去除cq码)
     msg = re.sub(r"\[.*?\]", "", msg)
 
-    await asyncio.sleep(random.random()*10)
+    await asyncio.sleep(random.random()*5+1)
 
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
     if (not msg) or msg.isspace() or msg in [
