@@ -14,7 +14,7 @@ async def _(bot: Bot, event: MessageEvent):
 
     uid = event.user_id
     gid = event.group_id if isinstance(event, GroupMessageEvent) else 0
-    name = event.sender.nickname
+    name = str(event.sender.nickname)
     
     node = Tarot.get_tarot(uid, name)
     await bot.send_forward_msg(

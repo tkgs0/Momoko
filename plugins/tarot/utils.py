@@ -1,3 +1,4 @@
+from nonebot.adapters.onebot.v11 import MessageSegment
 from pathlib import Path
 from random import randint, choice
 try:
@@ -28,7 +29,7 @@ Minor_list = ["Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "N
 
 class Tarot():
     @staticmethod
-    def get_tarot(uid, name):
+    def get_tarot(uid: int, name: str):
         mj = randint(0,len(Major_list)-1)
         major = None
         img = None
@@ -44,7 +45,7 @@ class Tarot():
         sword = Swords[choice(Minor_list)]
         content = [
             "锵锵锵，塔罗牌的预言是~",
-            f"{major['title']}\n[CQ:image,file=file:///{img}]\n{wand['title']}\n{pentacle['title']}\n{cup['title']}\n{sword['title']}",
+            f"{major['title']}\n{MessageSegment.image(img)}\n{wand['title']}\n{pentacle['title']}\n{cup['title']}\n{sword['title']}",
             "以下为牌面解析~",
             f"{major['title']}\n{major['analysis']}",
             f"{wand['title']}\n{wand['analysis']}",
