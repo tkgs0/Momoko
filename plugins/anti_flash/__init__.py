@@ -32,15 +32,13 @@ async def _(bot: Bot, event: GroupMessageEvent):
         reg = "[^0-9A-Za-z\u4e00-\u9fa5]"
         text = comment1
         x = str(re.sub(reg, '', text.upper()))
-        id = event.get_user_id()
-        url = ('https://gchat.qpic.cn/gchatpic_new/' + id + '/2640570090-2264725042-' + x.upper() + '/0?term=3')
+        uid = event.get_user_id()
+        url = ('https://gchat.qpic.cn/gchatpic_new/' + uid + '/2640570090-2264725042-' + x.upper() + '/0?term=3')
 
-        name = event.sender.nickname
-        node = list()
-        img = {"type": "image","data": {"file": url}}
-        repo = {"type": "node", "data": { "user_id": id, "nickname": name, "content": img}}
-        node.append(repo)
-        await bot.send_group_forward_msg(group_id=gid, messages=node)
+        name = str(event.sender.nickname)
+        img = MessageSegment.image(url)
+        node = [{"type": "node", "data": {"name": name, "uin": uid, "content": img}}]
+        await bot.send_forward_msg(group_id=gid, messages=node)
         
         # await flashimg.finish((MessageSegment.image(url)))
 
