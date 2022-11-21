@@ -206,7 +206,7 @@ async def send_msg(
             user_id=user_id, 
             group_id=group_id,
             messages=[
-                {"type": "node", "data": {"name": event.sender.nickname, "uin": str(event.user_id), "content": msg}}
+                {"type": "node", "data": {"name": str(event.sender.nickname), "uin": str(event.user_id), "content": msg}}
             ],
         )
     except ActionFailed:
@@ -238,7 +238,7 @@ async def send_forward_msg(
             user_id=user_id, 
             group_id=group_id,
             messages=[
-                {"type": "node", "data": {"name": event.sender.nickname, "uin": str(event.user_id), "content": msg}}
+                {"type": "node", "data": {"name": str(event.sender.nickname), "uin": str(event.user_id), "content": msg}}
                 for msg in msg_list
             ],
         )
