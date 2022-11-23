@@ -162,6 +162,7 @@ anti_abuse = on_message(rule=to_me(), priority=15, block=False)
 async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     for i in curse_list['curse']:
         if i in str(event.get_message()):
+            matcher.stop_propagation()
             if flymo_list['enable']:
                 await asyncio.sleep(random()+1)
                 await anti_abuse.finish(choice(flymo_list['flymo']), at_sender=True)
@@ -176,7 +177,6 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
             except:
                 msg = handle_namelist(user_id)
                 logger.info(msg)
-            matcher.stop_propagation()
             await anti_abuse.finish("不理你啦！バーカー", at_sender=True)
 
 
