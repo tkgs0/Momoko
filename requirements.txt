@@ -1,5 +1,5 @@
 nb-cli
-nonebot2==2.0.0rc1
+nonebot2==2.0.0rc2
 nonebot-adapter-onebot==2.1.5
 nonebot-plugin-apscheduler
 nonebot-plugin-guild-patch
