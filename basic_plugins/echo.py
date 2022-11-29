@@ -55,8 +55,8 @@ _snapshot = on_command(
 )
 
 @_snapshot.handle()
-async def _(message: Message = CommandArg()):
-    url = unescape(str(message))
+async def _(arg: Message = CommandArg()):
+    url = unescape(arg.extract_plain_text())
     try:
         await _snapshot.send(MessageSegment.image(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"))
     except Exception as e:

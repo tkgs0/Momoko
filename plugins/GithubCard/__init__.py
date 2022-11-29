@@ -1,6 +1,10 @@
 from nonebot.rule import T_State
 from nonebot import on_message, get_driver
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message
+from nonebot.adapters.onebot.v11 import (
+    GroupMessageEvent,
+    Message,
+    unescape
+)
 import re
 from .config import Config
 from .data_source import get_github_reposity_information
@@ -15,8 +19,8 @@ github = on_message(priority=5, block=False)
 
 
 @github.handle()
-async def github_handle(bot: Bot, event: GroupMessageEvent, state: T_State):
-    url = event.get_plaintext()
+async def github_handle(event: GroupMessageEvent, state: T_State):
+    url = unescape(event.get_plaintext())
     if re.match("https://github.com/.*?/.*?", url) != None:
         imageUrl = await get_github_reposity_information(url)
         assert(imageUrl != "获取信息失败")
