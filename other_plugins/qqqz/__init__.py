@@ -8,7 +8,7 @@ import requests
 
 
 
-url = 'http://tfkapi.top/API/qqqz.php?type=json&qq='
+url = 'http://tc.tfkapi.top/API/qqqz.php?type=json&qq='
 
 _flmt_notice = choice(['慢...慢一..点❤', '冷静1下', '歇会歇会~~'])
 
