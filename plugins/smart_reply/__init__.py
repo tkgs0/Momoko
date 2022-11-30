@@ -16,6 +16,7 @@ poke_ = on_notice(priority=99, block=False)
 @poke_.handle()
 async def _(event: PokeNotifyEvent):
     if event.self_id == event.target_id:
+        await asyncio.sleep(random.random()+1)
         # await poke_.finish(f"请不要戳{Bot_NICKNAME}>_<")
         await poke_.finish(MessageSegment("poke", {"qq": event.user_id}))
 
@@ -31,7 +32,7 @@ async def _(event: MessageEvent):
     # 去掉带中括号的内容(去除cq码)
     msg = re.sub(r"\[.*?\]", "", msg)
 
-    await asyncio.sleep(random.random()*5+1)
+    await asyncio.sleep(random.random()*2+1)
 
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
     if (not msg) or msg.isspace() or msg in [
