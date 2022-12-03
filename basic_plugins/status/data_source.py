@@ -51,7 +51,7 @@ class Status():
                 - datetime.utcfromtimestamp(b).replace(microsecond=0)
             )
         except:
-            return "Failed to get status."
+            return "获取状态信息失败", False
 
         msg = "アトリは、高性能ですから！"
         if cpu > 90:  # type: ignore
