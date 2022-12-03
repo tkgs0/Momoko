@@ -21,6 +21,7 @@ _help = """
 help = on_command(
     "help",
     rule=to_me(),
+    aliases={"帮助","menu","菜单"},
     priority=5, block=True
 )
 
