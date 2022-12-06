@@ -11,7 +11,7 @@ from .data_source import CodeRunner
 _flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
 
 
-code_runner = on_command('>code', priority=5, block=True)
+code_runner = on_command('>code', priority=6, block=True)
 
 
 @code_runner.handle([Cooldown(5, prompt=_flmt_notice)])

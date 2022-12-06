@@ -1,4 +1,3 @@
-import os
 from subprocess import Popen, PIPE
 from random import choice
 from nonebot import on_command
@@ -17,8 +16,7 @@ def help() -> str:
     return (
         "调用系统命令行\n"
         "⚠危险操作, 谨慎使用!\n\n"
-        ">cmd [-s] {命令}\n"
-        "  -s 无日志输出\n"
+        ">cmd {命令}\n"
         "For example:\n"
         ">cmd echo \"Hello World\""
     )
@@ -27,7 +25,7 @@ def help() -> str:
 _flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
 
 
-sys_cmd = on_command('>cmd', priority=5, block=True, permission=SUPERUSER)
+sys_cmd = on_command('>cmd', priority=6, block=True, permission=SUPERUSER)
 
 
 @sys_cmd.handle([Cooldown(5, prompt=_flmt_notice)])
@@ -43,14 +41,6 @@ async def _(opt: str = ArgPlainText("opt")):
     # 拯救傻瓜用户
     if opt.startswith(">cmd.help"):
         await sys_cmd.finish(help())
-
-    if opt.startswith('-s'):
-        opt = opt.replace('-s','',1)
-        if (opt.startswith(' ') or opt.startswith('\n')) and (opt := opt.lstrip().lstrip('\n')) != '':
-            content = os.system(unescape(opt))
-            await sys_cmd.finish("\n执行完毕: "+str(content), at_sender=True)
-        else:
-            await sys_cmd.finish("格式错误, 发送 >cmd.help 获取帮助")
 
     content = Popen(
         unescape(opt),
