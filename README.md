@@ -326,7 +326,7 @@ ANTI_FLASH_GROUP=[""]
 ```
 SAUCENAO_API_KEY=""
 ```
-在引号里填写你在 `saucenao.com` 申请到的 `apikey` , 可留空.  
+在引号里填写你在 `saucenao.com` 申请到的 `apikey` , 必填, 否则无法正常使用搜图.  
 
 ```
 EXHENTAI_COOKIES=""
@@ -336,8 +336,7 @@ EXHENTAI_COOKIES=""
 ```
 CAIYUNAI_APIKEY=""
 ```
-在引号里填写你的 彩云小梦 `apikey` , 不可留空.  
-如不需要 请删除本项目 `plugins` 文件夹里面的 `caiyun_ai` 文件夹  
+在引号里填写你的 彩云小梦 `apikey` , 必填, 否则无法正常使用小梦续写功能.  
   
   
 .  
