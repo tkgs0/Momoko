@@ -116,7 +116,7 @@ def extract(text: str) -> Tuple[str, Optional[str], Optional[str]]:
         return "", None, None
 
 
-async def search_bili_by_title(title: str) -> str:
+async def search_bili_by_title(title: str) -> str:  # type: ignore
     search_url = f"https://api.bilibili.com/x/web-interface/search/all/v2?keyword={urllib.parse.quote(title)}"
 
     async with aiohttp.request(
@@ -181,11 +181,11 @@ async def video_detail(url: str, **kwargs) -> Tuple[Union[Message, str], str]:
         return msg, vurl
     except Exception as e:
         msg = "视频解析出错--Error: {}".format(type(e))
-        return msg, None
+        return msg, None  # type: ignore
 
 
 async def bangumi_detail(
-    url: str, time_location: str = None
+    url: str, time_location: str = None  # type: ignore
 ) -> Tuple[Union[Message, str], str]:
     try:
         async with aiohttp.request(
@@ -193,7 +193,7 @@ async def bangumi_detail(
         ) as resp:
             res = (await resp.json()).get("result")
             if not res:
-                return None, None
+                return None, None  # type: ignore
         cover = (
             MessageSegment.image(res["cover"])
             if analysis_display_image or "bangumi" in analysis_display_image_list
@@ -224,7 +224,7 @@ async def bangumi_detail(
     except Exception as e:
         msg = "番剧解析出错--Error: {}".format(type(e))
         msg += f"\n{url}"
-        return msg, None
+        return msg, None  # type: ignore
 
 
 async def live_detail(url: str) -> Tuple[Union[Message, str], str]:
@@ -234,7 +234,7 @@ async def live_detail(url: str) -> Tuple[Union[Message, str], str]:
         ) as resp:
             res = await resp.json()
             if res["code"] != 0:
-                return None, None
+                return None, None  # type: ignore
         res = res["data"]
         uname = res["anchor_info"]["base_info"]["uname"]
         room_id = res["room_info"]["room_id"]
@@ -274,7 +274,7 @@ async def live_detail(url: str) -> Tuple[Union[Message, str], str]:
         return msg, vurl
     except Exception as e:
         msg = "直播间解析出错--Error: {}".format(type(e))
-        return msg, None
+        return msg, None  # type: ignore
 
 
 async def article_detail(url: str, cvid: str) -> Tuple[Union[Message, str], str]:
@@ -284,7 +284,7 @@ async def article_detail(url: str, cvid: str) -> Tuple[Union[Message, str], str]
         ) as resp:
             res = (await resp.json()).get("data")
             if not res:
-                return None, None
+                return None, None  # type: ignore
         images = (
             [MessageSegment.image(i) for i in res["origin_image_urls"]]
             if analysis_display_image or "article" in analysis_display_image_list
@@ -305,7 +305,7 @@ async def article_detail(url: str, cvid: str) -> Tuple[Union[Message, str], str]
         return msg, vurl
     except Exception as e:
         msg = "专栏解析出错--Error: {}".format(type(e))
-        return msg, None
+        return msg, None  # type: ignore
 
 
 async def dynamic_detail(url: str) -> Tuple[Union[Message, str], str]:
@@ -315,7 +315,7 @@ async def dynamic_detail(url: str) -> Tuple[Union[Message, str], str]:
         ) as resp:
             res = (await resp.json())["data"].get("card")
             if not res:
-                return None, None
+                return None, None  # type: ignore
         card = json.loads(res["card"])
         dynamic_id = res["desc"]["dynamic_id"]
         vurl = f"https://t.bilibili.com/{dynamic_id}\n"
@@ -350,4 +350,4 @@ async def dynamic_detail(url: str) -> Tuple[Union[Message, str], str]:
         return msg, vurl
     except Exception as e:
         msg = "动态解析出错--Error: {}".format(type(e))
-        return msg, None
+        return msg, None  # type: ignore
