@@ -32,11 +32,11 @@ async def bili_keyword(group_id: Optional[int], text: str) -> Union[Message, str
         if "view?" in url:
             msg, vurl = await video_detail(url, page=page, time_location=time_location)
         elif "bangumi" in url:
-            msg, vurl = await bangumi_detail(url, time_location)
+            msg, vurl = await bangumi_detail(url, time_location)  # type: ignore
         elif "xlive" in url:
             msg, vurl = await live_detail(url)
         elif "article" in url:
-            msg, vurl = await article_detail(url, page)
+            msg, vurl = await article_detail(url, page)  # type: ignore
         elif "dynamic" in url:
             msg, vurl = await dynamic_detail(url)
 
@@ -54,7 +54,7 @@ async def b23_extract(text: str) -> str:
     b23 = re.compile(r"b23.tv/(\w+)|(bili(22|23|33|2233).cn)/(\w+)", re.I).search(
         text.replace("\\", "")
     )
-    url = f"https://{b23[0]}"
+    url = f"https://{b23[0]}"  # type: ignore
     async with aiohttp.request(
         "GET", url, timeout=aiohttp.client.ClientTimeout(10)
     ) as resp:
@@ -111,7 +111,7 @@ def extract(text: str) -> Tuple[str, Optional[str], Optional[str]]:
             url = f"https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?rid={dynamic_id_type2[2]}&type=2"
         elif dynamic_id:
             url = f"https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id={dynamic_id[2]}"
-        return url, page, time
+        return url, page, time # type: ignore
     except Exception:
         return "", None, None
 
@@ -134,8 +134,8 @@ async def search_bili_by_title(title: str) -> str:
 # 处理超过一万的数字
 def handle_num(num: int) -> str:
     if num > 10000:
-        num = f"{num / 10000:.2f}万"
-    return num
+        num = f"{num / 10000:.2f}万"  # type: ignore
+    return str(num)
 
 
 async def video_detail(url: str, **kwargs) -> Tuple[Union[Message, str], str]:
@@ -177,7 +177,7 @@ async def video_detail(url: str, **kwargs) -> Tuple[Union[Message, str], str]:
         desc_list = desc.split("\n")
         if len(desc_list) > 4:
             desc = desc_list[0] + "\n" + desc_list[1] + "\n" + desc_list[2] + "……"
-        msg = Message([cover, vurl, title, tname, stat, desc])
+        msg = Message([cover, vurl, title, tname, stat, desc])  # type: ignore
         return msg, vurl
     except Exception as e:
         msg = "视频解析出错--Error: {}".format(type(e))
@@ -210,7 +210,7 @@ async def bangumi_detail(
         elif "media_id" in url:
             vurl = f"https://www.bilibili.com/bangumi/media/md{res['media_id']}"
         else:
-            epid = re.compile(r"ep_id=\d+").search(url)[0][len("ep_id=") :]
+            epid = re.compile(r"ep_id=\d+").search(url)[0][len("ep_id=") :]  # type: ignore
             for i in res["episodes"]:
                 if str(i["ep_id"]) == epid:
                     index_title = f"标题：{i['index_title']}\n"
@@ -219,7 +219,7 @@ async def bangumi_detail(
         if time_location:
             time_location = time_location[0].replace("&amp;", "&")[3:]
             vurl += f"?t={time_location}"
-        msg = Message([cover, f"{vurl}\n", title, index_title, desc, style, evaluate])
+        msg = Message([cover, f"{vurl}\n", title, index_title, desc, style, evaluate])  # type: ignore
         return msg, vurl
     except Exception as e:
         msg = "番剧解析出错--Error: {}".format(type(e))
@@ -270,7 +270,7 @@ async def live_detail(url: str) -> Tuple[Union[Message, str], str]:
             player = f"独立播放器：https://www.bilibili.com/blackboard/live/live-activity-player.html?enterTheRoom=0&cid={room_id}"
         else:
             player = ""
-        msg = Message([cover, vurl, title, up, watch, tags, player])
+        msg = Message([cover, vurl, title, up, watch, tags, player])  # type: ignore
         return msg, vurl
     except Exception as e:
         msg = "直播间解析出错--Error: {}".format(type(e))
@@ -301,7 +301,7 @@ async def article_detail(url: str, cvid: str) -> Tuple[Union[Message, str], str]
         dislike = f"不喜欢数：{handle_num(res['stats']['dislike'])}"
         desc = view + favorite + coin + "\n" + share + like + dislike + "\n"
         msg = Message(images)
-        msg.extend([title, up, desc, vurl])
+        msg.extend([title, up, desc, vurl])  # type: ignore
         return msg, vurl
     except Exception as e:
         msg = "专栏解析出错--Error: {}".format(type(e))
