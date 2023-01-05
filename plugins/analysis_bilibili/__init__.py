@@ -31,7 +31,7 @@ async def analysis_main(event: MessageEvent) -> None:
     msg = await bili_keyword(group_id, text)
     if msg:
         try:
-            msg = re.sub(r"简介.*", "", msg)  # type: ignore
+            msg = re.sub(r"简介(.|\s)*", "", str(msg))
             await analysis_bili.send(msg)
         except Exception as e:
             logger.exception(e)
