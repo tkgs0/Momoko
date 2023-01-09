@@ -1,11 +1,8 @@
-from nonebot import logger, on_command
+from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.permission import SUPERUSER
-from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
     Bot,
-    Message,
-    MessageEvent,
     GroupMessageEvent
 )
 
@@ -52,44 +49,6 @@ async def _(bot: Bot):
     msg = "\n".join(msg)
     msg = f"| QQ号 | 昵称 | 共{len(gl)}个好友\n" + msg
     await cls_friend.finish(msg)
-
-
-
-del_group = on_command("退群", rule=to_me(), permission=SUPERUSER, priority=1, block=True)
-
-@del_group.handle()
-async def _(event: MessageEvent, bot: Bot, arg: Message = CommandArg()):
-    gids = arg.extract_plain_text().strip().split()
-    if gids:
-        for gid in gids:
-            if not is_number(gid):
-                await del_group.finish("群号必须为数字", at_sender=True)
-        msg = ''
-        for gid in gids:
-            try:
-                await bot.set_group_leave(group_id=int(gid))
-                logger.info(f"退出群聊 {gid} 成功")
-                msg += f"\n退出群聊 {gid} 成功"
-            except Exception as e:
-                logger.info(f"退出群聊 {gid} 失败\n{repr(e)}")
-                msg += f"\n退出群聊 {gid} 失败 {e.__class__.__name__}"
-        await del_group.send('', at_sender=True)
-        await del_group.finish(msg.lstrip())
-
-    elif isinstance(event, GroupMessageEvent):
-        group_id = event.group_id
-        msg = ''
-        try:
-            await bot.set_group_leave(group_id=group_id)
-            logger.info(f"退出群聊 {group_id} 成功")
-            msg += f"退出群聊 {group_id} 成功"
-        except Exception as e:
-            logger.info(f"退出群聊 {group_id} 失败\n{repr(e)}")
-            msg += f"退出群聊 {group_id} 失败\n{repr(e)}"
-        await bot.send_private_msg(user_id=event.user_id, message=msg)
-
-    else:
-        await del_group.finish(f"需要群号", at_sender=True)
 
 
 
