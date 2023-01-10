@@ -223,7 +223,6 @@ qq号-昵称-消息内容
 <details>
   <summary>使用方法(点击展开)</summary>
 
-.  
 - 禁言 @qq @qq1 @qq2 X分钟(/小时/天)
 - 解除禁言 @qq @qq1 @qq2
 - 我要自闭 X分钟
