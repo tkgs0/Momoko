@@ -285,6 +285,9 @@ async def _(event: MessageEvent, bot: Bot, arg: Message = CommandArg()):
 
 
 async def ban_user(bot: Bot, gid: int, userlist: list, _time: int):
+    if not userlist:
+        logger.warning('未指定要禁言的用户!')
+        return None
     x = True
     try:
         for user in userlist:
