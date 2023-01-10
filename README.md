@@ -217,6 +217,30 @@ qq号-昵称-消息内容
 </details>
 
 
+### groupmanage 群管理
+  
+
+<details>
+  <summary>使用方法(点击展开)</summary>
+
+.  
+- 禁言 @qq @qq1 @qq2 X分钟(/小时/天)
+- 解除禁言 @qq @qq1 @qq2
+- 我要自闭 X分钟
+- 开启全员禁言
+- 解除全员禁言
+- 升为管理 @qq @qq1 @qq2
+- 取消管理 @qq @qq1 @qq2
+- 修改名片 @qq @qq1 @qq2 XXX
+- 修改头衔 @qq @qq1 @qq2 XXX
+- 申请头衔 XXX
+- 移出群聊 @qq @qq1 @qq2
+- @bot 退群 qq qq1 qq2
+
+
+</details>
+
+
 ### blacklist  黑名单
   
 
