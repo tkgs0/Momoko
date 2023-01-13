@@ -307,8 +307,8 @@ async def ban_user(bot: Bot, gid: int, userlist: list, _time: int):
 def ban_time(arg: Message = CommandArg()) -> int:
     try:
         _time = arg.extract_plain_text().strip()
-        _time = re.search('[1-9]\d*(天|小?(时|時)|分|)', _time).group()  # type: ignore
-        time1 = re.match('\d*', _time).group()  # type: ignore
+        _time = re.search(r'[1-9]\d*(天|小?(时|時)|分|)', _time).group()  # type: ignore
+        time1 = re.match(r'\d*', _time).group()  # type: ignore
         time2 = _time.replace(time1, '')
         time1 = int(time1)
         if '时' in time2 or '時' in time2:
