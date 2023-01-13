@@ -185,6 +185,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
 async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     uids = [int(at.data['qq']) for at in event.get_message()['at']]
     content = arg.extract_plain_text().strip()
+    if len(bytes(content, encoding='utf-8')) > 60:
+        await setgroupcard.finish('名字太长啦!')
     x = True
     try:
         for uid in uids:
@@ -203,6 +205,8 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
 async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     uids = [int(at.data['qq']) for at in event.get_message()['at']]
     content = arg.extract_plain_text().strip()
+    if len(bytes(content, encoding='utf-8')) > 18:
+        await specialtitle.finish('头衔太长啦!')
     x = True
     try:
         for uid in uids:
@@ -221,6 +225,8 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
 @applyspecialtitle.handle()
 async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     content = arg.extract_plain_text().strip()
+    if len(bytes(content, encoding='utf-8')) > 18:
+        await applyspecialtitle.finish('头衔太长啦!')
     x = True
     try:
         await bot.set_group_special_title(
@@ -232,7 +238,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     except Exception as e:
         logger.warning(repr(e))
         x = None
-    await specialtitle.finish(x if not x else '嗯, 很棒的头衔呢~')
+    await applyspecialtitle.finish(x if not x else '嗯, 很棒的头衔呢~')
 
 
 @kick.handle()
