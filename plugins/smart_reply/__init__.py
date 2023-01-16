@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import (
     PokeNotifyEvent,
     MessageSegment
 )
-import asyncio, random, re
+import asyncio, random
 from .utils import (
     # Bot_NICKNAME,
     hello__reply,
@@ -32,10 +32,8 @@ ai = on_message(rule=to_me(), priority=99,block=False)
 
 @ai.handle()
 async def _(event: MessageEvent):
-    # 获取消息文本
-    msg = str(event.get_message())
-    # 去掉带中括号的内容(去除cq码)
-    msg = re.sub(r'\[[^\[\]]*\]', '', msg)
+    # 获取纯文本消息
+    msg = event.get_plaintext()
 
     await asyncio.sleep(random.random()*2+1)
 
