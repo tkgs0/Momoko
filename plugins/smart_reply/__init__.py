@@ -52,7 +52,7 @@ async def _(event: MessageEvent):
     # 从字典里获取结果
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
-    if result == None:
+    if not result:
         content = await get_reply(msg)
         await ai.finish(content)
     await ai.finish(Message(result))
