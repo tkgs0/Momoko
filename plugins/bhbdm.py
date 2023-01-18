@@ -1,7 +1,7 @@
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.plugin import on_command
-import urllib
+from urllib.parse import quote
 
 
 
@@ -11,7 +11,7 @@ def run(msg: str, x: str) -> str:
         'yandex': 'https://yandex.com/search/?text=',
         'baidu': 'https://buhuibaidu.me/?s='
     }
-    msg = _engine[x] + urllib.parse.quote(msg)
+    msg = _engine[x] + quote(msg)
     return msg
 
 

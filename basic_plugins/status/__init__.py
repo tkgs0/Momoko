@@ -1,4 +1,5 @@
-from nonebot import on_command, require, logger, get_bot
+from nonebot import on_command, require, get_bot
+from nonebot.log import logger
 from nonebot.permission import SUPERUSER
 
 from .data_source import Status

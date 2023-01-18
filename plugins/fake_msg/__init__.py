@@ -1,9 +1,13 @@
-from random import choice, randint
+from random import choice
 from nonebot.plugin import on_command
 from nonebot.permission import SUPERUSER
 from nonebot.matcher import Matcher
 from nonebot.params import ArgPlainText, CommandArg
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent, Message
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    GroupMessageEvent,
+    Message
+)
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
 from .data_source import Funny
@@ -17,14 +21,14 @@ fake_msg = on_command("/fakemsg", priority=5, block=True, permission=SUPERUSER)
 
 
 @fake_msg.handle([Cooldown(15, prompt=_fake_flmt_notice)])
-async def _ready_fake(matcher: Matcher, args: Message = CommandArg()):
+async def _(matcher: Matcher, args: Message = CommandArg()):
     msg = args.extract_plain_text()
     if msg:
         matcher.set_arg("content", args)
 
 
 @fake_msg.got("content", "内容呢？格式：qq-name-content\n可构造多条，以上仅为一条，使用换行隔开")
-async def _deal_fake(
+async def _(
     bot: Bot, event: GroupMessageEvent, content: str = ArgPlainText("content")
 ):
     group_id = event.group_id

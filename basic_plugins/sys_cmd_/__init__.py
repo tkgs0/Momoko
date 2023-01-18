@@ -29,7 +29,7 @@ sys_cmd = on_command('>cmd', priority=6, block=True, permission=SUPERUSER)
 
 
 @sys_cmd.handle([Cooldown(5, prompt=_flmt_notice)])
-async def _sys_cmd(matcher: Matcher, args: Message = CommandArg()):
+async def _(matcher: Matcher, args: Message = CommandArg()):
     msg = args.extract_plain_text()
     if msg:
         matcher.set_arg("opt", args)

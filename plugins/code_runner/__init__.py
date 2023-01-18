@@ -15,7 +15,7 @@ code_runner = on_command('>code', priority=6, block=True)
 
 
 @code_runner.handle([Cooldown(5, prompt=_flmt_notice)])
-async def _code_runner(matcher: Matcher, args: Message = CommandArg()):
+async def _(matcher: Matcher, args: Message = CommandArg()):
     msg = args.extract_plain_text()
 
     if msg:

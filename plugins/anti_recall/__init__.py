@@ -1,4 +1,5 @@
-from nonebot import on_notice, logger
+from nonebot import on_notice
+from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import (
     Bot, 
     GroupRecallNoticeEvent, 
