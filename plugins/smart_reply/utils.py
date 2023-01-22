@@ -1,6 +1,7 @@
 from pathlib import Path
-import random, string
+import random
 import nonebot
+from nonebot.log import logger
 try:
     import ujson as json
 except ModuleNotFoundError:
@@ -37,14 +38,12 @@ headers = {
 
 # 从ownthink_api拿到消息
 async def get_reply(msg):
-    for i in string.punctuation:
-        msg = msg.replace(i, ' ')
 
     url = f'https://api.ownthink.com/bot'
     params = {
         'appid': 'xiaosi',
         'userid': 'user',
-        'spoken': msg.strip(),
+        'spoken': msg,
     }
 
     async with AsyncClient() as client:
@@ -56,5 +55,6 @@ async def get_reply(msg):
             else:
                 return 'ʕ  •ᴥ•ʔ……'
         except Exception as e:
-            return repr(e)
+            logger.warning(repr(e))
+            return 'ʕ  •ᴥ•ʔ</>'
 

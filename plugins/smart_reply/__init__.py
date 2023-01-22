@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import (
     PokeNotifyEvent,
     MessageSegment
 )
-import asyncio, random
+import asyncio, random, string
 from .utils import (
     # Bot_NICKNAME,
     hello__reply,
@@ -37,8 +37,12 @@ async def _(event: MessageEvent):
 
     await asyncio.sleep(random.random()*2+1)
 
+    for i in string.punctuation:
+        msg = msg.replace(i, ' ')
+
+    msg = msg.strip()
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
-    if (not msg) or msg.isspace() or msg in [
+    if not msg or msg in [
         '你好啊',
         '你好',
         '在吗',
