@@ -44,7 +44,7 @@
 ### PicSearch  搜图
 抄自 [NekoAria佬](https://github.com/NekoAria) 的 [YetAnotherPicSearch](https://github.com/NekoAria/YetAnotherPicSearch)  
 将原插件的 **搜图** 改为 **搜图#** ，增加了隐蔽性，防止误触（x  
-需要在 `.env.dev` 文件中添加saucenao的apikey：  
+需要在 `.env` 文件中添加saucenao的apikey：  
 ```
 SAUCENAO_API_KEY=xxx
 ```
@@ -79,7 +79,7 @@ P.S. `解除屏蔽` 可以解除临时屏蔽, 也可以解除禁言(当然, 需�
   <summary>使用方法(点击展开)</summary>
   
 .  
-在`.env.dev`内设置：
+在`.env`内设置：
 
 ```python
 ANTI_FLASH_ON=true                          # 全局开关
@@ -120,7 +120,7 @@ ANTI_FLASH_PATH="your-path-to-config.json"  # 配置文件路径，默认同插�
 .  
 **配置:**
 
-需要在 `.env.dev` 文件中添加彩云小梦apikey：
+需要在 `.env` 文件中添加彩云小梦apikey：
 
 ```
 CAIYUNAI_APIKEY=xxx
@@ -327,7 +327,7 @@ qq号-昵称-消息内容
 - **需要注意的是: 请确保将本项目放在纯英文的路径下.**  
 如果你不知道什么叫做**路径**, 建议你把电脑放进水里泡一下.
 4. 打开本项目所在目录
-5. 打开**隐藏文件** `.env.dev`, 填写以下信息:  
+5. 打开**隐藏文件** `.env`, 填写以下信息:  
 
 <details>
   <summary>点击展开</summary>
