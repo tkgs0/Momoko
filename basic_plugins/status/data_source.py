@@ -7,8 +7,8 @@ from datetime import datetime
 _status_msg = """
 > Status Overview
 
-[CPU: {p_cpu}% of {b_cpu}]
-[Memory: {p_mem}% of {b_mem}]
+[CPU: {b_cpu}% of {p_cpu}]
+[Memory: {b_mem}% of {p_mem}]
 [Disk usage: {p_disk}%]
 
 [Net sent: {inteSENT}MB]
@@ -70,11 +70,11 @@ class Status():
             is_ok = True
 
         msg0 = _status_msg.format(
+            b_cpu=f"{b_cpu}%",
+            b_mem="%.1f%%" % b_mem,
             p_cpu=cpu,
             p_mem=mem,
             p_disk=disk,
-            b_cpu=f"{b_cpu}%",
-            b_mem="%.1f%%" % b_mem,
             inteSENT=inte_send,
             inteRECV=inte_recv,
             bot_time=bot_time,
