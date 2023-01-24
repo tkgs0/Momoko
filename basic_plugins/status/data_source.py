@@ -101,5 +101,6 @@ headers = {
 async def get_url(url):
     async with AsyncClient() as client:
         response = await client.get(url, headers=headers, timeout=10)
+        await response.aclose()
         return response.status_code
 
