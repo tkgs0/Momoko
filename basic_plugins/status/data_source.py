@@ -7,8 +7,8 @@ from datetime import datetime
 _status_msg = """
 > Status Overview
 
-[CPU: {b_cpu}% of {p_cpu}]
-[Memory: {b_mem}% of {p_mem}]
+[CPU: {b_cpu} of {p_cpu}%]
+[Memory: {b_mem} of {p_mem}%]
 [Disk usage: {p_disk}%]
 
 [Net sent: {inteSENT}MB]
