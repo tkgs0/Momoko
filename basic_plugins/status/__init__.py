@@ -19,7 +19,7 @@ status = on_command("/status", priority=1, block=True, permission=SUPERUSER)
 
 @status.handle()
 async def _():
-    msg, _ = Status.get_status()
+    msg, _ = await Status.get_status()
     await status.finish(msg)
 
 
@@ -29,7 +29,7 @@ info_msg = "アトリは高性能ですから！"
 @scheduler.scheduled_job('cron', minute='*/10', id='状态检查')
 async def _():
     logger.info("开始检查资源消耗...")
-    msg, stat = Status.get_status()
+    msg, stat = await Status.get_status()
     if not stat:
         logger.warning(msg)
 
