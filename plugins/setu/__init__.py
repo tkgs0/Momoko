@@ -313,6 +313,7 @@ reset_setu = on_command(
 @reset_setu.got('flag', prompt='确定重置涩图服务? (Y/n)')
 async def reset_list(flag: str = ArgStr('flag')):
     if flag in ['Y', 'Yes', 'True']:
+        enabled['api'] = 'lolicon'
         enabled['userlist'].clear()
         enabled['grouplist'].clear()
         save_config()
