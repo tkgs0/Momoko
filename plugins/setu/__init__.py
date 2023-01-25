@@ -111,7 +111,7 @@ async def get__setu(
     keyword = args.extract_plain_text().strip().split()
     num = (
         int(keyword.pop(0))
-        if len(keyword) > 0 and is_number(keyword[0])
+        if keyword and is_number(keyword[0])
         else 1
     )
 
@@ -128,7 +128,7 @@ async def get__setu(
         content = await acggov.get_setu(
             uid = uid,
             name = name,
-            keyword = keyword,
+            keyword = keyword if keyword else ['R-18'],
             img = num,
             pixproxy = pixproxy,
             token = acggov_token
