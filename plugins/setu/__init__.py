@@ -21,6 +21,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
 from .config import Config
+from . import lolicon, acggov
 
 
 setu_config = Config.parse_obj(get_driver().config.dict())
@@ -115,19 +116,24 @@ async def get__setu(
     )
 
     if enabled['api'] == 'lolicon':
-        from .lolicon import get_setu
+        content = await lolicon.get_setu(
+            uid = uid,
+            name = name,
+            keyword = keyword,
+            img = num,
+            pixproxy = pixproxy,
+            r18 = lolicon_r18
+        )
     else:
-        from .acggov import get_setu
+        content = await acggov.get_setu(
+            uid = uid,
+            name = name,
+            keyword = keyword,
+            img = num,
+            pixproxy = pixproxy,
+            token = acggov_token
+        )
 
-    content = await get_setu(
-        uid = uid,
-        name = name,
-        keyword = keyword,
-        img = num,
-        pixproxy = pixproxy,
-        r18 = lolicon_r18,
-        token = acggov_token
-    )
 
     return content
 

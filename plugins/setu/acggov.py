@@ -24,7 +24,6 @@ async def get_setu(
     img: int = 1,
     pixproxy: str = '',
     token: str = 'apikey',
-    **kwargs
 ) -> list:
     logger.info('loading...')
 

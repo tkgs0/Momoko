@@ -13,7 +13,6 @@ async def get_setu(
     img: int = 1,
     pixproxy: str = '',
     r18: int = 0,
-    **kwargs
 ) -> list:
     logger.info('loading...')
     async with AsyncClient() as client:
