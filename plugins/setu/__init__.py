@@ -263,7 +263,7 @@ async def _(arg: Message = CommandArg()):
     elif api.startswith('acggov'):
         enabled['api'] = 'acggov'
     else:
-        enabled['api'] = 'lolicon' if enabled['api'] == 'acggov' else 'lolicon'
+        enabled['api'] = 'lolicon' if enabled['api'] == 'acggov' else 'acggov'
     save_config()
     await set_api.finish(f'API已切换为{enabled["api"]}')
 
