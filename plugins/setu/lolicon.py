@@ -56,7 +56,7 @@ async def get_setu(
                     "data": {
                         "name": name,
                         "uin": str(uid),
-                        "content": f'{MessageSegment.image(i[0])}\ni[1]'
+                        "content": f'{MessageSegment.image(i[0])}\n{i[1]}'
                     }
                 }
                 for i in pics
