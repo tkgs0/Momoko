@@ -77,7 +77,7 @@ async def _(bot: Bot, event: PrivateMessageEvent, args: Message = CommandArg()):
     if not content[1]:
         await setu.finish(content[0])
     try:
-        result = await bot.send_forward_msg(user_id=uid, message=content[0])
+        result = await bot.send_forward_msg(user_id=uid, messages=content[0])
     except Exception as e:
         logger.warning(repr(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
@@ -94,7 +94,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if not content[1]:
         await setu.finish(content[0])
     try:
-        result = await bot.send_forward_msg(group_id=gid, message=content[0])
+        result = await bot.send_forward_msg(group_id=gid, messages=content[0])
     except Exception as e:
         logger.warning(repr(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
