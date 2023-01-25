@@ -114,8 +114,12 @@ async def get__setu(
         else 1
     )
 
-    exec(f'from .{enabled["api"]} import get_setu')
-    content = await get_setu(  # type: ignore
+    if enabled['api'] == 'lolicon':
+        from .lolicon import get_setu
+    else:
+        from .acggov import get_setu
+
+    content = await get_setu(
         uid = uid,
         name = name,
         keyword = keyword,
