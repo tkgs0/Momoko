@@ -146,8 +146,8 @@ apikey获取：
 
 
 ### DirectLinker  群文件直链提取
-抄自 [ninthseason](https://github.com/ninthseason) 的 [DirectLinker](https://github.com/ninthseason/nonebot-plugin-directlinker)  
-**使用方法:** [▶传送门](https://github.com/ninthseason/nonebot-plugin-directlinker#%E7%94%A8%E6%B3%95)  
+抄自 [ninthseason](https://github.com/ninthseason) 的 [DirectLinker](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker)  
+**使用方法:** [▶传送门](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker#%E7%94%A8%E6%B3%95)  
 
 
 ### echo  说
