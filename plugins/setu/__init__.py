@@ -167,7 +167,7 @@ def handle_enabled(
         _mode = '禁用'
     save_config()
     _type = '私聊' if type_ == 'userlist' else '群聊'
-    return f"已在 {len(uids)} 个{_mode}会话{_type}涩图: {', '.join(uids)}"
+    return f"已在 {len(uids)} 个{_type}会话{_mode}涩图: {', '.join(uids)}"
 
 
 add_userlist = on_command(
