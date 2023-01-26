@@ -2,8 +2,18 @@ from sys import exc_info
 import httpx
 from httpx import AsyncClient
 
+from nonebot import require
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment
+
+require("nonebot_plugin_imageutils")
+from nonebot_plugin_imageutils import BuildImage as Image
+
+
+def edit_img(img: bytes) -> bytes:
+    image = Image.open(img)
+    image.draw_ellipse((3,3,30,30), outline='black')
+    return image.save_png().getvalue()
 
 
 async def get_setu(
@@ -86,7 +96,7 @@ async def get_setu(
 
 
 
-async def down_pic(content, pixproxy):
+async def down_pic(content, pixproxy) -> tuple[list, list]:
     async with AsyncClient() as client:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
@@ -110,9 +120,10 @@ async def down_pic(content, pixproxy):
             )
             if res.status_code == 200:
                 logger.success(f'获取图片 {i["pid"]} 成功')
-                pics.append([res.content, i['caption']])
+                pics.append([edit_img(res.content), i['caption']])
             else:
                 logger.error(sc := f'获取图片 {i["pid"]} 失败: {res.status_code}')
                 status.append(sc)
             await res.aclose()
         return pics, status
+
