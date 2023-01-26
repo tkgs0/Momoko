@@ -1,6 +1,7 @@
 from sys import exc_info
 import httpx, random
 from httpx import AsyncClient
+from io import BytesIO
 
 from nonebot import require
 from nonebot.log import logger
@@ -10,10 +11,10 @@ require("nonebot_plugin_imageutils")
 from nonebot_plugin_imageutils import BuildImage as Image
 
 
-def edit_img(img: bytes) -> bytes:
+def edit_img(img: bytes) -> BytesIO:
     image = Image.open(img)
     image.draw_ellipse((3,3,30,30), outline='black')
-    return image.save_png().getvalue()
+    return image.save_png()
 
 
 def generate_image_struct() -> dict:
