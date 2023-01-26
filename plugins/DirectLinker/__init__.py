@@ -13,14 +13,14 @@ linker_command = config.linker_command
 linker_parser = ArgumentParser(add_help=False)
 linker_parser.add_argument("-h", "--help", dest="help", action="store_true")
 linker_parser.add_argument("-n", "--name", dest="name")
-linker_parser.add_argument("-f", "--file", dest="file", type=int)
+linker_parser.add_argument("-i", "--info", dest="info", type=int)
 linker_parser.add_argument("-p", "--path", dest="path")
 
 linker = on_shell_command(linker_command, parser=linker_parser, priority=1)
 
 help_text = f"""Manual of 群文件直链提取器
 -n | --name     文件名.*
--f | --file     文件序号 
+-i | --info     文件序号 
 -p | --path     文件路径
 例：/{linker_command} -n 文件名.exe
 """
@@ -34,7 +34,7 @@ async def link(bot: Bot, event: GroupMessageEvent, state: T_State):
 
         help = args.get('help')
         name = args.get('name')
-        file = args.get('file')
+        info = args.get('info')
         path = args.get('path')
 
         logger.debug(args)
@@ -78,6 +78,8 @@ async def link(bot: Bot, event: GroupMessageEvent, state: T_State):
                     files = files[path]
                 else:
                     await linker.finish("[Linker]并没有找到文件呢~是否文件路径输错了？")
+            else:
+                files = [i for i in files.values() for i in i]
 
             searched_list: list[dict] = [i for i in files if name == i['file_name']]
 
@@ -87,10 +89,10 @@ async def link(bot: Bot, event: GroupMessageEvent, state: T_State):
             elif len(searched_list) == 1:
                 file = searched_list[0]
             elif len(searched_list) > 1:
-                if file is not None and file <= len(searched_list):
-                    file = searched_list[args.get('file') - 1]
+                if info is not None and info <= len(searched_list):
+                    file = searched_list[info - 1]
                 else:
-                    result = f"[Linker]找到了多个文件，请输入`/{linker_command} -n 文件名.* -f 文件序号`来选择文件"
+                    result = f"[Linker]找到了{len(searched_list)}个文件，请输入`/{linker_command} -n 文件名 -i 文件序号`来选择文件"
                     for i in range(len(searched_list)):
                         result += f"\n{i + 1}：上传者{searched_list[i]['uploader_name']}，上传时间" \
                                   + time.strftime('%Y-%m-%d %H:%M:%S',
@@ -99,7 +101,7 @@ async def link(bot: Bot, event: GroupMessageEvent, state: T_State):
 
             url = await bot.get_group_file_url(group_id=int(event.group_id), file_id=file['file_id'],
                                                bus_id=file['busid'])
-            url = url.get('url').rpartition("fname")[0] + '?fname=' + name
+            url = url.get('url').rpartition("/")[0] + '?fname=' + name
 
             result = [f"文件名：{file['file_name']}"
                       f"""\n上传时间：{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(file['upload_time']))}"""]
