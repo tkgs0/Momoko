@@ -179,9 +179,6 @@ def blacklist_processor(event: Event):
         raise IgnoredException('黑名单用户')
 
 
-
-
-
 namelist_del = on_command("解除屏蔽", aliases={"摘口球"}, permission=SUPERUSER, priority=1, block=True)
 
 @namelist_del.handle()
