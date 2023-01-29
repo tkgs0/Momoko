@@ -156,6 +156,9 @@ async def _(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
 @setadmin.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     uids = [int(at.data['qq']) for at in event.get_message()['at']]
+    if not uids:
+        logger.warning('未指定要设为管理的对象')
+        return
     x = True
     try:
         for uid in uids:
@@ -170,6 +173,9 @@ async def _(bot: Bot, event: GroupMessageEvent):
 @unsetadmin.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     uids = [int(at.data['qq']) for at in event.get_message()['at']]
+    if not uids:
+        logger.warning('未指定要取消管理的对象')
+        return
     x = True
     try:
         for uid in uids:
