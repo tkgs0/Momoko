@@ -160,38 +160,38 @@
 4. 打开本项目所在目录
 5. 打开**隐藏文件** `.env`, 填写以下信息:  
 
-  <details>
-    <summary>点击展开</summary>
-  
-  ```
-  SUPERUSERS=[""]
-  ```
-  在引号里填写用于控制bot的超级用户QQ  
-  可填写多个 例如: ["123456","654321"]  
-  
-  ```
-  ANTI_FLASH_GROUP=[""]
-  ```
-  引号里填写默认开启 反闪照 的群聊, 可留空.  
-  可填写多个 例如: ["123456","654321"]  
-  
-  ```
-  SAUCENAO_API_KEY=""
-  ```
-  在引号里填写你在 `saucenao.com` 申请到的 `apikey` , 必填, 否则无法正常使用搜图.  
-  
-  ```
-  EXHENTAI_COOKIES=""
-  ```
-  在引号里填写你的 `exhentai` `cookies` , 可留空.  
-  
-  ```
-  CAIYUNAI_APIKEY=""
-  ```
-  在引号里填写你的 彩云小梦 `apikey` , 必填, 否则无法正常使用小梦续写功能.  
-  
-  </details>
-  
+   <details>
+     <summary>点击展开</summary>
+   
+   ```
+   SUPERUSERS=[""]
+   ```
+   在引号里填写用于控制bot的超级用户QQ  
+   可填写多个 例如: ["123456","654321"]  
+   
+   ```
+   ANTI_FLASH_GROUP=[""]
+   ```
+   引号里填写默认开启 反闪照 的群聊, 可留空.  
+   可填写多个 例如: ["123456","654321"]  
+   
+   ```
+   SAUCENAO_API_KEY=""
+   ```
+   在引号里填写你在 `saucenao.com` 申请到的 `apikey` , 必填, 否则无法正常使用搜图.  
+   
+   ```
+   EXHENTAI_COOKIES=""
+   ```
+   在引号里填写你的 `exhentai` `cookies` , 可留空.  
+   
+   ```
+   CAIYUNAI_APIKEY=""
+   ```
+   在引号里填写你的 彩云小梦 `apikey` , 必填, 否则无法正常使用小梦续写功能.  
+   
+   </details>
+
 6. 在命令行 `cd` 到本项目的目录
 7. 输入 `pip install -r requirements.txt` 安装环境依赖
 8. 输入 `python bot.py` 启动机器人
