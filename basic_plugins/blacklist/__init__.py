@@ -216,4 +216,3 @@ async def reset_list(flag: str = ArgStr('flag')):
         await reset_blacklist.finish('黑名单已重置')
     else:
         await reset_blacklist.finish('操作已取消')
-
