@@ -14,3 +14,4 @@ nonebot.load_from_toml("pyproject.toml")
 
 if __name__ == "__main__":
     nonebot.run(app="__mp_main__:app")
+
