@@ -1,21 +1,21 @@
 
 # 桃桃Bot  
-此项目是基于 [Nonebot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人  
+此项目是基于 [NoneBot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人  
 借(chao)鉴(xi)了大佬们的代码，实现了一些对群友的娱乐功能和实用功能（大概  
 
 <div>
 
 <a href="./LICENSE">
-    <img src="https://img.shields.io/github/license/tkgs0/Momoko.svg" alt="license">
+    <img src="https://img.shields.io/github/license/tkgs0/Momoko.svg" alt="License">
 </a>
 <a href="https://www.python.org">
-    <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="python">
+    <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
 </a>
 <a href="https://https://v2.nonebot.dev">
-    <img src="https://img.shields.io/badge/nonebot-2.0.0-red.svg" alt="NoneBot">
+    <img src="https://img.shields.io/badge/NoneBot-2.0.0-red.svg" alt="NoneBot">
 </a>
 <a href="https://onebot.adapters.nonebot.dev">
-    <img src="https://img.shields.io/badge/onebot-v11-black.svg" alt="OneBot">
+    <img src="https://img.shields.io/badge/OneBot-v11-black.svg" alt="OneBot">
 </a>
 <a href="https://github.com/Mrs4s/go-cqhttp">
     <img src="https://img.shields.io/badge/gocq-1.0.0-blueviolet.svg" alt="go-cqhttp">
