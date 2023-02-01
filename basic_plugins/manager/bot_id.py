@@ -12,7 +12,8 @@ from pathlib import Path
 
 
 
-bot_info = Path(".") / "bot_id.json"
+bot_info = Path() / "data" / "bot_id.json"
+bot_info.parent.mkdir(parents=True, exist_ok=True)
 
 async def check_first_connect(_: LifecycleMetaEvent) -> bool:
     return True
@@ -40,3 +41,4 @@ async def start(bot: Bot) -> None:
             user_id=int(superuser),
             message=Message("Bot启动成功")
         )
+

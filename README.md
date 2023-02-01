@@ -1,7 +1,7 @@
 
-# 桃桃Bot  
-此项目是基于 [NoneBot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人  
-借(chao)鉴(xi)了大佬们的代码，实现了一些对群友的娱乐功能和实用功能（大概  
+# 桃桃Bot
+此项目是基于 [NoneBot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人
+借(chao)鉴(xi)了大佬们的代码，实现了一些对群友的娱乐功能和实用功能（大概
 
 <div>
 
@@ -37,48 +37,189 @@
 
 
 ## 声明
-此项目仅用于学习交流，不可商用以及非法用途  
+此项目仅用于学习交流，不可商用以及非法用途
 
 
-## 功能列表
-### PicSearch  搜图
-抄自 [NekoAria佬](https://github.com/NekoAria) 的 [YetAnotherPicSearch](https://github.com/NekoAria/YetAnotherPicSearch)  
-将原插件的 **搜图** 改为 **搜图#** ，增加了隐蔽性，防止误触（x  
-需要在 `.env` 文件中添加saucenao的apikey：  
-```
-SAUCENAO_API_KEY=xxx
-```
-除此之外请参考原插件 [▶使用方法️️](https://github.com/NekoAria/YetAnotherPicSearch/blob/main/docs/%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
+## 功能表
+- [x] **嘴臭屏蔽** - anti abuse
+
+  <details>
+    <summary>指令表</summary>
+
+  检测到有用户 `@机器人` 并嘴臭时将其临时屏蔽(bot重启后失效)
+  当bot为群管理时会请对方喝昏睡红茶(禁言)
+
+  - 超级用户不受临时屏蔽影响 _~~但是会被昏睡红茶影响~~_
+  - 当bot的群权限比超级用户高的时候, 超级用户也有机会品尝昏睡红茶
+  - 被bot灌了昏睡红茶的用户不会进临时黑名单
+  - 开启 **`对线模式`** 后不会被bot灌昏睡红茶和临时拉黑 (~~因为要对线~~)
+
+  <table> 
+    <tr align="center">
+      <th> 指令 </th>
+      <th> 权限 </th>
+      <th> 需要@ </th>
+      <th> 范围 </th>
+      <th> 说明 </th>
+    </tr>
+    <tr align="center">
+      <td> ^(添加|删除)屏蔽词 xxx </td>
+      <td> 主人 </td>
+      <td> 否 </td>
+      <td> 私聊 | 群聊 </td>
+      <td rowspan="2"> 可输入多个,<br>用空格隔开 </td>
+    </tr>
+    <tr align="center">
+      <td> 解除屏蔽 qq </td>
+      <td> 主人 </td>
+      <td> 否 </td>
+      <td> 私聊 | 群聊 </td>
+    </tr>
+    <tr align="center">
+      <td> 查看临时黑名单 </td>
+      <td> 主人 </td>
+      <td> 否 </td>
+      <td> 私聊 | 群聊 </td>
+      <td> </td>
+    </tr>
+    <tr align="center">
+      <td> ^(禁用|启用)飞(妈|马|🐴|🐎)令 </td>
+      <td> 主人 </td>
+      <td> 否 </td>
+      <td> 私聊 | 群聊 </td>
+      <td> 开启/关闭对线模式 </td>
+  </table>
+
+  P.S. `解除屏蔽` 可以解除临时屏蔽, 也可以解除禁言(当然, 需要bot为群管理).
+
+  你说从聊天界面查看屏蔽词库? 噢, 我亲爱的老伙计, 你怕是疯了!
+
+  </details>
+
+- [x] **黑名单** - blacklist
+
+  <details>
+    <summary>指令表</summary>
+
+  基于 [A-kirami](https://github.com/A-kirami) 的 [黑白名单](https://github.com/A-kirami/nonebot-plugin-namelist) 魔改(?)的仅黑名单插件
+
+  超级用户不受黑名单影响
+
+  拉黑:
+  ```
+  拉黑用户 qq qq1 qq2
+  拉黑群 qq qq1 qq2
+  拉黑所有群
+  拉黑所有好友
+  ```
+
+  解禁:
+  ```
+  解禁用户 qq qq1 qq2
+  解禁群 qq qq1 qq2
+  解禁所有群
+  解禁所有好友
+  ```
+
+  查看黑名单:
+  ```
+  查看用户黑名单
+  查看群聊黑名单
+
+  重置黑名单
+  ```
+
+  群内发送 **`/静默`**, **`/响应`** 可快捷拉黑/解禁当前群聊
+  `拉黑/解禁所有` 只对已添加的群/好友生效
+
+  </details>
+
+- [x] **好友/群聊管理** - manager
+
+  <details>
+    <summary>指令表</summary>
+
+  ```
+  踢出群聊 @qq @qq1 @qq2 ...
+  禁言 @qq @qq1 @qq2 ... XX分钟(/小时/天)
+  解除禁言 @qq @qq1 @qq2 ...
+  我要自闭 XX分钟(/小时/天)
+  开启(关闭)全员禁言
+  设为(撤销)管理 @qq @qq1 @qq2 ...
+  允许(禁止)匿名
+  修改名片(头衔) @qq @qq1 @qq2 ... XXXX
+  设置群名 XXXX
+  申请头衔 XXXX
+  撤回   (回复消息发送`撤回`)
+  ```
+
+  **以下命令需要前缀 `/`**
+  ```
+  同意(拒绝)好友 QQ号 备注
+  同意(拒绝)拉群 FLAG
+  [群聊] 同意(拒绝)入群 FLAG 理由
+  (`备注` 和 `理由` 可省略)
+
+  查看好友(群聊)请求
+  清空好友(入群/拉群)请求
+
+  好友(拉群)自动同意(拒绝)
+  关闭好友(拉群)自动
+
+  [群聊] 入群自动同意(拒绝)
+  [群聊] 关闭入群自动
+
+  重置请求自动
+  ```
+
+  **以下命令需要 `@机器人`** (私聊不用)
+  ```
+  设置网名 XXXX
+  查找好友(群) qq qq1 qq2 ...
+  查看所有好友(群)
+  查看单向好友
+  退群 qq qq1 qq2 ... (群号不存在时则退出当前群聊)
+  删除好友 qq qq1 qq2 ...
+  删除单向好友 qq qq1 qq2 ...
+  查看群员列表
+  设置群头像 [图片]   ⚠该API不稳定!
+  ```
+
+  </details>
+
+- [x] **自检** - status
+
+  <details>
+    <summary>使用方法</summary>
+
+  移植自 [摸](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI), 改成了限超级用户使用
+
+  发送 `/ping` 测试bot应答
+  发送 `/status` 查看bot设备状态
+
+  </details>
+
+- [x] **搜图** - PicSearch
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [NekoAria](https://github.com/NekoAria) 的 [YetAnotherPicSearch](https://github.com/NekoAria/YetAnotherPicSearch)
+  将原插件的 **搜图** 改为 **搜图#** ，增加了隐蔽性，防止误触（x
+  此外请参考原插件 [▶使用方法️️](https://github.com/NekoAria/YetAnotherPicSearch/blob/main/docs/%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
+
+  </details>
 
 
-### anti_abuse  嘴臭屏蔽
-**被动插件**  
-检测到有用户@机器人并嘴臭时将其临时屏蔽(bot重启后失效)  
-当bot为群管理时会请对方喝昏睡红茶  
-饮用了昏睡红茶的用户不会进临时黑名单  
-  
-**指令:**  
-
-```
-添加/删除屏蔽词 词1 词2 词3 ...
-
-查看临时黑名单
-
-解除屏蔽 qq1 qq2 qq3 ...
-```
-
-P.S. `解除屏蔽` 可以解除临时屏蔽, 也可以解除禁言(当然, 需要bot为群管理).  
-  
-你说从聊天界面查看屏蔽词库? 噢, 我亲爱的老伙计, 你怕是疯了!  
 
 
-### anti_flash  反闪照
-抄自 [KafCoppelia佬](https://github.com/MinatoAquaCrews) 的 [AntiFlash](https://github.com/MinatoAquaCrews/nonebot_plugin_antiflash)  
+- [x] anti_flash  反闪照
+抄自 [KafCoppelia](https://github.com/MinatoAquaCrews) 的 [AntiFlash](https://github.com/MinatoAquaCrews/nonebot_plugin_antiflash)
 
 <details>
   <summary>使用方法(点击展开)</summary>
-  
-.  
+
+.
 在`.env`内设置：
 
 ```python
@@ -87,37 +228,37 @@ ANTI_FLASH_GROUP=["123456789", "987654321"] # 默认开启的群聊，但可通�
 ANTI_FLASH_PATH="your-path-to-config.json"  # 配置文件路径，默认同插件代码路径
 ```
 
-`ANTI_FLASH_GROUP`会在每次初始化时写入配置文件，在群组启用反闪照，可通过指令更改。  
-  
-**修改** 配置文件即读即改，可后台修改。  
-  
+`ANTI_FLASH_GROUP`会在每次初始化时写入配置文件，在群组启用反闪照，可通过指令更改。
+
+**修改** 配置文件即读即改，可后台修改。
+
 **功能:**
-1. 全局开关**仅超管**配置，不支持指令修改全局开关；  
-2. 各群聊均配置开关，需**管理员及超管权限**进行修改；  
-  
-**命令:**  
+1. 全局开关**仅超管**配置，不支持指令修改全局开关；
+2. 各群聊均配置开关，需**管理员及超管权限**进行修改；
+
+**命令:**
 开启/启用/禁用反闪照
 
 </details>
 
 
-### anti_recall  反撤回
-移植自 [摸佬](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)  
+- [x] anti_recall  反撤回
+移植自 [摸佬](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)
 将检测到的撤回消息转发给超级用户
 
 
-### bhbdm  不会百度么？
-发送 `/百度搜索` 加 `内容` 返回直达链接  
+- [x] bhbdm  不会百度么？
+发送 `/百度搜索` 加 `内容` 返回直达链接
 <img style="height: 150px; width: 430px;" src="https://iili.io/6vMyOP.jpg">
 
 
-### caiyun_ai  AI续写
-抄自 [wq佬](https://github.com/MeetWq) 的 [caiyunai](https://github.com/noneplugin/nonebot-plugin-caiyunai)  
+- [x] caiyun_ai  AI续写
+抄自 [wq佬](https://github.com/MeetWq) 的 [caiyunai](https://github.com/noneplugin/nonebot-plugin-caiyunai)
 
 <details>
   <summary>使用方法(点击展开)</summary>
-  
-.  
+
+.
 **配置:**
 
 需要在 `.env` 文件中添加彩云小梦apikey：
@@ -137,7 +278,7 @@ apikey获取：
 或者进行一次续写，在 Network 中查看 novel_ai 请求，Payload 中的 uid 项即为 apikey。
 
 
-**使用:**  
+**使用:**
 ```
 @机器人 续写/彩云小梦 xxx
 ```
@@ -145,13 +286,13 @@ apikey获取：
 </details>
 
 
-### DirectLinker  群文件直链提取
-抄自 [ninthseason](https://github.com/ninthseason) 的 [DirectLinker](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker)  
-**使用方法:** [▶传送门](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker#%E7%94%A8%E6%B3%95)  
+- [x] DirectLinker  群文件直链提取
+抄自 [ninthseason](https://github.com/ninthseason) 的 [DirectLinker](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker)
+**使用方法:** [▶传送门](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker#%E7%94%A8%E6%B3%95)
 
 
-### echo  说
-**使用方法:**  
+- [x] echo  说
+**使用方法:**
 `@机器人` 并加上 **冒号** `：` 发送你想让机器人说的话
 ```
 @桃桃酱 ：xxxxx
@@ -159,51 +300,42 @@ apikey获取：
 为防止恶意用户滥用导致封号，限制仅超级用户可用
 
 
-### eventdone  好友添加事件处理
-抄自 [PadorFelice佬](https://github.com/PadorFelice) 的 [eventdone](https://github.com/PadorFelice/nonebot_plugin_eventdone)  
-**使用方法:**  
-私聊发送 `同意` 加申请人qq号
-```
-同意 xxxxxxxxx
-```
-
-
-### fake_msg  伪造合并转发消息
-移植自 [摸佬](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)  
-**使用方法:**  
+- [x] fake_msg  伪造合并转发消息
+移植自 [摸佬](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)
+**使用方法:**
 ```
 /fakemsg
 qq号-昵称-消息内容
 ```
-示例:  
+示例:
 ```
 /fakemsg
 123456789-桃桃酱-不可以色色
 987654321-路人甲-我就要色色
 ```
 
-### look_like  你看我像人吗
-**使用方法:**  
-`@机器人` 发送 `你看我像`  
-示例:  
+- [x] look_like  你看我像人吗
+**使用方法:**
+`@机器人` 发送 `你看我像`
+示例:
 ```
 @桃桃酱 你看我像人吗？
 ```
 
 
-### mockingbird  让bot发语音
-抄自 [白毛佬](https://github.com/AkashiCoin) 的 [mockingbird](https://github.com/AkashiCoin/nonebot_plugin_mockingbird)  
-**使用方法:**  
+- [x] mockingbird  让bot发语音
+抄自 [白毛佬](https://github.com/AkashiCoin) 的 [mockingbird](https://github.com/AkashiCoin/nonebot_plugin_mockingbird)
+**使用方法:**
 ```
 @Bot 说 [你想要bot说的话]
 ```
-配置不够的设备使用该功能容易死机，所以修改了权限限制仅超级用户可用。  
+配置不够的设备使用该功能容易死机，所以修改了权限限制仅超级用户可用。
 如果需要开放给所有用户使用的话，请将`plugins/mockingbird/__init__.py`第78行的`permission=SUPERUSER,`删掉
 
 <details>
   <summary>其他操作(点击展开)</summary>
-  
-.  
+
+.
 ```
 显示模型 # 显示出可供修改的模型
 # 修改指令
@@ -217,8 +349,8 @@ qq号-昵称-消息内容
 </details>
 
 
-### groupmanage 群管理
-  
+- [x] groupmanage 群管理
+
 
 <details>
   <summary>使用方法(点击展开)</summary>
@@ -240,83 +372,77 @@ qq号-昵称-消息内容
 </details>
 
 
-### blacklist  黑名单
-  
+- [x] blacklist  黑名单
+
 
 <details>
   <summary>使用方法(点击展开)</summary>
 
-.  
+.
 
-拉黑:  
+拉黑:
 ```
 拉黑用户 qq qq1 qq2
 拉黑群 qq qq1 qq2
 拉黑所有群
 拉黑所有好友
 ```
-  
-解禁:  
+
+解禁:
 ```
 解禁用户 qq qq1 qq2
 解禁群 qq qq1 qq2
 解禁所有群
 解禁所有好友
 ```
-  
-查看黑名单:  
+
+查看黑名单:
 ```
 查看用户黑名单
 查看群聊黑名单
 
 重置黑名单
 ```
-群内发送 **`/静默`**, **`/响应`** 可快捷拉黑/解禁当前群聊  
-`拉黑/解禁所有` 只对Bot添加的群/好友生效  
+群内发送 **`/静默`**, **`/响应`** 可快捷拉黑/解禁当前群聊
+`拉黑/解禁所有` 只对Bot添加的群/好友生效
 
 </details>
 
 
-### rss  订阅
-抄自 [Quan666](https://github.com/Quan666) 的 [ELF_RSS](https://github.com/Quan666/ELF_RSS)  
-**使用方法:** [▶传送门](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)  
+- [x] rss  订阅
+抄自 [Quan666](https://github.com/Quan666) 的 [ELF_RSS](https://github.com/Quan666/ELF_RSS)
+**使用方法:** [▶传送门](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
 
 
-### simplemusic  点歌
-抄自 [wq佬](https://github.com/MeetWq) 的 [SimpleMusic](https://github.com/noneplugin/nonebot-plugin-simplemusic)  
-**使用方法:**  
+- [x] simplemusic  点歌
+抄自 [wq佬](https://github.com/MeetWq) 的 [SimpleMusic](https://github.com/noneplugin/nonebot-plugin-simplemusic)
+**使用方法:**
 ```
 点歌/qq点歌/网易点歌/酷我点歌/酷狗点歌/咪咕点歌/b站点歌 + 关键词
 ```
 默认为qq点歌
 
 
-### smart_reply  AI聊天
-抄自 [Special-Week佬](https://github.com/Special-Week) 的 [SmartReply](https://github.com/Special-Week/nonebot_plugin_smart_reply)  
-**使用方法:**  
+- [x] smart_reply  AI聊天
+抄自 [Special-Week佬](https://github.com/Special-Week) 的 [SmartReply](https://github.com/Special-Week/nonebot_plugin_smart_reply)
+**使用方法:**
 `@机器人` 发送你想对机器人说的骚话
 
 
-### status  
 
-发送 `/ping` 测试bot应答  
-发送 `/status` 查看bot设备状态  
-超级用户使用
-
-
-### tarot  抽塔罗牌
-**使用方法:**  
+- [x] tarot  抽塔罗牌
+**使用方法:**
 ```
 @机器人 抽塔罗牌
 ```
 
 
-### wordbank2  你问我答
-抄自 [kexue佬](https://github.com/kexue-z) 的 [wordbank2](https://github.com/kexue-z/nonebot-plugin-word-bank2)  
-**使用方法:** [▶传送门](https://github.com/kexue-z/nonebot-plugin-word-bank2#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8)  
+- [x] wordbank2  你问我答
+抄自 [kexue佬](https://github.com/kexue-z) 的 [wordbank2](https://github.com/kexue-z/nonebot-plugin-word-bank2)
+**使用方法:** [▶传送门](https://github.com/kexue-z/nonebot-plugin-word-bank2#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8)
 
 
-### withdraw  撤回
+- [x] withdraw  撤回
 回复机器人的消息发送 `撤回`
 
 
@@ -324,48 +450,48 @@ qq号-昵称-消息内容
 1. 安装系统
 2. 安装3.9版本以上的Python
 3. 下载本项目到本地
-- **需要注意的是: 请确保将本项目放在纯英文的路径下.**  
+- **需要注意的是: 请确保将本项目放在纯英文的路径下.**
 如果你不知道什么叫做**路径**, 建议你把电脑放进水里泡一下.
 4. 打开本项目所在目录
-5. 打开**隐藏文件** `.env`, 填写以下信息:  
+5. 打开**隐藏文件** `.env`, 填写以下信息:
 
 <details>
-  <summary>点击展开</summary>
+    <summary>点击展开</summary>
 
-.  
+.
 
 ```
 SUPERUSERS=[""]
 ```
-在引号里填写用于控制bot的超级用户QQ  
-可填写多个 例如: ["123456","654321"]  
+在引号里填写用于控制bot的超级用户QQ
+可填写多个 例如: ["123456","654321"]
 
 ```
 ANTI_FLASH_GROUP=[""]
 ```
-引号里填写默认开启 反闪照 的群聊, 可留空.  
-可填写多个 例如: ["123456","654321"]  
+引号里填写默认开启 反闪照 的群聊, 可留空.
+可填写多个 例如: ["123456","654321"]
 
 ```
 SAUCENAO_API_KEY=""
 ```
-在引号里填写你在 `saucenao.com` 申请到的 `apikey` , 必填, 否则无法正常使用搜图.  
+在引号里填写你在 `saucenao.com` 申请到的 `apikey` , 必填, 否则无法正常使用搜图.
 
 ```
 EXHENTAI_COOKIES=""
 ```
-在引号里填写你的 `exhentai` `cookies` , 可留空.  
+在引号里填写你的 `exhentai` `cookies` , 可留空.
 
 ```
 CAIYUNAI_APIKEY=""
 ```
-在引号里填写你的 彩云小梦 `apikey` , 必填, 否则无法正常使用小梦续写功能.  
-  
-  
-.  
+在引号里填写你的 彩云小梦 `apikey` , 必填, 否则无法正常使用小梦续写功能.
+
+
+.
 
 </details>
-  
+
 6. 在命令行 `cd` 到本项目的目录
 7. 输入 `pip install -r requirements.txt` 安装环境依赖
 8. 输入 `python bot.py` 启动机器人
@@ -373,11 +499,11 @@ CAIYUNAI_APIKEY=""
 10. 运行适用于你的系统的 `go-cqhttp` 文件
 - 你也可以在 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases) 下载最新的`go-cqhttp` 文件, 并放入该文件夹.
 11. 用 `手机QQ` 扫码登入
-12. 登入成功后, 用你的 `超级用户` 账号 给bot发 `/ping`  
+12. 登入成功后, 用你的 `超级用户` 账号 给bot发 `/ping`
 如果bot给你回复 `I'm fine`, 那么就大功告成了.
 
 
-### ⚠注意
+## ⚠注意
 **如果你是第一次使用go-cqhttp, 可能会遇到以下情况:**
 
 - 登录失败，提示 `请在常用的设备上登录`
@@ -388,7 +514,7 @@ CAIYUNAI_APIKEY=""
 1. 将电脑和手机处在同一IP环境下
  - 比如手机和电脑使用同一个WiFi, 或者电脑连接手机的热点.
 2. 选择扫码登入
-  
+
 **服务器用户同理:**
 
 3. 下载win版的go-cqhttp到自己电脑上
@@ -396,7 +522,7 @@ CAIYUNAI_APIKEY=""
 5. 登入成功后把生成的文件拷到服务器上
 
 
-### ⚠喜报
+## ⚠喜报
 你可能会遇到以下问题:
 
 - 私聊机器人收得到消息，但是群聊收不到
@@ -408,11 +534,11 @@ CAIYUNAI_APIKEY=""
 
 解决办法:
 
-- 挂几天试试  
+- 挂几天试试
 万一企鹅大发慈悲给你解除风控了呢
 
-- 企业账号  
+- 企业账号
 企业账号是不会风控的，就是开通费有亿点点贵。
 
-- 换个号  
+- 换个号
 换个qq号吧，就当续命了

@@ -5,8 +5,11 @@ from nonebot.permission import SUPERUSER
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, ArgPlainText
 from nonebot.adapters.onebot.v11 import (
+    Bot,
     Message,
-    unescape
+    GroupMessageEvent,
+    unescape,
+    ActionFailed,
 )
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
@@ -25,7 +28,7 @@ def help() -> str:
 _flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
 
 
-sys_cmd = on_command('>cmd', priority=6, block=True, permission=SUPERUSER)
+sys_cmd = on_command('>cmd', priority=1, block=True, permission=SUPERUSER)
 
 
 @sys_cmd.handle([Cooldown(5, prompt=_flmt_notice)])
@@ -68,3 +71,81 @@ sys_cmd_helper = on_command('>cmd.help', priority=5, block=True)
 @sys_cmd_helper.handle()
 async def _():
     await sys_cmd_helper.finish(help())
+
+
+
+
+upload_group_file = on_command(
+    ">上传文件",
+    permission=SUPERUSER,
+    priority=1,
+    block=True,
+)
+
+@upload_group_file.handle()
+async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
+    args = arg.extract_plain_text().strip().split(maxsplit=1)
+    if len(args) < 2:
+        await upload_group_file.finish("用法:\n>上传文件 文件名 本地路径")
+    filename = unescape(args[0])
+    filepath = unescape(args[1])
+    try:
+        await bot.upload_group_file(
+            group_id=event.group_id,
+            name=filename,
+            file=filepath
+        )
+    except ActionFailed as e:
+        await upload_group_file.finish(err_info(e))
+    await upload_group_file.finish()
+
+
+upload_private_file = on_command(
+    ">私发文件",
+    permission=SUPERUSER,
+    priority=1,
+    block=True,
+)
+
+@upload_private_file.handle()
+async def _(bot: Bot, arg: Message = CommandArg()):
+    args = arg.extract_plain_text().strip().split(maxsplit=2)
+    if len(args) < 3 or not is_number(args[0]):
+        await upload_private_file.finish("用法:\n>私发文件 目标QQ 文件名 本地路径")
+    uid = args[0]
+    filename = unescape(args[1])
+    filepath = unescape(args[2])
+    try:
+        await bot.upload_private_file(
+            user_id=int(uid),
+            name=filename,
+            file=filepath
+        )
+    except ActionFailed as e:
+        await upload_private_file.finish(err_info(e))
+    await upload_private_file.finish()
+
+
+def err_info(e: ActionFailed):
+    if e1 := e.info.get('wording'):
+        return e1
+    elif e1 := e.info.get('msg'):
+        return e1
+    else:
+        return repr(e)
+
+
+def is_number(s: str) -> bool:
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+    try:
+        import unicodedata
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+    return False
+
