@@ -44,7 +44,7 @@
 - [x] **嘴臭屏蔽** - anti abuse
 
   <details>
-    <summary>指令表</summary>
+    <summary>使用方法</summary>
 
   检测到有用户 `@机器人` 并嘴臭时将其临时屏蔽(bot重启后失效)
 
@@ -100,7 +100,7 @@
 - [x] **黑名单** - blacklist
 
   <details>
-    <summary>指令表</summary>
+    <summary>使用方法</summary>
 
   基于 [A-kirami](https://github.com/A-kirami) 的 [黑白名单](https://github.com/A-kirami/nonebot-plugin-namelist) 魔改(?)的仅黑名单插件
 
@@ -139,7 +139,7 @@
 - [x] **好友/群聊管理** - manager
 
   <details>
-    <summary>指令表</summary>
+    <summary>使用方法</summary>
 
   ```
   踢出群聊 @qq @qq1 @qq2 ...
@@ -196,9 +196,220 @@
 
   移植自 [摸](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI), 改成了限超级用户使用
 
-  发送 `/ping` 测试bot应答
+  ```
+  /ping    # 测试bot应答
 
-  发送 `/status` 查看bot设备状态
+  /status    # 查看bot设备状态
+  ```
+
+  </details>
+
+- [x] **调用命令行** - sys cmd
+
+  <details>
+    <summary>使用方法</summary>
+
+  调用系统命令行
+
+  ⚠危险操作, 谨慎使用!
+
+  ```
+  >cmd {命令}
+
+  # 示例:
+  >cmd echo "Hello World"
+  ```
+
+  </details>
+
+- [x] **说** - echo
+
+  <details>
+    <summary>使用方法</summary>
+
+  `@机器人` 并加上 **冒号** `：` 发送你想让机器人说的话
+
+  ```
+  @桃桃酱 ：xxxxx
+  ```
+
+  为防止恶意用户滥用导致封号，限制仅超级用户可用
+
+  </details>
+
+- [x] **B链解析** - analysis bilibili
+
+  <details>
+    <summary>使用方法</summary>
+
+  ［被动插件］
+
+  抄自 [mengshouer](https://github.com/mengshouer) [analysis\_bilibili](https://github.com/mengshouer/nonebot_plugin_analysis_bilibili) 的 [NekoAria修改版](https://github.com/NekoAria/nonebot_plugin_analysis_bilibili)
+
+  自动解析聊天中发送的 bilibili 小程序/链接
+
+  [▶使用方法](https://github.com/NekoAria/nonebot_plugin_analysis_bilibili#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F)
+
+  </details>
+
+- [x] **反闪照** - anti flash
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [KafCoppelia](https://github.com/MinatoAquaCrews) 的 [AntiFlash](https://github.com/MinatoAquaCrews/nonebot_plugin_antiflash)
+
+  在`env`内设置：
+
+  ```python
+  ANTI_FLASH_ON=true                          # 全局开关
+  ANTI_FLASH_GROUP=["123456789", "987654321"] # 默认开启的群聊，但可通过指令开关
+  ANTI_FLASH_PATH="your-path-to-config.json"  # 配置文件路径，默认同插件代码路径
+  ```
+
+  `ANTI_FLASH_GROUP` 会在每次初始化时写入配置文件，在群组启用反闪照，可通过指令更改。
+
+  **修改** 配置文件即读即改，可后台修改。
+
+  - 全局开关**仅超管**配置，不支持指令修改全局开关；
+  - 各群聊均配置开关，需**管理员及超管权限**进行修改；
+
+  指令:
+
+  ```
+  开启/启用/禁用反闪照
+  ```
+
+  </details>
+
+- [x] **反撤回** - anti recall
+
+  <details>
+    <summary>使用方法</summary>
+
+  移植自 [摸](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)
+
+  将检测到的撤回消息转发给超级用户
+
+  </details>
+
+- [x] **彩云小梦** - caiyun ai
+
+  <details>
+    <summary>使用方法</summary>
+
+  **配置:**
+
+  需要在 `.env` 文件中添加彩云小梦apikey：
+
+  ```
+  CAIYUNAI_APIKEY=xxx
+  ```
+
+  apikey获取：
+
+  前往 http://if.caiyunai.com/dream 注册彩云小梦用户；
+
+  注册完成后，F12打开开发者工具；
+
+  在控制台中输入 `alert(localStorage.cy_dream_user)` ，弹出窗口中的 uid 即为 apikey；
+
+  或者进行一次续写，在 Network 中查看 novel\_ai 请求，Payload 中的 uid 项即为 apikey。
+
+
+  **使用:**
+  ```
+  @机器人 续写/彩云小梦 xxx
+  ```
+
+  </details>
+
+- [x] **在线跑代码** - code runner
+
+  <details>
+    <summary>使用方法</summary>
+
+  移植自 [摸](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)
+
+  ```
+  >code {语言}
+  {代码}
+
+  # 示例:
+  >code python
+  print('hello world')
+
+  # 发送 >code.list 查看支持的语言
+  ```
+
+  </details>
+
+- [x] **群文件直链提取** - direct linker
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [ninthseason](https://github.com/ninthseason) 的 [DirectLinker](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker)
+
+  [▶使用方法](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker#%E7%94%A8%E6%B3%95)
+
+  </details>
+
+- [x] **合并转发** - fake msg
+
+  <details>
+    <summary>使用方法</summary>
+
+  移植自 [摸](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)
+
+  ```
+  /fakemsg
+  qq号-昵称-消息内容
+
+  # 示例:
+  /fakemsg
+  123456789-桃桃酱-不可以色色
+  987654321-路人甲-我就要色色
+  ```
+
+  </details>
+
+- [x] **你看我像** - look like
+
+  <details>
+    <summary>使用方法</summary>
+
+  `@机器人` 发送 `你看我像`
+
+  ```
+  @桃桃酱 你看我像人吗？
+  ```
+
+  </details>
+
+- [x] **拟声鸟** - mockingbird
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [白毛](https://github.com/AkashiCoin) 的 [mockingbird](https://github.com/AkashiCoin/nonebot_plugin_mockingbird)
+
+  ```
+  @Bot 说 [你想要bot说的话]
+  ```
+
+  配置不够的设备使用该功能容易死机，所以修改了权限限制仅超级用户可用。
+  如果需要开放给所有用户使用的话，请将`plugins/mockingbird/__init__.py`第78行的`permission=SUPERUSER,`删掉
+
+  ```
+  显示模型 # 显示出可供修改的模型
+  # 修改指令
+  修改模型 [序号]\[模型名称]
+  重载模型 进行模型重载(并没有什么卵用，或许以后内存泄漏解决会有用？)
+  调整/修改精度 修改语音合成精度
+  调整/修改句长 修改语音合成最大句长
+  更新模型 更新模型列表
+  ```
 
   </details>
 
@@ -215,6 +426,95 @@
 
   </details>
 
+- [x] **RSS订阅** - rss
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [Quan666](https://github.com/Quan666) 的 [ELF\_RSS](https://github.com/Quan666/ELF_RSS)
+
+  [▶使用方法](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
+
+  </details>
+
+- [x] **涩图** - setu
+
+  <details>
+    <summary>使用方法</summary>
+
+  ```
+  /setu {数量} {关键词}
+  ```
+
+  示例:
+
+  ```
+  /setu                         # 来1张涩图
+  /setu 3                       # 来3张涩图
+  /setu 阿波尼亚                # 来1张 '阿波尼亚' 的涩图
+  /setu 3 阿波尼亚              # 来3张 '阿波尼亚' 的涩图
+  /setu 3 R-18 阿波尼亚 水着    # 来3张 '水着','阿波尼亚','R-18' 的涩图
+  ```
+
+  </details>
+
+- [x] **点歌** - simplemusic
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [wq佬](https://github.com/MeetWq) 的 [SimpleMusic](https://github.com/noneplugin/nonebot-plugin-simplemusic)
+
+  ```
+  点歌/qq点歌/网易点歌/酷我点歌/酷狗点歌/咪咕点歌/b站点歌 + 关键词
+  ```
+
+  示例:
+
+  ```
+  点歌 朝你大胯捏一把
+  ```
+
+  默认为qq点歌
+
+  </details>
+
+- [x] **闲聊** - smart reply
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [Special-Week](https://github.com/Special-Week) 的 [SmartReply](https://github.com/Special-Week/nonebot_plugin_smart_reply)
+
+  `@机器人` + 你想对机器人说的骚话
+
+  ```
+  @桃桃酱 不可以色色
+  ```
+
+  </details>
+
+- [x] **塔罗牌** - tarot
+
+  <details>
+    <summary>使用方法</summary>
+
+  ```
+  @机器人 抽塔罗牌
+  ```
+
+  </details>
+
+- [x] **词库问答** (你问我答) - wordbank
+
+  <details>
+    <summary>使用方法</summary>
+
+  抄自 [kexue佬](https://github.com/kexue-z) 的 [wordbank2](https://github.com/kexue-z/nonebot-plugin-word-bank2)
+
+  [▶使用方法](https://github.com/kexue-z/nonebot-plugin-word-bank2#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8)
+
+  </details>
 
 
 ## 部署方式
@@ -229,32 +529,32 @@
    <details>
      <summary>点击展开</summary>
 
-   ```
-   SUPERUSERS=[""]
-   ```
-   在引号里填写用于控制bot的超级用户QQ  
-   可填写多个 例如: ["123456","654321"]
+   ```env
+   SUPERUSERS=[""]  # 填写用于控制bot的超级用户QQ
+   # 可填写多个 例如: ["123456","654321"]
 
-   ```
-   ANTI_FLASH_GROUP=[""]
-   ```
-   引号里填写默认开启 反闪照 的群聊, 可留空.  
-   可填写多个 例如: ["123456","654321"]
+   LOLICON_R18=2  # Lolicon API设置
+   # 0为非R18，1为R18，2为混合（在库中的分类，不等同于作品本身的 R-18 标识）
 
-   ```
-   SAUCENAO_API_KEY=""
-   ```
-   在引号里填写你在 `saucenao.com` 申请到的 `apikey` , 必填, 否则无法正常使用搜图.
+   PIXPROXY=""  # pximg图片代理, 需要填写前缀 https:// 或 http://
+   # 留空为直连 i.pximg.net
 
-   ```
-   EXHENTAI_COOKIES=""
-   ```
-   在引号里填写你的 `exhentai` `cookies` , 可留空.
+   ACGGOV_TOKEN="apikey"
 
+   ANTI_FLASH_GROUP=[""]  # 填写默认开启 反闪照 的群聊, 可留空.
+   # 可填写多个 例如: ["123456","654321"]
+
+   SAUCENAO_API_KEY=""  # 在引号里填写你在 saucenao.com 申请到的 apikey
+   # 缺少该项将无法正常使用搜图.
+
+   EXHENTAI_COOKIES=""  # 在引号里填写你的 exhentai cookies, 可留空.
+
+   CAIYUNAI_APIKEY=""  # 在引号里填写你的 彩云小梦 apikey
+   # 缺少该项将无法正常使用小梦续写功能.
+
+   LINKER_GROUP=[""]  # 填写启用群文件直链插件的群
+   LINKER_COMMAND="link"  # 设置插件触发命令（默认`link`）
    ```
-   CAIYUNAI_APIKEY=""
-   ```
-   在引号里填写你的 彩云小梦 `apikey` , 必填, 否则无法正常使用小梦续写功能.
 
    </details>
 
