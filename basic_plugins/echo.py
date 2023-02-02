@@ -8,6 +8,8 @@ from nonebot.params import CommandArg
 from nonebot.plugin import on_command
 from nonebot.permission import SUPERUSER
 
+from urllib.parse import quote
+
 
 
 _help = """
@@ -56,7 +58,7 @@ _snapshot = on_command(
 
 @_snapshot.handle()
 async def _(arg: Message = CommandArg()):
-    url = unescape(arg.extract_plain_text())
+    url = quote(unescape(arg.extract_plain_text()))
     try:
         await _snapshot.send(MessageSegment.image(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"))
     except Exception as e:
