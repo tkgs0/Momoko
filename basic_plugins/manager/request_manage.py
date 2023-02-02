@@ -6,7 +6,7 @@ try:
 except ModuleNotFoundError:
     import json
 
-from nonebot import on_notice, on_request, on_command
+from nonebot import logger, on_notice, on_request, on_command
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
@@ -53,10 +53,13 @@ fdgr = on_request(priority=1, block=False)
 async def _(bot: Bot, event: FriendRequestEvent):
 
     if type(auto := reqlist['auto_approve']['user']) == bool:
-        await bot.set_friend_add_request(flag=event.flag, approve=auto)
+        try:
+            await bot.set_friend_add_request(flag=event.flag, approve=auto)
+        except ActionFailed as e:
+            logger.error(f'处理好友请求失败({event.flag}): {err_info(e)}')
     else:
         reqlist['user'].update({
-            event.user_id: {
+            event.flag: {
                 'time': event.time,
                 'self_id': event.self_id,  # 机器人id
                 'user_id': event.user_id,  # 请求人id
@@ -69,14 +72,13 @@ async def _(bot: Bot, event: FriendRequestEvent):
     nickname = (
         await bot.get_stranger_info(user_id=event.user_id, no_cache=True)
     )['nickname']
-    _time = format_time(event.time)
     msg = (
         '⚠收到一条好友请求:\n'
+        f'flag: {event.flag}\n'
         f'user: {event.user_id}\n'
         f'name: {nickname}\n'
-        f'time: {_time}\n'
+        f'time: {format_time(event.time)}\n'
         f'自动同意/拒绝: {auto}\n'
-        '(-1为不处理)\n'
         f'验证信息:\n'
         f'{event.comment}'
     )
@@ -89,15 +91,17 @@ async def _(bot: Bot, event: GroupRequestEvent):
     nickname = (
         await bot.get_stranger_info(user_id=event.user_id, no_cache=True)
     )['nickname']
-    _time = format_time(event.time)
 
     auto = reqlist['auto_approve']['group']
 
     if event.sub_type == 'add':  # 当类型为入群申请
         auto1 = auto[0].get(event.group_id)
         if type(auto1) == bool:
-            await bot.set_group_add_request(
-                flag=event.flag, sub_type='add', approve=auto1)
+            try:
+                await bot.set_group_add_request(
+                    flag=event.flag, sub_type='add', approve=auto1)
+            except ActionFailed as e:
+                logger.error(f'处理群聊请求失败({event.flag}): {err_info(e)}')
         else:
             reqlist['group']['add'].update({
                 event.flag: {
@@ -116,9 +120,8 @@ async def _(bot: Bot, event: GroupRequestEvent):
             f'flag: {event.flag}\n'
             f'user: {event.user_id}\n'
             f'name: {nickname}\n'
-            f'time: {_time}\n'
+            f'time: {format_time(event.time)}\n'
             f'自动同意/拒绝: {auto[0].get(event.group_id)}\n'
-            '(None为不处理)\n'
             f'验证信息:\n'
             f'{event.comment}'
         )
@@ -127,13 +130,18 @@ async def _(bot: Bot, event: GroupRequestEvent):
     if event.sub_type == 'invite':  # 当类型为拉群邀请
         if str(event.user_id) in bot.config.superusers:
             await asyncio.sleep(random.random()+2.5)
-            await bot.set_group_add_request(
-                flag=event.flag, sub_type='invite', approve=True)
-            return
+            try:
+                await bot.set_group_add_request(
+                    flag=event.flag, sub_type='invite', approve=True)
+            except ActionFailed as e:
+                logger.error(f'处理群聊请求失败({event.flag}): {err_info(e)}')
         if type(auto[1]) == bool:
             await asyncio.sleep(random.random()+2.5)
-            await bot.set_group_add_request(
-                flag=event.flag, sub_type='invite', approve=auto[1])
+            try:
+                await bot.set_group_add_request(
+                    flag=event.flag, sub_type='invite', approve=auto[1])
+            except ActionFailed as e:
+                logger.error(f'处理群聊请求失败({event.flag}): {err_info(e)}')
         else:
             reqlist['group']['invite'].update({
                 event.flag: {
@@ -157,9 +165,8 @@ async def _(bot: Bot, event: GroupRequestEvent):
             f'name: {nickname}\n'
             f'group: {event.group_id}\n'
             f'name: {group_name}\n'
-            f'time: {_time}\n'
+            f'time: {format_time(event.time)}\n'
             f'自动同意/拒绝: {auto[1]}\n'
-            '(-1为不处理)\n'
             f'验证信息:\n'
             f'{event.comment}'
         )
@@ -174,32 +181,32 @@ async def friend(
 ) -> str:
     args = arg.extract_plain_text().strip().split(maxsplit=1)
     if not args:
-        return '用法: \n同意(拒绝)好友 QQ号 备注\n\n(备注可留空)'
+        return '用法: \n同意(拒绝)好友 FLAG 备注\n\n(备注可留空)'
 
     uid = args[0]
     remark = unescape(args[1]) if len(args) > 2 else ''
     if not is_number(uid):
-        return '参数错误! QQ号必须为数字.'
+        return '参数错误! FLAG必须为数字.'
     if len(bytes(remark, encoding='utf-8')) > 60:
         return '备注太长啦!'
 
     try:
         req = reqlist['user'].pop(int(uid))
     except KeyError:
-        return '事件不存在或已被清理.'
-    flag = req.get('flag')
+        req = {'user_id': 'NaN'}
     save_reqlist()
 
     try:
         await bot.set_friend_add_request(
-            flag=flag, approve=approve, remark=remark)
+            flag=uid, approve=approve, remark=remark)
     except ActionFailed as e:
-        return err_info(e)
+        logger.error(f'处理好友请求失败({uid}): {err_info(e)}')
+        return f'{err_info(e)}\nflag: {uid}'
     except Exception as e:
         return repr(e)
 
     _mode = '同意' if approve else '拒绝'
-    return f'已{_mode}好友{uid}.'
+    return f"已{_mode}好友: {req['user_id']}"
 
 
 async def group(
@@ -227,17 +234,22 @@ async def group(
 
     req = reqlist['group'][mode].get(flag)
     if not req:
-        return '事件不存在或已被清理.'
+        req = {'user_id': 'NaN', 'group_id': 'NaN'}
     if group and group != req['group_id']:
-        return '不可跨群处理.'
-    reqlist['group'][mode].pop(flag)
+        return '事件已走丢, 请尝试手动处理.'
+
+    try:
+        reqlist['group'][mode].pop(flag)
+    except KeyError:
+        pass
     save_reqlist()
 
     try:
         await bot.set_group_add_request(
             flag=flag, sub_type=mode, approve=approve, reason=reason)
     except ActionFailed as e:
-        return err_info(e)
+        logger.error(f'处理群聊请求失败({flag}): {err_info(e)}')
+        return f'{err_info(e)}\nflag: {flag}'
     except Exception as e:
         return repr(e)
 
@@ -353,10 +365,7 @@ async def _():
     
     await read_fdreq.finish(
         f'自动处理: {reqlist["auto_approve"]["user"]}'
-        '\n-1: 不处理'
-        '\nTrue: 自动同意'
-        '\nFalse: 自动拒绝'
-        f'\n\n当前存在的好友请求: {msg}'
+        f'\n当前存在的好友请求: {msg}'
     )
 
 
@@ -398,12 +407,7 @@ async def _():
         )
     msg1 = f'\n\n拉群邀请:\n自动处理: {reqlist["auto_approve"]["group"][1]}' + gri
 
-    await read_grreq.finish(
-        f'当前存在的群聊请求: \n{msg+msg1}'
-        '\n\n-1: 不处理'
-        '\nTrue: 自动同意'
-        '\nFalse: 自动拒绝'
-    )
+    await read_grreq.finish(f'当前存在的群聊请求: \n{msg+msg1}')
 
 
 reset_fdreq = on_command(
