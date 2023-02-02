@@ -16,7 +16,8 @@ from nonebot.adapters.onebot.v11 import (
     Message,
     MessageEvent,
     PrivateMessageEvent,
-    GroupMessageEvent
+    GroupMessageEvent,
+    ActionFailed,
 )
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
@@ -39,6 +40,15 @@ enabled = (
     if filepath.is_file()
     else {'api': 'lolicon', 'grouplist': [], 'userlist': []}
 )
+
+
+def err_info(e: ActionFailed):
+    if e1 := e.info.get('wording'):
+        return e1
+    elif e1 := e.info.get('msg'):
+        return e1
+    else:
+        return repr(e)
 
 
 def is_number(s: str) -> bool:
@@ -78,8 +88,8 @@ async def _(bot: Bot, event: PrivateMessageEvent, args: Message = CommandArg()):
         await setu.finish(content[0])
     try:
         result = await bot.send_forward_msg(user_id=uid, messages=content[0])
-    except Exception as e:
-        logger.warning(repr(e))
+    except ActionFailed as e:
+        logger.warning(err_info(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
     await asyncio.sleep(60)
     await bot.delete_msg(message_id = result["message_id"])
@@ -95,8 +105,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await setu.finish(content[0])
     try:
         result = await bot.send_forward_msg(group_id=gid, messages=content[0])
-    except Exception as e:
-        logger.warning(repr(e))
+    except ActionFailed as e:
+        logger.warning(err_info(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
     await asyncio.sleep(60)
     await bot.delete_msg(message_id = result["message_id"])
@@ -107,7 +117,7 @@ async def get__setu(
     args: Message = CommandArg()
 ) -> list:
     uid = event.user_id
-    name = name if (name := event.sender.nickname) else '一位不愿透露姓名的网友'
+    name = name if (name := event.sender.nickname) else '群色批'
     keyword = args.extract_plain_text().strip().split()
     num = (
         int(keyword.pop(0))
