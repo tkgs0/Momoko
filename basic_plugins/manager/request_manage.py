@@ -12,8 +12,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
-    MessageSegment,
-    PrivateMessageEvent,
+    # MessageSegment,
     GroupMessageEvent,
     GroupIncreaseNoticeEvent,
     GroupDecreaseNoticeEvent,
@@ -126,6 +125,11 @@ async def _(bot: Bot, event: GroupRequestEvent):
         await bot.send_group_msg(group_id=event.group_id, message=msg)
 
     if event.sub_type == 'invite':  # 当类型为拉群邀请
+        if str(event.user_id) in bot.config.superusers:
+            await asyncio.sleep(random.random()+2.5)
+            await bot.set_group_add_request(
+                flag=event.flag, sub_type='invite', approve=True)
+            return
         if type(auto[1]) == bool:
             await asyncio.sleep(random.random()+2.5)
             await bot.set_group_add_request(
@@ -617,8 +621,8 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
                 await bot.set_group_leave(group_id=event.group_id)
     else:
         await asyncio.sleep(random.random()*2+1)
-        msg = '欢迎~, 以下为本群群规\n' + \
-            MessageSegment.image(file='https://code.gitlink.org.cn/SmartBrain/test/raw/branch/main/7f9b8412f8332096cea00a563aba54ac.jpg')
+        # msg = '欢迎~, 以下为本群群规\n' + \
+        #     MessageSegment.image(file='https://code.gitlink.org.cn/SmartBrain/test/raw/branch/main/7f9b8412f8332096cea00a563aba54ac.jpg')
         await group_member_event.finish('欢迎~', at_sender=True)
 
 @group_member_event.handle()
