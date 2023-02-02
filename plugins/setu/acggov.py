@@ -59,14 +59,14 @@ async def get_setu(
                 url, params=params, headers=headers, timeout=30
             )
         except httpx.HTTPError as e:
-            logger.warning(e)
+            logger.error(e)
             return [f'API异常{e}', False]
 
         try:
             logger.debug(data := res.json())
 
             if not data['illusts']:
-                logger.info(e := f'图库中没有搜到关于{keyword}的图。')
+                logger.warning(e := f'图库中没有搜到关于{keyword}的图。')
                 return [e, False]
 
             for _ in range(img if len(data['illusts']) > img else len(data['illusts'])):
@@ -102,7 +102,7 @@ async def get_setu(
 
             pics, status = await down_pic(content, pixproxy)
 
-            logger.success('complete.')
+            logger.info('complete.')
 
             if not pics:
                 return ['\n'.join(status), False]
@@ -132,13 +132,13 @@ async def get_setu(
             return [node, 1]
 
         except httpx.ProxyError as e:
-            logger.warning(e)
+            logger.error(e)
             return [f'代理错误: {e}', False]
         except IndexError as e:
             logger.warning(e)
             return [f'图库中没有搜到关于{keyword}的图。', False]
         except:
-            logger.warning(f'{exc_info()[0]}, {exc_info()[1]}')
+            logger.exception(f'{exc_info()[0]}, {exc_info()[1]}')
             return [f'{exc_info()[0]} {exc_info()[1]}。', False]
 
 

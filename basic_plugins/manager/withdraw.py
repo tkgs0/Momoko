@@ -21,5 +21,5 @@ async def _(bot: Bot, event: MessageEvent):
             await bot.delete_msg(message_id=event.reply.message_id)
             await bot.delete_msg(message_id=event.message_id)
         except ActionFailed as e:
-            logger.warning(repr(e))
+            logger.exception(repr(e))
 

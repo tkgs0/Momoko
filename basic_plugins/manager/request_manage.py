@@ -56,7 +56,7 @@ async def _(bot: Bot, event: FriendRequestEvent):
         try:
             await bot.set_friend_add_request(flag=event.flag, approve=auto)
         except ActionFailed as e:
-            logger.error(f'处理好友请求失败({event.flag}): {err_info(e)}')
+            logger.exception(f'处理好友请求失败({event.flag}): {err_info(e)}')
     else:
         reqlist['user'].update({
             event.flag: {
@@ -101,7 +101,7 @@ async def _(bot: Bot, event: GroupRequestEvent):
                 await bot.set_group_add_request(
                     flag=event.flag, sub_type='add', approve=auto1)
             except ActionFailed as e:
-                logger.error(f'处理群聊请求失败({event.flag}): {err_info(e)}')
+                logger.exception(f'处理群聊请求失败({event.flag}): {err_info(e)}')
         else:
             reqlist['group']['add'].update({
                 event.flag: {
@@ -134,14 +134,14 @@ async def _(bot: Bot, event: GroupRequestEvent):
                 await bot.set_group_add_request(
                     flag=event.flag, sub_type='invite', approve=True)
             except ActionFailed as e:
-                logger.error(f'处理群聊请求失败({event.flag}): {err_info(e)}')
+                logger.exception(f'处理群聊请求失败({event.flag}): {err_info(e)}')
         if type(auto[1]) == bool:
             await asyncio.sleep(random.random()+2.5)
             try:
                 await bot.set_group_add_request(
                     flag=event.flag, sub_type='invite', approve=auto[1])
             except ActionFailed as e:
-                logger.error(f'处理群聊请求失败({event.flag}): {err_info(e)}')
+                logger.exception(f'处理群聊请求失败({event.flag}): {err_info(e)}')
         else:
             reqlist['group']['invite'].update({
                 event.flag: {
@@ -200,7 +200,7 @@ async def friend(
         await bot.set_friend_add_request(
             flag=uid, approve=approve, remark=remark)
     except ActionFailed as e:
-        logger.error(f'处理好友请求失败({uid}): {err_info(e)}')
+        logger.exception(f'处理好友请求失败({uid}): {err_info(e)}')
         return f'{err_info(e)}\nflag: {uid}'
     except Exception as e:
         return repr(e)
@@ -248,7 +248,7 @@ async def group(
         await bot.set_group_add_request(
             flag=flag, sub_type=mode, approve=approve, reason=reason)
     except ActionFailed as e:
-        logger.error(f'处理群聊请求失败({flag}): {err_info(e)}')
+        logger.exception(f'处理群聊请求失败({flag}): {err_info(e)}')
         return f'{err_info(e)}\nflag: {flag}'
     except Exception as e:
         return repr(e)

@@ -39,7 +39,7 @@ async def analysis_main(event: MessageEvent) -> None:
             msg = re.sub(r"\s*简介(.|\s)*", "", msg)  # type: ignore
             await analysis_bili.finish(msg)
         except ActionFailed as e:
-            logger.exception(err_info(e))
+            logger.warning(err_info(e))
         except Exception as e:
             logger.exception(repr(e))
 

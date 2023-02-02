@@ -95,7 +95,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
                 reject_add_request=False
             )
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
 
 
 async def is_reply(bot: Bot, event: MessageEvent) -> str | int | None:
@@ -109,7 +109,7 @@ async def is_reply(bot: Bot, event: MessageEvent) -> str | int | None:
             msg = await bot.get_msg(message_id=msg_id)
             uid = msg['sender']['user_id']
         except ActionFailed as e:
-            logger.warning(repr(e))
+            logger.exception(repr(e))
             uid = None
         except:
             uid = None
@@ -225,7 +225,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
             await bot.set_group_admin(
                 group_id=event.group_id, user_id=uid, enable=True)
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
         x = None
     await setadmin.finish(x if not x else '设置成功~')
 
@@ -251,7 +251,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
             await bot.set_group_admin(
                 group_id=event.group_id, user_id=uid, enable=False)
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
         x = None
     await unsetadmin.finish(x if not x else '设置成功~')
 
@@ -269,7 +269,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     try:
         await bot.set_group_anonymous(group_id=event.group_id, enable=True)
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
 
 
 unsetnm = on_command(
@@ -285,7 +285,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     try:
         await bot.set_group_anonymous(group_id=event.group_id, enable=True)
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
 
 
 setgroupcard = on_command(
@@ -315,7 +315,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                 card=content
             )
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
         x = None
     await setgroupcard.finish(x if not x else '嗯, 很棒的名字呢~')
 
@@ -335,7 +335,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     try:
         await bot.set_group_name(group_id=event.group_id, group_name=content)
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
         return
     await setgroupname.finish('嗯, 很棒的名字呢~')
 
@@ -365,7 +365,7 @@ async def _(event: MessageEvent, bot: Bot, arg: Message = CommandArg()):
                 msg += f"\n退出群聊 {gid} 成功"
             except ActionFailed as e:
                 e1 = err_info(e)
-                logger.warning(f"退出群聊 {gid} 失败: {e1}")
+                logger.exception(f"退出群聊 {gid} 失败: {e1}")
                 msg += f"\n退出群聊 {gid} 失败: {e1}"
         await leavegroup.send('', at_sender=True)
         await leavegroup.finish(msg.lstrip())
@@ -378,7 +378,7 @@ async def _(event: MessageEvent, bot: Bot, arg: Message = CommandArg()):
             msg = f"退出群聊 {group_id} 成功"
         except ActionFailed as e:
             e1 = err_info(e)
-            logger.warning(f"退出群聊 {group_id} 失败: {e1}")
+            logger.exception(f"退出群聊 {group_id} 失败: {e1}")
             msg = f"退出群聊 {group_id} 失败: {e1}"
         await bot.send_private_msg(user_id=event.user_id, message=msg)
 
@@ -414,7 +414,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                 duration=-1
             )
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
         x = None
     await specialtitle.finish(x if not x else '嗯, 很棒的头衔呢~')
 
@@ -440,7 +440,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
             duration=-1
         )
     except Exception as e:
-        logger.warning(repr(e))
+        logger.exception(repr(e))
         x = None
     await applyspecialtitle.finish(x if not x else '嗯, 很棒的头衔呢~')
 
