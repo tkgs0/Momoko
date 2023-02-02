@@ -41,6 +41,33 @@
 
 
 ## 功能表
+- [x] **涩图** - setu
+
+  <details>
+    <summary>使用方法</summary>
+
+  ```
+  /setu {数量} {关键词}
+
+  私聊(群聊)启用(禁用)涩图 qq qq1 qq2 ...
+  查看涩图设置
+  切换涩图api       # lolicon, acggov
+  启用(禁用)涩图    # 在当前会话启用(禁用)涩图
+  重置涩图          # 重置涩图设置
+  ```
+
+  示例:
+
+  ```
+  /setu                         # 来1张涩图
+  /setu 3                       # 来3张涩图
+  /setu 阿波尼亚                # 来1张 '阿波尼亚' 的涩图
+  /setu 3 阿波尼亚              # 来3张 '阿波尼亚' 的涩图
+  /setu 3 R-18 阿波尼亚 水着    # 来3张 '水着','阿波尼亚','R-18' 的涩图
+  ```
+
+  </details>
+
 - [x] **嘴臭屏蔽** - anti abuse
 
   <details>
@@ -152,7 +179,7 @@
   修改名片(头衔) @qq @qq1 @qq2 ... XXXX
   设置群名 XXXX
   申请头衔 XXXX
-  撤回   (回复消息发送`撤回`)
+  撤回    # 回复消息发送`撤回`
   ```
 
   **以下命令需要前缀 `/`**
@@ -160,7 +187,7 @@
   同意(拒绝)好友 FLAG 备注
   同意(拒绝)拉群 FLAG
   [群聊] 同意(拒绝)入群 FLAG 理由
-  (`备注` 和 `理由` 可省略)
+  ## `备注` 和 `理由` 可省略
 
   查看好友(群聊)请求
   清空好友(入群/拉群)请求
@@ -180,11 +207,11 @@
   查找好友(群) qq qq1 qq2 ...
   查看所有好友(群)
   查看单向好友
-  退群 qq qq1 qq2 ... (群号不存在时则退出当前群聊)
+  退群 qq qq1 qq2 ...    # 群号不存在时则退出当前群聊
   删除好友 qq qq1 qq2 ...
   删除单向好友 qq qq1 qq2 ...
   查看群员列表
-  设置群头像 [图片]   ⚠该API不稳定!
+  设置群头像[图片]    # ⚠该API不稳定!
   ```
 
   </details>
@@ -215,8 +242,11 @@
 
   ```
   >cmd {命令}
+  ```
 
-  # 示例:
+  示例:
+
+  ```
   >cmd echo "Hello World"
   ```
 
@@ -334,13 +364,16 @@
   ```
   >code {语言}
   {代码}
+  ```
 
-  # 示例:
+  示例:
+
+  ```
   >code python
   print('hello world')
-
-  # 发送 >code.list 查看支持的语言
   ```
+
+  发送 `>code.list` 查看支持的语言
 
   </details>
 
@@ -365,8 +398,11 @@
   ```
   /fakemsg
   qq号-昵称-消息内容
+  ```
 
-  # 示例:
+  示例:
+
+  ```
   /fakemsg
   123456789-桃桃酱-不可以色色
   987654321-路人甲-我就要色色
@@ -403,7 +439,6 @@
 
   ```
   显示模型 # 显示出可供修改的模型
-  # 修改指令
   修改模型 [序号]\[模型名称]
   重载模型 进行模型重载(并没有什么卵用，或许以后内存泄漏解决会有用？)
   调整/修改精度 修改语音合成精度
@@ -434,27 +469,6 @@
   抄自 [Quan666](https://github.com/Quan666) 的 [ELF\_RSS](https://github.com/Quan666/ELF_RSS)
 
   [▶使用方法](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
-
-  </details>
-
-- [x] **涩图** - setu
-
-  <details>
-    <summary>使用方法</summary>
-
-  ```
-  /setu {数量} {关键词}
-  ```
-
-  示例:
-
-  ```
-  /setu                         # 来1张涩图
-  /setu 3                       # 来3张涩图
-  /setu 阿波尼亚                # 来1张 '阿波尼亚' 的涩图
-  /setu 3 阿波尼亚              # 来3张 '阿波尼亚' 的涩图
-  /setu 3 R-18 阿波尼亚 水着    # 来3张 '水着','阿波尼亚','R-18' 的涩图
-  ```
 
   </details>
 
@@ -510,7 +524,7 @@
   <details>
     <summary>使用方法</summary>
 
-  抄自 [kexue佬](https://github.com/kexue-z) 的 [wordbank2](https://github.com/kexue-z/nonebot-plugin-word-bank2)
+  抄自 [kexue](https://github.com/kexue-z) 的 [wordbank2](https://github.com/kexue-z/nonebot-plugin-word-bank2)
 
   [▶使用方法](https://github.com/kexue-z/nonebot-plugin-word-bank2#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8)
 
@@ -532,6 +546,8 @@
    ```env
    SUPERUSERS=[""]  # 填写用于控制bot的超级用户QQ
    # 可填写多个 例如: ["123456","654321"]
+
+   NICKNAME=["桃桃", "桃桃酱"]  # 机器人的昵称
 
    LOLICON_R18=2  # Lolicon API设置
    # 0为非R18，1为R18，2为混合（在库中的分类，不等同于作品本身的 R-18 标识）
