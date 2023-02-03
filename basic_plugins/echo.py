@@ -15,9 +15,9 @@ from urllib.parse import quote
 _help = """
 ⛦ 🍑 Momoko 开源 Project ⛥
 * OneBot + NoneBot + Python
-* Copyright © 2021 - 2022 tkgs0. All Rights Reserved.
+* Copyright © 2021 - 2023 tkgs0. All Rights Reserved.
 * 项目地址: https://github.com/tkgs0/Momoko
-* 使用帮助: https://deja-vu.eu.org/2022/11/15/momoko
+* 使用帮助: https://github.com/tkgs0/Momoko#功能表
 """.strip()
 
 help = on_command(
