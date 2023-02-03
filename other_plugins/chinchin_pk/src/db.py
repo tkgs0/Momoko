@@ -200,9 +200,7 @@ class Sql():
         global sql_ins
         if sql_ins:
             return sql_ins
-        if not os.path.exists(Paths.base_db_dir()):
-            os.mkdir(Paths.base_db_dir())
-        if not os.path.exists(Paths.sqlite_path()):
+        if not Paths.sqlite_path().is_file():
             open(Paths.sqlite_path(), 'w').close()
         sql_ins = Sql()
         sql_ins.check_table_exists()
