@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.params import CommandArg
 from nonebot.plugin import on_command
 from nonebot.permission import SUPERUSER
-
+import httpx
 from urllib.parse import quote
 
 
@@ -58,8 +58,17 @@ _snapshot = on_command(
 
 @_snapshot.handle()
 async def _(arg: Message = CommandArg()):
-    url = quote(unescape(arg.extract_plain_text()))
+    url = arg.extract_plain_text()
+    url = quote(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}")
     try:
-        await _snapshot.send(MessageSegment.image(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"))
+        res = httpx.get(url, headers=headers, timeout=30) 
+        await _snapshot.send(MessageSegment.image(file=res.content))
+        res.close()
     except Exception as e:
         await _snapshot.finish(repr(e))
+
+
+headers = {
+    'Referer': 'https://github.com/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+}
