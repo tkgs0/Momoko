@@ -8,7 +8,6 @@ from nonebot.params import CommandArg
 from nonebot.plugin import on_command
 from nonebot.permission import SUPERUSER
 import httpx
-from urllib.parse import quote
 
 
 
@@ -59,7 +58,7 @@ _snapshot = on_command(
 @_snapshot.handle()
 async def _(arg: Message = CommandArg()):
     url = arg.extract_plain_text()
-    url = quote(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}")
+    url = f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"
     try:
         res = httpx.get(url, headers=headers, timeout=30) 
         await _snapshot.send(MessageSegment.image(file=res.content))
