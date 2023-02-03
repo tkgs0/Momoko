@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
 )
 
-from .src.main import message_processor as chinchin
+from .src.main import KEYWORDS, message_processor as chinchin
 
 
 _help = [
@@ -27,6 +27,13 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     msg = event.get_plaintext()
     if msg.startswith('/'):
         msg = msg.replace('/', '', 1)
+        x = 0
+        for i in KEYWORDS.values():
+            for j in i:
+                if j in msg:
+                    x = 1
+        if not x:
+            return
         uid = event.user_id
         gid = event.group_id
         uids = [at.data['qq'] for at in event.get_message()['at']]
