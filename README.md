@@ -550,7 +550,7 @@
    NICKNAME=["桃桃", "桃桃酱"]  # 机器人的昵称
 
    SETU_COOLDOWN=60  # 涩图的响应cd 为0则无冷却
-   SETU_WITHDRAW=60  # 涩图的撤回cd < 120 为0则无冷却
+   SETU_WITHDRAW=60  # 涩图的撤回cd < 120 为0则不撤回
 
    LOLICON_R18=2  # Lolicon API设置
    # 0为非R18，1为R18，2为混合（在库中的分类，不等同于作品本身的 R-18 标识）
