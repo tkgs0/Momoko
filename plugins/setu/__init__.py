@@ -27,6 +27,8 @@ from . import lolicon, acggov
 
 setu_config = Config.parse_obj(get_driver().config.dict())
 
+cooldown: int = setu_config.setu_cooldown
+withdraw: int = setu_config.setu_withdraw
 lolicon_r18: int = setu_config.lolicon_r18
 pixproxy: str = setu_config.pixproxy
 acggov_token: str = setu_config.acggov_token
@@ -42,7 +44,24 @@ enabled = (
 )
 
 
-def err_info(e: ActionFailed):
+def save_config() -> None:
+    filepath.write_text(json.dumps(enabled), encoding='utf-8')
+
+
+setu_cd = [Cooldown(cooldown, prompt='慢...慢一..点❤')] if cooldown > 0 else None
+
+def setu_wd(bot: Bot, msg_id: int) -> None:
+    if withdraw < 1:
+        return
+    wd = 60 if withdraw > 120 else withdraw
+    loop = asyncio.get_running_loop()
+    loop.call_later(
+        wd,  # 消息撤回等待时间 单位秒
+        lambda: loop.create_task(bot.delete_msg(message_id=msg_id)),
+    )
+
+
+def err_info(e: ActionFailed) -> str:
     if e1 := e.info.get('wording'):
         return e1
     elif e1 := e.info.get('msg'):
@@ -66,10 +85,6 @@ def is_number(s: str) -> bool:
     return False
 
 
-def save_config() -> None:
-    filepath.write_text(json.dumps(enabled), encoding='utf-8')
-
-
 setu = on_command(
     '/setu',
     aliases={'涩图', '瑟图', '色图'},
@@ -78,7 +93,7 @@ setu = on_command(
 )
 
 
-@setu.handle([Cooldown(120, prompt='慢...慢一..点❤')])
+@setu.handle(setu_cd)
 async def _(bot: Bot, event: PrivateMessageEvent, args: Message = CommandArg()):
     if not str(uid := event.user_id) in enabled['userlist']:
         return
@@ -91,14 +106,10 @@ async def _(bot: Bot, event: PrivateMessageEvent, args: Message = CommandArg()):
     except ActionFailed as e:
         logger.warning(err_info(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
-    loop = asyncio.get_running_loop()
-    loop.call_later(
-        60,  # 消息撤回等待时间 单位秒
-        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
-    )
+    setu_wd(bot, result['message_id'])
 
 
-@setu.handle([Cooldown(120, prompt='慢...慢一..点❤')])
+@setu.handle(setu_cd)
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if not str(gid := event.group_id) in enabled['grouplist']:
         return
@@ -111,11 +122,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     except ActionFailed as e:
         logger.warning(err_info(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
-    loop = asyncio.get_running_loop()
-    loop.call_later(
-        60,  # 消息撤回等待时间 单位秒
-        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
-    )
+    setu_wd(bot, result['message_id'])
 
 
 async def get__setu(
@@ -149,7 +156,6 @@ async def get__setu(
             pixproxy = pixproxy,
             token = acggov_token
         )
-
 
     return content
 
