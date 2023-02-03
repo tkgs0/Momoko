@@ -8,7 +8,7 @@ Headers = {
 
 async def get_github_reposity_information(url: str) -> str:
     try:
-        UserName, RepoName = url.replace("https://github.com/", "").split("/")
+        UserName, RepoName = url.replace("github.com/", "").split("/")
         async with AsyncClient() as client:
             res = await client.get(f"https://api.github.com/users/{UserName}", headers=Headers, timeout=5)
             RawData = res.json()
