@@ -91,8 +91,11 @@ async def _(bot: Bot, event: PrivateMessageEvent, args: Message = CommandArg()):
     except ActionFailed as e:
         logger.warning(err_info(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
-    await asyncio.sleep(60)
-    await bot.delete_msg(message_id = result["message_id"])
+    loop = asyncio.get_running_loop()
+    loop.call_later(
+        60,  # 消息撤回等待时间 单位秒
+        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
+    )
 
 
 @setu.handle([Cooldown(120, prompt='慢...慢一..点❤')])
@@ -108,8 +111,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     except ActionFailed as e:
         logger.warning(err_info(e))
         await setu.finish('Error: 涩图太涩, 发不出去力...')
-    await asyncio.sleep(60)
-    await bot.delete_msg(message_id = result["message_id"])
+    loop = asyncio.get_running_loop()
+    loop.call_later(
+        60,  # 消息撤回等待时间 单位秒
+        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
+    )
 
 
 async def get__setu(
