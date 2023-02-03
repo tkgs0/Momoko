@@ -23,3 +23,5 @@ python-qbittorrent>=0.4.1
 tenacity>=8.0.0
 tinydb>=4.6.0
 ujson>=5.2.0
+arrow>=1.2.3
+dbutils>=3.0.2
