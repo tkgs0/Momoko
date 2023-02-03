@@ -210,16 +210,17 @@ async def send_msg(
             ],
         )
     except ActionFailed:
-        result = await bot.send_msg(
+        await bot.send_msg(
             user_id=user_id, 
             group_id=group_id,
             message="消息发送失败, 可能是寄了...",
         )
+        return
 
     loop = asyncio.get_running_loop()
     loop.call_later(
         60,  # 消息撤回等待时间 单位秒
-        lambda: asyncio.ensure_future(bot.delete_msg(message_id=result["message_id"])),
+        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
     )
 
 
@@ -243,16 +244,17 @@ async def send_forward_msg(
             ],
         )
     except ActionFailed:
-        result = await bot.send_msg(
+        await bot.send_msg(
             user_id=user_id, 
             group_id=group_id,
             message="消息发送失败, 可能是寄了...",
         )
+        return
 
     loop = asyncio.get_running_loop()
     loop.call_later(
         60,  # 消息撤回等待时间 单位秒
-        lambda: asyncio.ensure_future(bot.delete_msg(message_id=result["message_id"])),
+        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
     )
 
 
