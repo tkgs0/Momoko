@@ -328,6 +328,8 @@
   <details>
     <summary>使用方法</summary>
 
+  抄自 [wq佬](https://github.com/MeetWq) 的 [caiyunai](https://github.com/noneplugin/nonebot-plugin-caiyunai)
+
   **配置:**
 
   需要在 `.env` 文件中添加彩云小梦apikey：
