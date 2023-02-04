@@ -7,7 +7,20 @@ try:
 except ImportError:
     import json
 
-config_file_path = Path(__file__).parent / 'config.json'
+
+config_template = Path(__file__).parent / 'config.json'
+config_file_path = Path() / 'configs' / 'Dicky_PK.json'
+config_file_path.parent.mkdir(parents=True, exist_ok=True)
+if not config_file_path.is_file():
+    config_file_path.write_text(
+        json.dumps(
+            json.loads(config_template.read_text('utf-8')),
+            ensure_ascii=False,
+            escape_forward_slashes=False,
+            indent=2
+        ),
+        encoding='utf-8'
+    )
 cache = None
 
 
