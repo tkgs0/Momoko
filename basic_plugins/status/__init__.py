@@ -47,7 +47,7 @@ async def _():
     logger.info("检查资源消耗中...")
     msg, stat = await get_status()
     if not stat:
-        logger.warning("资源消耗异常")
+        logger.warning(msg)
 
         try:
             bot = get_bot()

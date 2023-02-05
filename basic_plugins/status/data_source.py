@@ -3,8 +3,6 @@ from datetime import datetime
 from typing import Tuple
 from httpx import AsyncClient
 
-from nonebot import logger
-
 
 _STATUS_MSG = """
 > Status Overview
@@ -49,7 +47,6 @@ async def get_status() -> Tuple[str, bool]:
             - datetime.utcfromtimestamp(b).replace(microsecond=0)
         )
     except Exception as e:
-        logger.error(repr(e))
         return f"状态检查失败!\n{repr(e)}", False
 
     msg = "アトリは、高性能ですから！"
