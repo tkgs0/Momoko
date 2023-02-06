@@ -3,6 +3,8 @@ from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
     Bot,
     GroupMessageEvent,
+    GROUP_ADMIN,
+    GROUP_OWNER,
     ActionFailed,
 )
 
@@ -11,7 +13,7 @@ withdraw_msg = on_fullmatch(
     "撤回",
     priority=5,
     block=True,
-    permission=SUPERUSER
+    permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN
 )
 
 @withdraw_msg.handle()
