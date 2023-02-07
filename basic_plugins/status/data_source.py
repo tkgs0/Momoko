@@ -17,8 +17,9 @@ _STATUS_MSG = """
 [Net sent: {inteSENT}MB]
 [Net recv: {inteRECV}MB]
 
-[Bot runtime: {bot_time}]
-[Platform runtime: {boot_time}]
+[Run Duration]
+[Bot: {bot_time}]
+[Platform: {boot_time}]
 {msg}
 """.strip()
 
