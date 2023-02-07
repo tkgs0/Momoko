@@ -2,9 +2,12 @@ from nonebot import on_metaevent, on_command, get_bot
 from nonebot.log import logger
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import LifecycleMetaEvent
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from .data_source import get_status
-from .utils import Limiter, scheduler
+from .utils import Limiter
+
+scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
 
 
 def check_first_connect(_: LifecycleMetaEvent) -> bool:

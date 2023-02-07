@@ -1,15 +1,5 @@
-import asyncio, logging
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
 from collections import defaultdict
-from nonebot.log import LoguruHandler
-
-
-scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
-
-aps_logger = logging.getLogger("apscheduler")
-aps_logger.setLevel(30)
-aps_logger.handlers.clear()
-aps_logger.addHandler(LoguruHandler())
 
 
 class Limiter:

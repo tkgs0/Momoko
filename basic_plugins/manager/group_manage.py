@@ -4,9 +4,8 @@ try:
     import ujson as json
 except ModuleNotFoundError:
     import json
-from nonebot import on_command, on_message, logger, require
+from nonebot import on_command, on_message, logger
 from nonebot.rule import to_me
-# from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
@@ -25,10 +24,8 @@ from nonebot.adapters.onebot.v11.helpers import (
     extract_image_urls,
 )
 
-require('nonebot_plugin_apscheduler')
-from nonebot_plugin_apscheduler import scheduler
-# from apscheduler.schedulers.asyncio import AsyncIOScheduler
-# scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
 
 from .utils import (
     flmt_notice,
@@ -66,7 +63,13 @@ async def _(event: GroupMessageEvent):
     return
 
 
-@scheduler.scheduled_job('cron', minute='*/30', id='过期会话清理')
+@scheduler.scheduled_job(
+    'interval',
+    id='过期会话清理',
+    name='过期会话清理',
+    minutes=30,
+    misfire_grace_time=15
+)
 async def _():
     logger.debug('清理过期的会话记录...')
     for i in anonymous:
