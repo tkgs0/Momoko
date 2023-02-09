@@ -5,7 +5,6 @@ from nonebot.adapters.onebot.v11 import LifecycleMetaEvent
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from .data_source import get_status
-from .utils import Limiter
 
 scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
 
@@ -37,8 +36,6 @@ async def _():
     await status.finish(msg)
 
 
-limiter = Limiter(5, 21600)
-
 @scheduler.scheduled_job(
     "interval",
     id="状态检查",
@@ -51,21 +48,15 @@ async def _():
     msg, stat = await get_status()
     if not stat:
         logger.warning(msg)
-
         try:
             bot = get_bot()
         except Exception:
             bot = None
-        if not limiter.check("114514"):
-            msg = "状态检查提示已达限制, 将冷却 6h"
-
         try:
             if bot:
                 for superuser in bot.config.superusers:
                     await bot.send_private_msg(user_id=int(superuser), message=msg)
-            limiter.increase("114514")
         except Exception:
             return
-
     else:
         logger.info("资源消耗正常")
