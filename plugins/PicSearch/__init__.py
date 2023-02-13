@@ -19,7 +19,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.log import logger
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
-from nonebot.plugin.on import on_command, on_message, on_metaevent
+from nonebot.plugin.on import on_message, on_metaevent
 from nonebot.rule import Rule
 from PicImageSearch import Network
 from tenacity import AsyncRetrying, stop_after_attempt, stop_after_delay
@@ -36,10 +36,6 @@ from .utils import DEFAULT_HEADERS, get_bot_friend_list, handle_img, handle_repl
 sending_lock: DefaultDict[Tuple[Union[int, str], str], asyncio.Lock] = defaultdict(
     asyncio.Lock
 )
-
-# issue #30 and #32 ?
-# if sys.version_info >= (3, 8) and sys.platform == "win32":
-#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 def check_first_connect(_: LifecycleMetaEvent) -> bool:
@@ -65,25 +61,22 @@ def has_images(event: MessageEvent) -> bool:
 
 def to_me_with_images(bot: Bot, event: MessageEvent) -> bool:
     plain_text = event.message.extract_plain_text()
-    if plain_text.startswith("搜图#"):
-        return False
-    has_image = has_images(event)
+    has_command = "搜图" in plain_text
     if isinstance(event, PrivateMessageEvent):
-        return has_image and config.search_immediately
+        return config.search_immediately or has_command
     # 群里回复机器人发送的消息时，必须带上 "搜图" 才会搜图，否则会被无视
     if event.reply and event.reply.sender.user_id == int(bot.self_id):
-        return has_image and "搜图#" in plain_text
+        return has_command
     at_me = bool(
         [i for i in event.message if i.type == "at" and i.data["qq"] == bot.self_id]
     )
-    return has_image and (event.to_me or at_me or "搜图#" in plain_text)
+    return event.to_me or at_me or has_command
 
 
 IMAGE_SEARCH = on_message(rule=Rule(to_me_with_images), priority=5)
-IMAGE_SEARCH_MODE = on_command("搜图#", priority=5)
 
 
-@IMAGE_SEARCH_MODE.handle()
+@IMAGE_SEARCH.handle()
 async def handle_first_receive(
     event: MessageEvent, matcher: Matcher, args: Message = CommandArg()
 ) -> None:
@@ -192,82 +185,97 @@ async def send_result_message(
 
 
 async def send_msg(
-    bot: Bot, event: MessageEvent, msg: str, index: Optional[int] = None
+    bot: Bot, event: MessageEvent, message: str, index: Optional[int] = None
 ) -> None:
-
-    if index is not None:
-        msg = f"第 {index + 1} 张图片的搜索结果：\n{msg}"
-
     user_id=event.user_id if isinstance(event, PrivateMessageEvent) else 0
     group_id=event.group_id if isinstance(event, GroupMessageEvent) else 0
 
-    try: 
+    if index:
+        message = f"第 {index + 1} 张图片的搜索结果：\n{message}"
+    message = f"{handle_reply_msg(event.message_id)}{message}"
+    try:
         result = await bot.send_forward_msg(
-            user_id=user_id, 
+            user_id=user_id,
             group_id=group_id,
-            messages=[
-                {"type": "node", "data": {"name": str(event.sender.nickname), "uin": str(event.user_id), "content": msg}}
-            ],
+            messages=[{
+                "type": "node",
+                "data": {
+                    "name": (event.sender.nickname
+                             if event.sender.nickname
+                             else '老色批'),
+                    "uin": event.user_id,
+                    "content": message
+                }
+            }]
         )
-    except ActionFailed:
+        del_msg(bot, result['message_id'])
+    except ActionFailed as e:
         await bot.send_msg(
-            user_id=user_id, 
+            user_id=user_id,
             group_id=group_id,
-            message="消息发送失败, 可能是寄了...",
+            message=err_info(e),
         )
-        return
+    return
 
+
+def del_msg(bot: Bot, mid: int):
     loop = asyncio.get_running_loop()
     loop.call_later(
         60,  # 消息撤回等待时间 单位秒
-        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
+        lambda: loop.create_task(bot.delete_msg(message_id=mid)),
     )
+
+
+def err_info(e: ActionFailed):
+    logger.error(repr(e))
+    if e1 := e.info.get('wording'):
+        return e1
+    elif e1 := e.info.get('msg'):
+        return e1
+    else:
+        return repr(e)
 
 
 async def send_forward_msg(
     bot: Bot, event: MessageEvent, msg_list: List[str], index: Optional[int] = None
 ) -> None:
-
-    if index is not None:
-        msg_list = [f"第 {index + 1} 张图片的搜索结果："] + msg_list
-
     user_id=event.user_id if isinstance(event, PrivateMessageEvent) else 0
     group_id=event.group_id if isinstance(event, GroupMessageEvent) else 0
 
+    if index:
+        msg_list = [f"第 {index + 1} 张图片的搜索结果："] + msg_list
     try:
         result = await bot.send_forward_msg(
-            user_id=user_id, 
+            user_id=user_id,
             group_id=group_id,
-            messages=[
-                {"type": "node", "data": {"name": str(event.sender.nickname), "uin": str(event.user_id), "content": msg}}
-                for msg in msg_list
-            ],
+            messages=[{
+                "type": "node",
+                "data": {
+                    "name": (event.sender.nickname
+                             if event.sender.nickname
+                             else '老色批'),
+                    "uin": event.user_id,
+                    "content": msg,
+                }
+            } for msg in msg_list]
         )
-    except ActionFailed:
+        del_msg(bot, result['message_id'])
+    except ActionFailed as e:
         await bot.send_msg(
-            user_id=user_id, 
+            user_id=user_id,
             group_id=group_id,
-            message="消息发送失败, 可能是寄了...",
+            message=err_info(e),
         )
-        return
-
-    loop = asyncio.get_running_loop()
-    loop.call_later(
-        60,  # 消息撤回等待时间 单位秒
-        lambda: loop.create_task(bot.delete_msg(message_id=result['message_id'])),
-    )
+    return
 
 
-@IMAGE_SEARCH.handle()
-@IMAGE_SEARCH_MODE.got("IMAGES", prompt="请发送图片")
+
+@IMAGE_SEARCH.got("IMAGES", prompt="请发送图片")
 async def handle_image_search(bot: Bot, event: MessageEvent, matcher: Matcher) -> None:
     image_urls_with_md5 = get_image_urls_with_md5(event)
     if not image_urls_with_md5:
-        await IMAGE_SEARCH_MODE.reject()
-    if "ARGS" in matcher.state:
-        mode, purge = matcher.state["ARGS"]
-    else:
-        mode, purge = get_args(event.message)
+        await IMAGE_SEARCH.reject()
+    mode, purge = matcher.state["ARGS"]
     network = (
         Network(proxies=config.proxy, cookies=config.exhentai_cookies, timeout=60)
         if mode == "ex"
