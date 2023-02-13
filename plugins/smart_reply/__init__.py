@@ -1,19 +1,36 @@
-from nonebot.plugin.on import on_message, on_notice
+from nonebot.plugin.on import on_command, on_message, on_notice
 from nonebot.rule import to_me
+from nonebot.params import CommandArg
+from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
     Message,
     MessageEvent,
     PokeNotifyEvent,
     MessageSegment
 )
-import asyncio, random, string
+import ujson as json
+from pathlib import Path
+import asyncio, random  # , string
 from .utils import (
     # Bot_NICKNAME,
     hello__reply,
     get_chat_result,
-    get_reply
+    xiaosi,
+    xiaoai
 )
 
+confpath = Path() / 'data' / 'smart_reply' / 'reply.json'
+confpath.parent.mkdir(parents=True, exist_ok=True)
+
+conf = (
+    json.loads(confpath.read_text('utf-8'))
+    if confpath.is_file()
+    else {'xiaoai': False}
+)
+
+
+def save_conf():
+    confpath.write_text(json.dumps(conf), encoding='utf-8')
 
 
 poke_ = on_notice(priority=99, block=False)
@@ -37,8 +54,8 @@ async def _(event: MessageEvent):
 
     await asyncio.sleep(random.random()*2+1)
 
-    for i in string.punctuation:
-        msg = msg.replace(i, ' ')
+    # for i in string.punctuation:
+    #     msg = msg.replace(i, ' ')
 
     msg = msg.strip()
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
@@ -57,6 +74,34 @@ async def _(event: MessageEvent):
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
     if not result:
-        content = await get_reply(msg)
-        await ai.finish(content)
+        text, voice = await xiaoai(msg) if conf['xiaoai'] else await xiaosi(msg)
+        result = voice if voice else text
     await ai.finish(Message(result))
+
+
+
+# 小爱回复须到 https://apibug.cn/doc/xiaoai.html 零元购apikey
+# 在 .env 中填写你的小爱apikey并重启bot
+# 示例: APIBUG_XIAOAI = 'XXXXXXX'
+
+set_reply = on_command(
+    '设置回复模式',
+    aliases={'切换回复模式'},
+    permission=SUPERUSER,
+    priority=2,
+    block=True
+)
+
+@set_reply.handle()
+async def _(arg: Message = CommandArg()):
+    msg = arg.extract_plain_text().strip()
+    if msg.startswith('思知') or msg.startswith('小思'):
+        conf['xiaoai'] = False
+    elif msg.startswith('小爱'):
+        conf['xiaoai'] = True
+    elif not msg:
+        conf['xiaoai'] = not conf['xiaoai']
+    else:
+        await set_reply.finish('模式不存在.')
+    save_conf()
+    await set_reply.finish(f'已设置回复模式{"小爱" if conf["xiaoai"] else "小思"}')
