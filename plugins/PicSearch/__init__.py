@@ -18,7 +18,6 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.log import logger
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg
 from nonebot.plugin.on import on_message, on_metaevent
 from nonebot.rule import Rule
 from PicImageSearch import Network
@@ -77,13 +76,11 @@ IMAGE_SEARCH = on_message(rule=Rule(to_me_with_images), priority=5)
 
 
 @IMAGE_SEARCH.handle()
-async def handle_first_receive(
-    event: MessageEvent, matcher: Matcher, args: Message = CommandArg()
-) -> None:
-    mode, purge = get_args(args)
+async def handle_first_receive(event: MessageEvent, matcher: Matcher) -> None:
+    mode, purge = get_args(event.message)
     matcher.state["ARGS"] = (mode, purge)
     if has_images(event):
-        matcher.set_arg("IMAGES", args)
+        matcher.state["IMAGES"] = event
 
 
 async def image_search(
@@ -267,7 +264,6 @@ async def send_forward_msg(
             message=err_info(e),
         )
     return
-
 
 
 @IMAGE_SEARCH.got("IMAGES", prompt="请发送图片")
