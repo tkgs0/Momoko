@@ -1,10 +1,6 @@
 from pathlib import Path
 from typing import Literal
-
-try:
-    import ujson as json
-except ModuleNotFoundError:
-    import json
+import ujson as json
 import asyncio
 
 from nonebot import on_command, get_driver
@@ -104,8 +100,8 @@ async def _(bot: Bot, event: PrivateMessageEvent, args: Message = CommandArg()):
     try:
         result = await bot.send_forward_msg(user_id=uid, messages=content[0])
     except ActionFailed as e:
-        logger.warning(err_info(e))
-        await setu.finish('Error: 涩图太涩, 发不出去力...')
+        logger.error(repr(e))
+        await setu.finish(err_info(e))
     setu_wd(bot, result['message_id'])
 
 
@@ -120,8 +116,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     try:
         result = await bot.send_forward_msg(group_id=gid, messages=content[0])
     except ActionFailed as e:
-        logger.warning(err_info(e))
-        await setu.finish('Error: 涩图太涩, 发不出去力...')
+        logger.error(repr(e))
+        await setu.finish(err_info(e))
     setu_wd(bot, result['message_id'])
 
 
