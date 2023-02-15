@@ -3,6 +3,7 @@ import random
 import ujson as json
 from httpx import AsyncClient
 from urllib.parse import quote
+from string import punctuation, whitespace
 
 from nonebot import get_driver, logger
 from nonebot.adapters.onebot.v11 import MessageSegment
@@ -65,6 +66,10 @@ async def xiaosi(msg: str) -> str:
 # 从小爱api拿到消息
 # 语音回复需在 .env 添加 XIAOAI_VOICE=true
 async def xiaoai(msg: str) -> str | MessageSegment:
+
+    # 将半角标点和空白符号换成全角空格
+    for i in punctuation + whitespace:
+        msg = msg.replace(i, '　')
 
     url = 'http://81.70.100.130/api/xiaoai.php'
     params = {
