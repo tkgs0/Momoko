@@ -134,24 +134,16 @@ async def get__setu(
         else 1
     )
 
-    if enabled['api'] == 'lolicon':
-        content = await lolicon.get_setu(
-            uid = uid,
-            name = name,
-            keyword = keyword,
-            img = num,
-            pixproxy = pixproxy,
-            r18 = lolicon_r18
-        )
-    else:
-        content = await acggov.get_setu(
-            uid = uid,
-            name = name,
-            keyword = keyword if keyword else ['R-18'],
-            img = num,
-            pixproxy = pixproxy,
-            token = acggov_token
-        )
+    get_api = lolicon if enabled['api'] == 'lolicon' else acggov
+    content = await get_api.get_setu(
+        uid = uid,
+        name = name,
+        keyword = keyword if keyword else ['R-18'],
+        img = num,
+        pixproxy = pixproxy,
+        r18 = lolicon_r18,
+        token = acggov_token
+    )
 
     return content
 

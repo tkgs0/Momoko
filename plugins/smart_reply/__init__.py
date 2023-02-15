@@ -49,6 +49,9 @@ ai = on_message(rule=to_me(), priority=99,block=False)
 
 @ai.handle()
 async def _(event: MessageEvent):
+
+    get_reply = xiaoai if conf['xiaoai'] else xiaosi
+
     # 获取纯文本消息
     msg = event.get_plaintext()
 
@@ -74,7 +77,7 @@ async def _(event: MessageEvent):
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
     if not result:
-        text, voice = await xiaoai(msg) if conf['xiaoai'] else await xiaosi(msg)
+        text, voice = await get_reply(msg)
         result = voice if voice else text
     await ai.finish(Message(result))
 

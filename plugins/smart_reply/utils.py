@@ -16,7 +16,9 @@ Bot_MASTER: str = list(config.superusers)[0]  # bot的主人id
 xiaoai_key: str = config.apibug_xiaoai
 
 # 载入词库(这个词库有点涩)
-AnimeThesaurus = json.load(open(Path(__file__).parent / 'resource' / 'data.json', 'r', encoding='utf8'))
+AnimeThesaurus = json.loads(
+    (Path(__file__).parent / 'resource' / 'data.json').read_text('utf-8')
+)
 
 # hello之类的回复
 hello__reply = [
