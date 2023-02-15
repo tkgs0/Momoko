@@ -77,16 +77,11 @@ async def _(event: MessageEvent):
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
     if not result:
-        text, voice = await get_reply(msg)
-        result = voice if voice else text
+        result = await get_reply(msg)
     await ai.finish(Message(result))
 
 
-
-# 小爱回复须到 https://apibug.cn/doc/xiaoai.html 零元购apikey
-# 在 .env 中填写你的小爱apikey并重启bot
-# 示例: APIBUG_XIAOAI = 'XXXXXXX'
-
+# 小爱语音回复需在 .env 添加 XIAOAI_VOICE=true
 set_reply = on_command(
     '设置回复模式',
     aliases={'切换回复模式'},

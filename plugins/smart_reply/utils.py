@@ -11,9 +11,9 @@ from .config import Config
 
 config = Config.parse_obj(get_driver().config.dict())
 
-Bot_NICKNAME: str = list(config.nickname)[0]  # bot的nickname
-Bot_MASTER: str = list(config.superusers)[0]  # bot的主人id
-xiaoai_key: str = config.apibug_xiaoai
+NICKNAME: str = list(config.nickname)[0]  # bot的nickname
+MASTER: str = list(config.superusers)[0]  # bot的主人id
+XIAOAI: bool = config.xiaoai_voice
 
 # 载入词库(这个词库有点涩)
 AnimeThesaurus = json.loads(
@@ -36,7 +36,7 @@ async def get_chat_result(text: str) -> str | None:
 
 
 # 从思知api拿到消息
-async def xiaosi(msg) -> tuple:
+async def xiaosi(msg: str) -> str:
 
     url = f'https://api.ownthink.com/bot'
     params = {
@@ -53,47 +53,49 @@ async def xiaosi(msg) -> tuple:
         try:
             response = await client.get(url=url, params=params, headers=headers)
             if response.json()['data']['type'] == 5000:
-                res = response.json()['data']['info']['text'].replace('小思', Bot_NICKNAME)
+                res = response.json()['data']['info']['text'].replace('小思', NICKNAME)
                 await response.aclose()
-                return res, None
-            else:
-                return 'ʕ  •ᴥ•ʔ……', None
+                return res
+            return 'ʕ  •ᴥ•ʔ……'
         except Exception as e:
             logger.error(repr(e))
-            return 'ʕ  •ᴥ•ʔ</>', None
+            return 'ʕ  •ᴥ•ʔ</>'
 
 
 # 从小爱api拿到消息
-async def xiaoai(msg) -> tuple:
-    if not xiaoai_key:
-        return '未配置小爱apikey, 请联系bot管理员', None
+# 语音回复需在 .env 添加 XIAOAI_VOICE=true
+async def xiaoai(msg: str) -> str | MessageSegment:
 
-    url = 'https://apibug.cn/api/xiaoai/'
+    url = 'http://81.70.100.130/api/xiaoai.php'
     params = {
-        'apiKey': xiaoai_key,
         'msg': quote(msg),
+        'n': 'mp3' if XIAOAI else 'text',
     }
     headers = {
-        'referer': 'https://apibug.cn/',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
     }
+
     async with AsyncClient() as client:
         try:
             response = await client.get(url=url, params=params, headers=headers)
-            res = response.json()
+            res, status = response.text, response.status_code
             await response.aclose()
-            
-            text = res['text']
-            voice = await get_voice(res['mp3'])
-            
-            return text, MessageSegment.record(file=voice, cache=False) if voice else None
+
+            if status == 200:
+                content = (
+                    await get_voice(res)
+                    if XIAOAI
+                    else res.replace('小爱', NICKNAME).replace('小米智能助理', '猫')
+                )
+                return content if content else 'ʕ  •ᴥ•ʔ</>'
+            logger.error(res)
 
         except Exception as e:
             logger.error(repr(e))
-            return 'ʕ  •ᴥ•ʔ</>', None
+        return 'ʕ  •ᴥ•ʔ</>'
 
 
-async def get_voice(url: str) -> bytes | None:
+async def get_voice(url: str) -> MessageSegment | None:
 
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
@@ -105,8 +107,7 @@ async def get_voice(url: str) -> bytes | None:
             res, status = response.content, response.status_code
             await response.aclose()
             if status == 200:
-                return res
-            else:
-                logger.error(res.decode())
+                return MessageSegment.record(file=res, cache=False)
+            logger.error(res.decode())
         except Exception as e:
             logger.error(repr(e))
