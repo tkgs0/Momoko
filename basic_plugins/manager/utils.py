@@ -13,11 +13,12 @@ from nonebot.adapters.onebot.v11 import (
 flmt_notice = random.choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
 
 
-def err_info(e: ActionFailed):
-    if e1 := e.info.get('wording'):
-        return e1
-    elif e1 := e.info.get('msg'):
-        return e1
+def err_info(e: ActionFailed) -> str:
+    e1 = 'Failed: '
+    if e2 := e.info.get('wording'):
+        return e1 + e2
+    elif e2 := e.info.get('msg'):
+        return e1 + e2
     else:
         return repr(e)
 

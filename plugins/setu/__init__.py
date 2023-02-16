@@ -58,10 +58,11 @@ def setu_wd(bot: Bot, msg_id: int) -> None:
 
 
 def err_info(e: ActionFailed) -> str:
-    if e1 := e.info.get('wording'):
-        return e1
-    elif e1 := e.info.get('msg'):
-        return e1
+    e1 = 'Failed: '
+    if e2 := e.info.get('wording'):
+        return e1 + e2
+    elif e2 := e.info.get('msg'):
+        return e1 + e2
     else:
         return repr(e)
 
