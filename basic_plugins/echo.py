@@ -7,7 +7,6 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.params import CommandArg
 from nonebot.plugin import on_command
 from nonebot.permission import SUPERUSER
-import httpx
 
 
 
@@ -19,16 +18,16 @@ _help = """
 * 使用帮助: https://deja-vu.eu.org/2022/11/15/momoko/
 """.strip()
 
-help = on_command(
+help_ = on_command(
     "help",
     rule=to_me(),
     aliases={"帮助","menu","菜单"},
     priority=5, block=True
 )
 
-@help.handle()
+@help_.handle()
 async def _():
-    await help.finish(_help)
+    await help_.finish(_help)
 
 
 
@@ -60,14 +59,7 @@ async def _(arg: Message = CommandArg()):
     url = arg.extract_plain_text()
     url = f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"
     try:
-        res = httpx.get(url, headers=headers, timeout=30) 
-        await _snapshot.send(MessageSegment.image(file=res.content))
-        res.close()
+        await _snapshot.send(MessageSegment.image(url))
     except Exception as e:
         await _snapshot.finish(repr(e))
 
-
-headers = {
-    'Referer': 'https://github.com/',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
-}
