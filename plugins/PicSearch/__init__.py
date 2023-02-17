@@ -217,9 +217,10 @@ async def send_msg(
 
 
 def del_msg(bot: Bot, mid: int):
+    from random import random
     loop = asyncio.get_running_loop()
     loop.call_later(
-        60,  # 消息撤回等待时间 单位秒
+        60 + random()*3-1,  # 消息撤回等待时间 单位秒
         lambda: loop.create_task(bot.delete_msg(message_id=mid)),
     )
 
@@ -269,11 +270,12 @@ async def send_forward_msg(
 
 @IMAGE_SEARCH.got("IMAGES", prompt="请发送图片")
 async def handle_image_search(bot: Bot, event: MessageEvent, matcher: Matcher) -> None:
-    await IMAGE_SEARCH.send("正在搜索，请稍候～")
-
     image_urls_with_md5 = get_image_urls_with_md5(event)
     if not image_urls_with_md5:
         await IMAGE_SEARCH.reject()
+
+    await IMAGE_SEARCH.send("正在搜索，请稍候～")
+
     mode, purge = matcher.state["ARGS"]
     network = (
         Network(proxies=config.proxy, cookies=config.exhentai_cookies, timeout=60)

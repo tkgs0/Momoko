@@ -47,12 +47,13 @@ def save_config() -> None:
 setu_cd = [Cooldown(cooldown, prompt='慢...慢一..点❤')] if cooldown > 0 else None
 
 def setu_wd(bot: Bot, msg_id: int) -> None:
+    from random import random
     if withdraw < 1:
         return
     wd = 60 if withdraw > 120 else withdraw
     loop = asyncio.get_running_loop()
     loop.call_later(
-        wd,  # 消息撤回等待时间 单位秒
+        wd - random()*3,  # 消息撤回等待时间 单位秒
         lambda: loop.create_task(bot.delete_msg(message_id=msg_id)),
     )
 
