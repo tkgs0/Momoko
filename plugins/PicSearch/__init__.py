@@ -60,7 +60,7 @@ def contains_image(event: MessageEvent) -> bool:
 
 def to_me_with_image_or_command(bot: Bot, event: MessageEvent) -> bool:
     plain_text = event.message.extract_plain_text().strip()
-    if command_exists := re.search(r"^搜图(\s+)?(--\w+)?$", plain_text):
+    if command_exists := bool(re.search(r"^搜图(\s+)?(--\w+)?$", plain_text)):
         return True
     image_exists = contains_image(event)
     if isinstance(event, PrivateMessageEvent):
@@ -159,6 +159,13 @@ def get_args(msg: Message) -> Tuple[str, bool]:
 async def send_result_message(
     bot: Bot, event: MessageEvent, msg_list: List[str], index: Optional[int] = None
 ) -> None:
+    if not (
+        isinstance(event, PrivateMessageEvent)
+        and event.user_id == int(list(config.superusers)[0])
+    ):
+        msg_list = [
+            msg.replace("❤️ 已收藏\n", "") if "已收藏" in msg else msg for msg in msg_list
+        ]
     if isinstance(event, GroupMessageEvent):
         current_sending_lock = sending_lock[(event.group_id, "group")]
     else:

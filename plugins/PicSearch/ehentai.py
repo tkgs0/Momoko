@@ -1,4 +1,5 @@
 import itertools
+import re
 from asyncio import sleep
 from collections import defaultdict
 from difflib import SequenceMatcher
@@ -42,7 +43,7 @@ async def ehentai_search(url: str, client: ClientSession, hide_img: bool) -> Lis
 
 
 async def ehentai_title_search(title: str, hide_img: bool) -> List[str]:
-    title = title.replace(" ::: ", " ")
+    title = re.sub(r"●|~| ::: |[中国翻訳]", " ", title).strip()
     url = "https://exhentai.org" if config.exhentai_cookies else "https://e-hentai.org"
     params: Dict[str, Any] = {"f_search": title}
     async with ClientSession(headers=EHENTAI_HEADERS) as session:
@@ -123,10 +124,12 @@ async def search_result_filter(
         selected_res.thumbnail, hide_img, cookies=config.exhentai_cookies
     )
     date = arrow.get(selected_res.date).to("Asia/Shanghai").format("YYYY-MM-DD HH:mm")
+    favorited = bool(selected_res.origin.find("[id^='posted']").eq(0).attr("style"))
     res_list = [
         "EHentai 搜索结果",
         thumbnail,
         selected_res.title,
+        "❤️ 已收藏" if favorited else "",
         f"类型：{selected_res.type}",
         f"日期：{date}",
         f"来源：{selected_res.url}",
