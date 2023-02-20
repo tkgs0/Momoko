@@ -5,10 +5,10 @@ require("nonebot_plugin_imageutils")
 from nonebot_plugin_imageutils import BuildImage as Image
 
 
-def edit_img(img: bytes) -> BytesIO:
+def edit_img(img: bytes) -> bytes:
     image = Image.open(BytesIO(img))
     image = image.resize_width(image.width//2 if image.width < 4000 else 1000)
-    return image.save_png()
+    return image.save_png().getvalue()
 
 
 async def down_pic(content, pixproxy) -> tuple[list, list]:
