@@ -47,13 +47,11 @@ def save_config() -> None:
 setu_cd = [Cooldown(cooldown, prompt='慢...慢一..点❤')] if cooldown > 0 else None
 
 def setu_wd(bot: Bot, msg_id: int) -> None:
-    from random import random
     if withdraw < 1:
         return
-    wd = 60 if withdraw > 120 else withdraw
     loop = asyncio.get_running_loop()
     loop.call_later(
-        wd - random()*3,  # 消息撤回等待时间 单位秒
+        60 if withdraw > 120 else withdraw,  # 消息撤回等待时间 单位秒
         lambda: loop.create_task(bot.delete_msg(message_id=msg_id)),
     )
 
@@ -92,34 +90,23 @@ setu = on_command(
 
 
 @setu.handle(setu_cd)
-async def _(bot: Bot, event: PrivateMessageEvent, args: Message = CommandArg()):
-    if not str(uid := event.user_id) in enabled['userlist']:
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
+
+    gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
+    uid: int = event.user_id if isinstance(event, PrivateMessageEvent) else 0
+
+    if gid and str(gid) not in enabled['grouplist']:
         return
-    await setu.send('正在拉取涩图, 请稍后...', at_sender=True)
+    if not gid and str(uid) not in enabled['userlist']:
+        return
+
+    await setu.send('loading...', at_sender=True)
     content = await get__setu(event, args)
     if not content[1]:
         await setu.finish(content[0])
     try:
-        result = await bot.send_private_forward_msg(
-            user_id=uid, messages=content[0]
-        )
-    except ActionFailed as e:
-        logger.error(repr(e))
-        await setu.finish(err_info(e))
-    setu_wd(bot, result['message_id'])
-
-
-@setu.handle(setu_cd)
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if not str(gid := event.group_id) in enabled['grouplist']:
-        return
-    await setu.send('正在拉取涩图, 请稍后...', at_sender=True)
-    content = await get__setu(event, args)
-    if not content[1]:
-        await setu.finish(content[0])
-    try:
-        result = await bot.send_group_forward_msg(
-            group_id=gid, messages=content[0]
+        result = await bot.send_forward_msg(
+            user_id=uid, group_id=gid, messages=content[0]
         )
     except ActionFailed as e:
         logger.error(repr(e))
