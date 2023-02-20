@@ -215,14 +215,10 @@ async def send_msg(
         )
         del_msg(bot, result['message_id'])
     except ActionFailed as e:
-        await bot.send_msg(
-            user_id=user_id,
-            group_id=group_id,
-            message=err_info(e),
-        )
+        await bot.send(event=event, message=err_info(e))
 
 
-def del_msg(bot: Bot, mid: int):
+def del_msg(bot: Bot, mid: int) -> None:
     loop = asyncio.get_running_loop()
     loop.call_later(
         60,  # 消息撤回等待时间 单位秒
@@ -266,11 +262,7 @@ async def send_forward_msg(
         )
         del_msg(bot, result['message_id'])
     except ActionFailed as e:
-        await bot.send_msg(
-            user_id=user_id,
-            group_id=group_id,
-            message=err_info(e),
-        )
+        await bot.send(event=event, message=err_info(e))
 
 
 @IMAGE_SEARCH.got("IMAGES", prompt="请发送图片")
