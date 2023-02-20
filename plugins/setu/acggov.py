@@ -1,20 +1,10 @@
 from sys import exc_info
 import httpx, random
 from httpx import AsyncClient
-from io import BytesIO
-
-from nonebot import require
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment
 
-require("nonebot_plugin_imageutils")
-from nonebot_plugin_imageutils import BuildImage as Image
-
-
-def edit_img(img: bytes) -> BytesIO:
-    image = Image.open(img)
-    image.draw_ellipse((3,3,30,30), outline='black')
-    return image.save_png()
+from .utils import down_pic
 
 
 def generate_image_struct() -> dict:
@@ -141,36 +131,4 @@ async def get_setu(
         except:
             logger.exception(f'{exc_info()[0]}, {exc_info()[1]}')
             return [f'{exc_info()[0]} {exc_info()[1]}。', False]
-
-
-
-async def down_pic(content, pixproxy) -> tuple[list, list]:
-    async with AsyncClient() as client:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
-        }
-        if not pixproxy:
-            headers = {
-                'Host': 'i.pximg.net',
-                'Referer': 'https://www.pixiv.net/',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
-            }
-        pics, status = list(), list()
-        for i in content:
-            res = await client.get(
-                url = (
-                    i['url'].replace('https://i.pximg.net', pixproxy)
-                    if pixproxy else i['url']
-                ),
-                headers=headers,
-                timeout=30
-            )
-            if res.status_code == 200:
-                logger.success(f'获取图片 {i["pid"]} 成功')
-                pics.append([edit_img(res.content), i['caption']])
-            else:
-                logger.error(sc := f'获取图片 {i["pid"]} 失败: {res.status_code}')
-                status.append(sc)
-            await res.aclose()
-        return pics, status
 
