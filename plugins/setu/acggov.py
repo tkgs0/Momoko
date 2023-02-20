@@ -104,7 +104,7 @@ async def get_setu(
                     "name": name,
                     "uin": str(uid),
                     "content": ''.join([
-                        f'{MessageSegment.image(i[0])}\n{i[1]}'
+                        f'{MessageSegment.image(i[0], cache=False)}\n{i[1]}'
                         for i in pics
                     ])
                 }

@@ -5,10 +5,10 @@ require("nonebot_plugin_imageutils")
 from nonebot_plugin_imageutils import BuildImage as Image
 
 
-def edit_img(img: bytes) -> bytes:
+def edit_img(img: bytes) -> BytesIO:
     image = Image.open(BytesIO(img))
-    image = image.resize_width(image.width//2 if image.width < 4000 else 1000)
-    return image.save_png().getvalue()
+    image.draw_ellipse((5,5,50,50), outline='red')
+    return image.save_png()
 
 
 async def down_pic(content, pixproxy) -> tuple[list, list]:
