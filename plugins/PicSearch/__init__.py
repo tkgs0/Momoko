@@ -1,5 +1,6 @@
 import asyncio
 import re
+from asyncio import Lock
 from collections import defaultdict
 from contextlib import suppress
 from typing import Any, DefaultDict, Dict, List, Optional, Tuple, Union
@@ -62,16 +63,20 @@ def to_me_with_image_or_command(bot: Bot, event: MessageEvent) -> bool:
     plain_text = event.message.extract_plain_text().strip()
     if command_exists := bool(re.search(r"^搜图(\s+)?(--\w+)?$", plain_text)):
         return True
-    image_exists = contains_image(event)
+
+    if not contains_image(event):
+        return False
+
     if isinstance(event, PrivateMessageEvent):
-        return image_exists and config.search_immediately
+        return config.search_immediately
+
     # 群里回复机器人发送的消息时，必须带上 "搜图" 才会搜图，否则会被无视
     if event.reply and event.to_me:
-        return image_exists and command_exists
-    at_me = bool(
-        [i for i in event.message if i.type == "at" and i.data["qq"] == bot.self_id]
+        return command_exists
+
+    return event.to_me or any(
+        i.type == "at" and i.data["qq"] == bot.self_id for i in event.message
     )
-    return image_exists and at_me
 
 
 IMAGE_SEARCH = on_message(rule=Rule(to_me_with_image_or_command), priority=5)
@@ -129,7 +134,7 @@ async def get_universal_img_url(url: str) -> str:
     final_url = re.sub(r"\?.*$", "", final_url)
     async with ClientSession(headers=DEFAULT_HEADERS) as session:
         async with session.get(final_url) as resp:
-            if resp.status == 200:
+            if resp.status < 400:
                 return final_url
     return url
 
@@ -166,28 +171,39 @@ async def send_result_message(
         msg_list = [
             msg.replace("❤️ 已收藏\n", "") if "已收藏" in msg else msg for msg in msg_list
         ]
+
     if isinstance(event, GroupMessageEvent):
         current_sending_lock = sending_lock[(event.group_id, "group")]
     else:
         current_sending_lock = sending_lock[(event.user_id, "private")]
+
     if flag := (config.forward_search_result and len(msg_list) > 1):
         try:
-            start_time = arrow.now()
-            async with current_sending_lock:
-                await send_forward_msg(bot, event, msg_list, index)
-                await asyncio.sleep(
-                    max(1 - (arrow.now() - start_time).total_seconds(), 0)
-                )
+            await send_message_with_lock(
+                bot, event, msg_list, current_sending_lock, index
+            )
         except ActionFailed:
             flag = False
     if not flag:
         for msg in msg_list:
-            start_time = arrow.now()
-            async with current_sending_lock:
-                await send_msg(bot, event, msg, index)
-                await asyncio.sleep(
-                    max(1 - (arrow.now() - start_time).total_seconds(), 0)
-                )
+            await send_message_with_lock(bot, event, [msg], current_sending_lock, index)
+
+
+async def send_message_with_lock(
+    bot: Bot,
+    event: MessageEvent,
+    msg_list: List[str],
+    current_sending_lock: Lock,
+    index: Optional[int] = None,
+) -> None:
+    start_time = arrow.now()
+    async with current_sending_lock:
+        if len(msg_list) == 1:
+            await send_msg(bot, event, msg_list[0], index)
+        else:
+            await send_forward_msg(bot, event, msg_list, index)
+        await asyncio.sleep(max(1 - (arrow.now() - start_time).total_seconds(), 0))
+
 
 async def send_msg(
     bot: Bot, event: MessageEvent, message: str, index: Optional[int] = None
