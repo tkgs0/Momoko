@@ -125,3 +125,6 @@ dmypy.json
 
 # swap-file
 *.swp
+
+# test
+test/
