@@ -1,6 +1,6 @@
-from nonebot.plugin.on import on_command, on_message, on_notice
+from nonebot import get_driver, on_command, on_message, on_notice
 from nonebot.rule import to_me
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, ArgStr
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
     Message,
@@ -10,7 +10,7 @@ from nonebot.adapters.onebot.v11 import (
 )
 import ujson as json
 from pathlib import Path
-import asyncio, random  # , string
+import asyncio, random
 from .utils import (
     # Bot_NICKNAME,
     hello__reply,
@@ -19,13 +19,16 @@ from .utils import (
     xiaoai
 )
 
+from . import gpt
+
+
 confpath = Path() / 'data' / 'smart_reply' / 'reply.json'
 confpath.parent.mkdir(parents=True, exist_ok=True)
 
 conf = (
     json.loads(confpath.read_text('utf-8'))
     if confpath.is_file()
-    else {'xiaoai': False}
+    else {'mode': 0}
 )
 
 
@@ -50,15 +53,18 @@ ai = on_message(rule=to_me(), priority=99,block=False)
 @ai.handle()
 async def _(event: MessageEvent):
 
-    get_reply = xiaoai if conf['xiaoai'] else xiaosi
+    if conf['mode'] == 1:
+        get_reply = xiaoai
+    elif conf['mode'] == 2:
+        get_reply = gpt.get_chat
+    else:
+        get_reply = xiaosi
+
 
     # 获取纯文本消息
     msg = event.get_plaintext()
 
     await asyncio.sleep(random.random()*2+1)
-
-    # for i in string.punctuation:
-    #     msg = msg.replace(i, ' ')
 
     msg = msg.strip()
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
@@ -77,11 +83,18 @@ async def _(event: MessageEvent):
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
     if not result:
-        result = await get_reply(msg)
+        result = await get_reply(msg, uid=event.user_id)
     await ai.finish(Message(result))
 
 
-# 小爱语音回复需在 .env 添加 XIAOAI_VOICE=true
+'''
+小爱语音回复需在 .env 添加 XIAOAI_VOICE=true
+
+ChatGPT回复需在 .env 添加openai帐号和密码
+⚠注意: 插件会将openai帐密上传到**第三方API**过`人机验证`来获取令牌
+  CHATGPT_USR="xxxxx"
+  CHATGPT_PWD="xxxxx"
+'''
 set_reply = on_command(
     '设置回复模式',
     aliases={'切换回复模式'},
@@ -94,12 +107,79 @@ set_reply = on_command(
 async def _(arg: Message = CommandArg()):
     msg = arg.extract_plain_text().strip()
     if msg.startswith('思知') or msg.startswith('小思'):
-        conf['xiaoai'] = False
+        conf['mode'] = 0
     elif msg.startswith('小爱'):
-        conf['xiaoai'] = True
+        conf['mode'] = 1
+    elif msg.lower().startswith('gpt') or msg.lower().startswith('chatgpt'):
+        conf['mode'] = 2
     elif not msg:
-        conf['xiaoai'] = not conf['xiaoai']
+        conf['mode'] = conf['mode'] + 1 if conf['mode'] < 2 else 0
     else:
         await set_reply.finish('模式不存在.')
     save_conf()
-    await set_reply.finish(f'已设置回复模式{"小爱" if conf["xiaoai"] else "小思"}')
+    mode = ['小思', '小爱', 'ChatGPT']
+    await set_reply.finish(f'已设置回复模式{mode[conf["mode"]]}')
+
+
+clear_all_chat = on_command(
+    '清空对话列表',
+    rule=to_me(),
+    permission=SUPERUSER,
+    priority=2,
+    block=True
+)
+
+@clear_all_chat.got('flag', prompt='确定吗? (Y/n)')
+async def _(flag: str = ArgStr('flag')):
+    if flag.lower().strip() in ['y', 'yes', 'true']:
+        msg = gpt.clear_all_chat()
+        await clear_all_chat.finish(msg if msg else '已清空对话列表.')
+    await clear_all_chat.finish('操作已取消.')
+
+
+clear_chat = on_command(
+    '重置对话',
+    rule=to_me(),
+    priority=15,
+    block=True
+)
+
+@clear_chat.handle()
+async def _(event: MessageEvent, arg: Message = CommandArg()):
+    uids = None
+    res = None
+    if str(event.user_id) in get_driver().config.superusers:
+        uids = [at.data['qq'] for at in event.get_message()['at']]
+        if not uids:
+            uids = handle_msg(arg)
+    if uids:
+        for i in uids:
+            if res := gpt.clear_chat(int(i)):
+                break
+    else:
+        res = gpt.clear_chat(event.user_id)
+    await clear_chat.finish(res if res else '对话已重置.')
+
+
+def handle_msg(arg) -> list | str:
+    uids = arg.extract_plain_text().strip().split()
+    for uid in uids:
+        if not is_number(uid):
+            return '参数错误, qq号必须是数字..'
+    return uids
+
+
+def is_number(s: str) -> bool:
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+    try:
+        import unicodedata
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+    return False
+
