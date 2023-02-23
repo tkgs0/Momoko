@@ -33,7 +33,7 @@ chatlist = (
     else default_chatlist
 )
 
-keyword = (Path(__file__).parent / "resource" / "keyword.txt").read_text("utf-8")
+keyword = (Path(__file__).parent / "resource" / "keyword.txt").read_text("utf-8").split("\n")
 
 chatbot = (
     Chatbot(config={"email": usr, "password": pwd})
