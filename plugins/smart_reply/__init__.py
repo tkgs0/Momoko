@@ -98,7 +98,10 @@ async def _(event: MessageEvent):
     if not conf['mode'] == 2:
         return
     msg = event.get_plaintext().strip()
-    await ai.finish(Message(gpt.get_chat(msg, event.user_id)))
+    await ai.finish(Message(
+        gpt.get_chat(msg, event.user_id)
+        if msg else 'ʕ  •ᴥ•ʔ ?'
+    ))
 
 
 '''
