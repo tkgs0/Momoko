@@ -22,17 +22,20 @@ from .utils import (
 from . import gpt
 
 
-confpath = Path() / 'data' / 'smart_reply' / 'reply.json'
+default_conf: dict = {'mode': 0}
+
+confpath: Path = Path() / 'data' / 'smart_reply' / 'reply.json'
 confpath.parent.mkdir(parents=True, exist_ok=True)
 
-conf = (
+conf: dict = (
     json.loads(confpath.read_text('utf-8'))
-    if confpath.is_file()
-    else {'mode': 0}
+    if confpath.is_file() else default_conf
 )
 
+conf: dict = conf if conf.keys() == default_conf.keys() else default_conf
 
-def save_conf():
+
+def save_conf() -> None:
     confpath.write_text(json.dumps(conf), encoding='utf-8')
 
 
