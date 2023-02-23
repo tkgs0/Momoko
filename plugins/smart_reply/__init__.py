@@ -88,7 +88,12 @@ async def _(event: MessageEvent):
         result = await get_reply(msg)
     await ai.finish(Message(result))
 
-_flmt_notice = random.choice(["慢...慢一..点❤", "冷静1下"])
+_flmt_notice = random.choice([
+    "慢...慢一..点❤",
+    "要坏...坏掉惹❤",
+    "等..等一...下❤",
+    "冷静1下",
+])
 @ai.handle([Cooldown(
     60,
     prompt=_flmt_notice,
@@ -99,7 +104,7 @@ async def _(event: MessageEvent):
         return
     msg = event.get_plaintext().strip()
     await ai.finish(Message(
-        gpt.get_chat(msg, event.user_id)
+        gpt.get_chat(msg, str(event.user_id))
         if msg else 'ʕ  •ᴥ•ʔ ?'
     ), at_sender=True)
 
@@ -171,10 +176,10 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             uids = handle_msg(arg)
     if uids:
         for i in uids:
-            if res := gpt.clear_chat(int(i)):
+            if res := gpt.clear_chat(i):
                 break
     else:
-        res = gpt.clear_chat(event.user_id)
+        res = gpt.clear_chat(str(event.user_id))
     await clear_chat.finish(res if res else '对话已重置.')
 
 
