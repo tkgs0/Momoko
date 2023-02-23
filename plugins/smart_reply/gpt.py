@@ -16,10 +16,12 @@ filepath.parent.mkdir(parents=True, exist_ok=True)
 
 '''
 {
-    user: [conversation_id, parent_id]
+    chatlist: {
+        user: [conversation_id, parent_id]
+    }
 }
 '''
-default_chatlist: dict = {}
+default_chatlist: dict = {"chatlist": {}}
 chatlist = (
     json.loads(filepath.read_text("utf-8"))
     if filepath.is_file()
@@ -46,19 +48,20 @@ def get_chat(msg: str, uid: int) -> str:
     if not chatbot:
         return "未配置openai帐号, 请联系Bot管理员."
 
-    try:
-        user = chatlist.get(uid)
-        cid = user[0] if user else None
-        pid = user[1] if user else None
+    user = chatlist["chatlist"].get(uid)
+    cid = user[0] if user else None
+    pid = user[1] if user else None
     
+    try:
+        chatbot.reset_chat()
         text = ""
         for data in chatbot.ask(msg, cid, pid):
             text = data["message"]
-        chatlist.update({uid: [chatbot.conversation_id, chatbot.parent_id]})
-        save_chat()
+        chatlist["chatlist"].update({uid: [chatbot.conversation_id, chatbot.parent_id]})
     except Exception as e:
         return repr(e)
 
+    save_chat()
     return text
 
 
@@ -66,13 +69,13 @@ def clear_chat(uid: int) -> str | None:
     if not chatbot:
         return "未配置openai帐号, 请联系Bot管理员."
 
-    if not (user := chatlist.get(uid)):
+    if not (user := chatlist["chatlist"].get(uid)):
         return
     try:
         chatbot.delete_conversation(user[0])
     except Exception as e:
         return repr(e)
-    chatlist.pop(uid)
+    chatlist["chatlist"].pop(uid)
     save_chat()
 
 
@@ -84,5 +87,5 @@ def clear_all_chat() -> str | None:
         chatbot.clear_conversations()
     except Exception as e:
         return repr(e)
-    chatlist.clear()
+    chatlist["chatlist"].clear()
     save_chat()
