@@ -101,7 +101,7 @@ async def _(event: MessageEvent):
     await ai.finish(Message(
         gpt.get_chat(msg, event.user_id)
         if msg else 'ʕ  •ᴥ•ʔ ?'
-    ))
+    ), at_sender=True)
 
 
 '''
