@@ -1,10 +1,11 @@
 from pathlib import Path
 import ujson as json
-from revChatGPT.V1 import Chatbot
+from revChatGPT import V1
 from nonebot import get_driver
 
 from .config import Config
 
+V1.log.info = V1.log.debug
 
 config = Config.parse_obj(get_driver().config.dict())
 
@@ -36,7 +37,7 @@ chatlist = (
 keyword = (Path(__file__).parent / "resource" / "keyword.txt").read_text("utf-8").split("\n")
 
 chatbot = (
-    Chatbot(config={"email": usr, "password": pwd})
+    V1.Chatbot(config={"email": usr, "password": pwd})
     if usr and pwd
     else None
 )
