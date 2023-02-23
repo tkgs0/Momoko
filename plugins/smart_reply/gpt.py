@@ -33,6 +33,8 @@ chatlist = (
     else default_chatlist
 )
 
+keyword = (Path(__file__).parent / "resource" / "keyword.txt").read_text("utf-8")
+
 chatbot = (
     Chatbot(config={"email": usr, "password": pwd})
     if usr and pwd
@@ -62,6 +64,9 @@ def get_chat(msg: str, uid: str) -> str:
         return repr(e)
 
     save_chat()
+
+    for i in keyword:
+        text = text.replace(i, "░"*len(i))
     return text
 
 
