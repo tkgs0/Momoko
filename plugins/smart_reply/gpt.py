@@ -51,7 +51,6 @@ def get_chat(msg: str, uid: int) -> str:
         cid = user[0] if user else None
         pid = user[1] if user else None
     
-        chatbot.reset_chat()
         text = ""
         for data in chatbot.ask(msg, cid, pid):
             text = data["message"]
