@@ -8,6 +8,10 @@ from nonebot.adapters.onebot.v11 import (
     PokeNotifyEvent,
     MessageSegment
 )
+from nonebot.adapters.onebot.v11.helpers import (
+    Cooldown,
+    CooldownIsolateLevel
+)
 import ujson as json
 from pathlib import Path
 import asyncio, random
@@ -47,20 +51,17 @@ async def _(event: PokeNotifyEvent):
         await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
 
 
-
-# 优先级99, 条件: 艾特bot就触发
-ai = on_message(rule=to_me(), priority=99,block=False)
+ai = on_message(rule=to_me(), priority=99, block=False)
 
 @ai.handle()
 async def _(event: MessageEvent):
 
     if conf['mode'] == 1:
         get_reply = xiaoai
-    elif conf['mode'] == 2:
-        get_reply = gpt.get_chat
-    else:
+    elif not conf['mode']:
         get_reply = xiaosi
-
+    else:
+        return
 
     # 获取纯文本消息
     msg = event.get_plaintext()
@@ -84,8 +85,20 @@ async def _(event: MessageEvent):
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
     if not result:
-        result = await get_reply(msg, uid=event.user_id)
+        result = await get_reply(msg)
     await ai.finish(Message(result))
+
+_flmt_notice = random.choice(["慢...慢一..点❤", "冷静1下"])
+@ai.handle([Cooldown(
+    60,
+    prompt=_flmt_notice,
+    isolate_level=CooldownIsolateLevel.GLOBAL
+)])
+async def _(event: MessageEvent):
+    if not conf['mode'] == 2:
+        return
+    msg = event.get_plaintext().strip()
+    await ai.finish(Message(gpt.get_chat(msg, event.user_id)))
 
 
 '''

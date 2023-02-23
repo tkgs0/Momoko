@@ -37,7 +37,7 @@ async def get_chat_result(text: str) -> str | None:
 
 
 # 从思知api拿到消息
-async def xiaosi(msg: str, **kwargs) -> str:
+async def xiaosi(msg: str) -> str:
 
     url = f'https://api.ownthink.com/bot'
     params = {
@@ -65,7 +65,7 @@ async def xiaosi(msg: str, **kwargs) -> str:
 
 # 从小爱api拿到消息
 # 语音回复需在 .env 添加 XIAOAI_VOICE=true
-async def xiaoai(msg: str, **kwargs) -> str | MessageSegment:
+async def xiaoai(msg: str) -> str | MessageSegment:
 
     # 将半角标点和空白符号换成全角空格
     for i in punctuation + whitespace:

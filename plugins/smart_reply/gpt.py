@@ -42,7 +42,7 @@ def save_chat():
     filepath.write_text(json.dumps(chatlist), "utf-8")
 
 
-async def get_chat(msg: str, uid: int) -> str:
+def get_chat(msg: str, uid: int) -> str:
     if not chatbot:
         return "未配置openai帐号, 请联系Bot管理员."
 
@@ -79,7 +79,7 @@ def clear_chat(uid: int) -> str | None:
 
 def clear_all_chat() -> str | None:
     if not chatbot:
-        return "未配置openai帐号, 请联系Bot管理员."
+        return "未配置openai帐号."
 
     try:
         chatbot.clear_conversations()
