@@ -19,10 +19,16 @@ filepath.parent.mkdir(parents=True, exist_ok=True)
     user: [conversation_id, parent_id]
 }
 '''
+default_chatlist: dict = {}
 chatlist = (
     json.loads(filepath.read_text("utf-8"))
     if filepath.is_file()
-    else {}
+    else default_chatlist
+)
+chatlist = (
+    chatlist 
+    if chatlist.keys() == default_chatlist.keys() 
+    else default_chatlist
 )
 
 chatbot = (
@@ -48,7 +54,7 @@ async def get_chat(msg: str, uid: int) -> str:
         chatbot.reset_chat()
         text = ""
         for data in chatbot.ask(msg, cid, pid):
-            text += data["message"]
+            text = data["message"]
         chatlist.update({uid: [chatbot.conversation_id, chatbot.parent_id]})
         save_chat()
     except Exception as e:
