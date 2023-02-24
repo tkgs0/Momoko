@@ -101,7 +101,7 @@ async def _(event: MessageEvent):
         await asyncio.to_thread(
             gpt.get_chat, msg=msg, uid=str(event.user_id)
         )
-    ) if msg else 'ʕ  •ᴥ•ʔ ?'
+    ).strip() if msg else 'ʕ  •ᴥ•ʔ ?'
     await ai.send(Message(text))
 
 
