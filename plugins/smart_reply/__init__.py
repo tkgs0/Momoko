@@ -97,7 +97,7 @@ _flmt_notice = [
 @ai.handle([Cooldown(
     60,
     prompt=random.choice(_flmt_notice),
-    isolate_level=CooldownIsolateLevel.GLOBAL
+    isolate_level=CooldownIsolateLevel.USER,
 )])
 async def _(event: MessageEvent):
     if not conf['mode'] == 2:
