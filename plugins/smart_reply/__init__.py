@@ -88,15 +88,15 @@ async def _(event: MessageEvent):
         result = await get_reply(msg)
     await ai.finish(Message(result))
 
-_flmt_notice = random.choice([
+_flmt_notice = [
     "慢...慢一..点❤",
     "要坏...坏掉惹❤",
     "等..等一...下❤",
     "冷静1下",
-])
+]
 @ai.handle([Cooldown(
     60,
-    prompt=_flmt_notice,
+    prompt=random.choice(_flmt_notice),
     isolate_level=CooldownIsolateLevel.GLOBAL
 )])
 async def _(event: MessageEvent):
