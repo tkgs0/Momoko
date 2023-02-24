@@ -80,33 +80,29 @@ async def _(event: MessageEvent):
         '你好',
         '在',
     ]:
-        await ai.finish(Message(random.choice(hello__reply)))
+        await ai.send(Message(random.choice(hello__reply)))
     # 从字典里获取结果
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
     if not result:
         result = await get_reply(msg)
-    await ai.finish(Message(result))
+    await ai.send(Message(result))
 
-_flmt_notice = [
-    "慢...慢一..点❤",
-    "要坏...坏掉惹❤",
-    "等..等一...下❤",
-    "冷静1下",
-]
 @ai.handle([Cooldown(
     60,
-    prompt=random.choice(_flmt_notice),
+    prompt=random.choice(["慢...慢一..点❤", "等..等一...下❤"]),
     isolate_level=CooldownIsolateLevel.USER,
 )])
 async def _(event: MessageEvent):
     if not conf['mode'] == 2:
         return
     msg = event.get_plaintext().strip()
-    text = await asyncio.to_thread(
-        gpt.get_chat, msg=msg, uid=str(event.user_id)
+    text = f'{MessageSegment.at(event.user_id)}\n' + (
+        await asyncio.to_thread(
+            gpt.get_chat, msg=msg, uid=str(event.user_id)
+        )
     ) if msg else 'ʕ  •ᴥ•ʔ ?'
-    await ai.finish(Message(text), at_sender=True)
+    await ai.send(Message(text))
 
 
 '''
