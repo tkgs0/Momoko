@@ -18,7 +18,7 @@ from nonebot.adapters.onebot.v11.helpers import Cooldown
 
 
 
-cmd_help = (
+cmd_help: str = (
     '调用系统命令行\n'
     '⚠危险操作, 谨慎使用!\n\n'
     '>cmd {命令}\n'
@@ -27,7 +27,7 @@ cmd_help = (
 )
 
 
-shell_help = (
+shell_help: str = (
     '调用系统命令行\n'
     '(不支持Windows)\n'
     '⚠危险操作, 谨慎使用!\n\n'
@@ -37,10 +37,10 @@ shell_help = (
 )
 
 
-_win = ('windows', 'Windows', 'win32', 'Win32', 'win16', 'Win16')
+_win: tuple = ('windows', 'Windows', 'win32', 'Win32', 'win16', 'Win16')
 
 
-_flmt_notice = choice(['慢...慢一..点❤', '冷静1下', '歇会歇会~~'])
+_flmt_notice: str = choice(['慢...慢一..点❤', '冷静1下', '歇会歇会~~'])
 
 
 sys_shell = on_command(
@@ -55,7 +55,7 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     for i in _win:
         if system() and (system() in i or i in system()):
             await sys_shell.finish('暂不支持Windows,\n请使用同步方法 `>cmd`')
-    msg = args.extract_plain_text()
+    msg: str = args.extract_plain_text()
     if msg:
         matcher.set_arg('opt', args)
 
@@ -67,7 +67,7 @@ async def _(opt: str = ArgPlainText('opt')):
     if opt.startswith('>shell.help'):
         await sys_shell.finish(shell_help)
 
-    content = await (await create_subprocess_shell(
+    content: tuple = await (await create_subprocess_shell(
         unescape(opt),
         stdin=AsyncPIPE,
         stdout=AsyncPIPE,
@@ -75,13 +75,13 @@ async def _(opt: str = ArgPlainText('opt')):
     )).communicate()
     
     if content == (b'', b''):
-        msg = '\n执行完毕, 没有任何输出呢~'
+        msg: str = '\n执行完毕, 没有任何输出呢~'
     elif content[1] == b'':
-        msg = f'\nstdout:\n{content[0].decode()}\n>执行完毕'
+        msg: str = f'\nstdout:\n{content[0].decode()}\n>执行完毕'
     elif content[0] == b'':
-        msg = f'\nstderr:\n{content[1].decode()}'
+        msg: str = f'\nstderr:\n{content[1].decode()}'
     else :
-        msg = (f'\nstdout:\n{content[0].decode()}'
+        msg: str = (f'\nstdout:\n{content[0].decode()}'
                f'\nstderr:\n{content[1].decode()}'
                '\n>执行完毕')
     await sys_shell.finish(msg, at_sender=True)
@@ -97,7 +97,7 @@ sys_cmd = on_command(
 
 @sys_cmd.handle([Cooldown(5, prompt=_flmt_notice)])
 async def _(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
+    msg: str = args.extract_plain_text()
     if msg:
         matcher.set_arg('opt', args)
 
@@ -109,7 +109,7 @@ async def _(opt: str = ArgPlainText('opt')):
     if opt.startswith('>cmd.help'):
         await sys_cmd.finish(cmd_help)
 
-    content = Popen(
+    content: tuple = Popen(
         unescape(opt),
         stdin=PIPE,
         stdout=PIPE,
@@ -119,13 +119,13 @@ async def _(opt: str = ArgPlainText('opt')):
     ).communicate()
 
     if content == ('',''):
-        msg = '\n执行完毕, 没有任何输出呢~'
+        msg: str = '\n执行完毕, 没有任何输出呢~'
     elif content[1] == '':
-        msg = f'\nstdout:\n{content[0]}\n>执行完毕'
+        msg: str = f'\nstdout:\n{content[0]}\n>执行完毕'
     elif content[0] == '':
-        msg = f'\nstderr:\n{content[1]}'
+        msg: str = f'\nstderr:\n{content[1]}'
     else :
-        msg = f'\nstdout:\n{content[0]}\nstderr:\n{content[1]}\n>执行完毕'
+        msg: str = f'\nstdout:\n{content[0]}\nstderr:\n{content[1]}\n>执行完毕'
     await sys_cmd.finish(msg, at_sender=True)
 
 
@@ -147,11 +147,11 @@ upload_group_file = on_command(
 
 @upload_group_file.handle()
 async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
-    args = arg.extract_plain_text().strip().split(maxsplit=1)
+    args: list = arg.extract_plain_text().strip().split(maxsplit=1)
     if len(args) < 2:
         await upload_group_file.finish('用法:\n>上传文件 文件名 本地路径')
-    filename = unescape(args[0])
-    filepath = unescape(args[1])
+    filename: str = unescape(args[0])
+    filepath: str = unescape(args[1])
     try:
         await bot.upload_group_file(
             group_id=event.group_id,
@@ -172,12 +172,12 @@ upload_private_file = on_command(
 
 @upload_private_file.handle()
 async def _(bot: Bot, arg: Message = CommandArg()):
-    args = arg.extract_plain_text().strip().split(maxsplit=2)
+    args: list = arg.extract_plain_text().strip().split(maxsplit=2)
     if len(args) < 3 or not is_number(args[0]):
         await upload_private_file.finish('用法:\n>私发文件 目标QQ 文件名 本地路径')
-    uid = args[0]
-    filename = unescape(args[1])
-    filepath = unescape(args[2])
+    uid: str = args[0]
+    filename: str = unescape(args[1])
+    filepath: str = unescape(args[2])
     try:
         await bot.upload_private_file(
             user_id=int(uid),
@@ -190,7 +190,7 @@ async def _(bot: Bot, arg: Message = CommandArg()):
 
 
 def err_info(e: ActionFailed) -> str:
-    e1 = 'Failed: '
+    e1: str = 'Failed: '
     if e2 := e.info.get('wording'):
         return e1 + e2
     elif e2 := e.info.get('msg'):
