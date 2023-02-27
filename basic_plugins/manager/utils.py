@@ -61,16 +61,24 @@ async def ban_user(
 def ban_time(arg: Message = CommandArg()) -> int:
     try:
         _time = arg.extract_plain_text().strip()
-        _time = re.search(r'[1-9]\d*(天|小?(时|時)|分)?', _time).group()  # type: ignore
+        _time = re.search(
+            r'[1-9]\d*((个|個|箇)?(月|小?(时|時))|(天|日)|分|秒)?',
+            _time
+        ).group()  # type: ignore
         time1 = re.match(r'\d*', _time).group()  # type: ignore
         time2 = _time.replace(time1, '')
         time1 = int(time1)
-        if '时' in time2 or '時' in time2:
-            time3 = time1*60*60
+        if '月' in time2:
+            return 2591940
         elif '天' in time2:
             time3 = time1*60*60*24
-        else:
+        elif '时' in time2 or '時' in time2:
+            time3 = time1*60*60
+        elif '分' in time2:
             time3 = time1*60
+        else:
+            time3 = time1 if time1 >= 60 else 60
+        time3 = time3 - time3 % 60 + 60 if time3 % 60 else time3
         return time3 if time3 <= 2591940 else 2591940
     except:
         return 43200
