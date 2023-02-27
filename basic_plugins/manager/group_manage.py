@@ -110,7 +110,7 @@ async def is_reply(bot: Bot, event: MessageEvent) -> str | int | None:
         
         try:
             msg = await bot.get_msg(message_id=msg_id)
-            uid = msg['sender']['user_id']
+            uid = int(msg['sender']['user_id'])
         except ActionFailed as e:
             logger.warning(err_info(e))
             uid = None
