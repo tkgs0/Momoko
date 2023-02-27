@@ -1,5 +1,6 @@
 from nonebot import get_driver, on_command, on_message, on_notice
 from nonebot.rule import to_me
+from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, ArgStr
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
@@ -51,11 +52,11 @@ async def _(event: PokeNotifyEvent):
         await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
 
 
-ai = on_message(rule=to_me(), priority=998, block=True)
+ai = on_message(rule=to_me(), priority=998, block=False)
 aigpt = on_message(rule=to_me(), priority=999, block=True)
 
 @ai.handle()
-async def _(event: MessageEvent):
+async def _(event: MessageEvent, matcher: Matcher):
     # 获取纯文本消息
     msg = event.get_plaintext().strip()
 
@@ -69,22 +70,19 @@ async def _(event: MessageEvent):
     await asyncio.sleep(random.random()*2+1)
 
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
-    if not msg or msg in [
-        '你好啊',
-        '你好',
-        '在吗',
-        '在不在',
-        '您好',
-        '您好啊',
-        '你好',
-        '在',
-    ]:
-        await ai.finish(Message(random.choice(hello__reply)))
+    result = (
+        random.choice(hello__reply)
+        if not msg or msg in [
+            '你好啊', '你好', '在吗', '在不在', '您好', '您好啊', '你好', '在']
+        else None
+    )
+
     # 从字典里获取结果
-    result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
-    if not result:
+    if not result and not (result := await get_chat_result(msg)):
         result = await get_reply(msg)
+
+    matcher.stop_propagation()
     await ai.finish(Message(result))
 
 @aigpt.handle([Cooldown(
