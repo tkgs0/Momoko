@@ -161,7 +161,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
 
 selfban = on_command(
     '我要自闭',
-    aliases={'来份先辈特调红茶', '来杯先辈特调红茶'},
+    aliases={'我要自閉', '来份先辈特调红茶', '来杯先辈特调红茶'},
     priority=5,
     block=True
 )
