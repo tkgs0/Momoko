@@ -52,21 +52,12 @@ async def _(event: PokeNotifyEvent):
 
 
 ai = on_message(rule=to_me(), priority=99, block=False)
+aigpt = on_message(rule=to_me(), priority=99, block=False)
 
-@ai.handle([Cooldown(
-    30,
-    prompt=random.choice(["慢...慢一..点❤", "等..等一...下❤"]),
-    isolate_level=CooldownIsolateLevel.USER,
-)] if conf['mode'] == 2 else None)
+@ai.handle()
 async def _(event: MessageEvent):
     # 获取纯文本消息
     msg = event.get_plaintext().strip()
-
-    if conf['mode'] == 2:
-        text = f'{MessageSegment.at(event.user_id)}\n' + (
-            await gpt.get_chat(msg=msg, uid=str(event.user_id))
-        ).strip() if msg else 'ʕ  •ᴥ•ʔ ?'
-        await ai.finish(Message(text))
 
     if conf['mode'] == 1:
         get_reply = xiaoai
@@ -95,6 +86,23 @@ async def _(event: MessageEvent):
     if not result:
         result = await get_reply(msg)
     await ai.finish(Message(result))
+
+@aigpt.handle([Cooldown(
+    60,
+    prompt=random.choice(["慢...慢一..点❤", "等..等一...下❤"]),
+    isolate_level=CooldownIsolateLevel.USER,
+)])
+async def _(event: MessageEvent):
+    # 获取纯文本消息
+    msg = event.get_plaintext().strip()
+
+    if conf['mode'] != 2:
+        return
+
+    text = f'{MessageSegment.at(event.user_id)}\n' + (
+        await gpt.get_chat(msg=msg, uid=str(event.user_id))
+    ).strip() if msg else 'ʕ  •ᴥ•ʔ ?'
+    await aigpt.finish(Message(text))
 
 
 '''
