@@ -41,7 +41,7 @@ def save_conf() -> None:
     confpath.write_text(json.dumps(conf), encoding='utf-8')
 
 
-poke_ = on_notice(priority=99, block=False)
+poke_ = on_notice(priority=999, block=False)
 
 @poke_.handle()
 async def _(event: PokeNotifyEvent):
@@ -51,8 +51,8 @@ async def _(event: PokeNotifyEvent):
         await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
 
 
-ai = on_message(rule=to_me(), priority=99, block=False)
-aigpt = on_message(rule=to_me(), priority=99, block=False)
+ai = on_message(rule=to_me(), priority=998, block=True)
+aigpt = on_message(rule=to_me(), priority=999, block=True)
 
 @ai.handle()
 async def _(event: MessageEvent):
