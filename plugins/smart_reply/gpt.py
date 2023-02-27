@@ -37,7 +37,7 @@ chatlist = (
 keyword = (Path(__file__).parent / "resource" / "keyword.txt").read_text("utf-8").split("\n")
 
 chatbot = (
-    V1.Chatbot(config={"email": usr, "password": pwd})
+    V1.AsyncChatbot(config={"email": usr, "password": pwd})
     if usr and pwd
     else None
 )
@@ -47,7 +47,7 @@ def save_chat():
     filepath.write_text(json.dumps(chatlist), "utf-8")
 
 
-def get_chat(msg: str, uid: str) -> str:
+async def get_chat(msg: str, uid: str) -> str:
     if not chatbot:
         return "未配置openai帐号, 请联系Bot管理员."
 
@@ -58,7 +58,7 @@ def get_chat(msg: str, uid: str) -> str:
     try:
         chatbot.reset_chat()
         text = ""
-        for data in chatbot.ask(msg, cid, pid):
+        async for data in chatbot.ask(msg, cid, pid):
             text = data["message"]
         chatlist["chatlist"].update({uid: [chatbot.conversation_id, chatbot.parent_id]})
     except Exception as e:
@@ -71,26 +71,26 @@ def get_chat(msg: str, uid: str) -> str:
     return text
 
 
-def clear_chat(uid: str) -> str | None:
+async def clear_chat(uid: str) -> str | None:
     if not chatbot:
         return "未配置openai帐号, 请联系Bot管理员."
 
     if not (user := chatlist["chatlist"].get(uid)):
         return
     try:
-        chatbot.delete_conversation(user[0])
+        await chatbot.delete_conversation(user[0])
     except Exception as e:
         return repr(e)
     chatlist["chatlist"].pop(uid)
     save_chat()
 
 
-def clear_all_chat() -> str | None:
+async def clear_all_chat() -> str | None:
     if not chatbot:
         return "未配置openai帐号."
 
     try:
-        chatbot.clear_conversations()
+        await chatbot.clear_conversations()
     except Exception as e:
         return repr(e)
     chatlist["chatlist"].clear()

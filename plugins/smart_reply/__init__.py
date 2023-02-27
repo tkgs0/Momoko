@@ -98,9 +98,7 @@ async def _(event: MessageEvent):
         return
     msg = event.get_plaintext().strip()
     text = f'{MessageSegment.at(event.user_id)}\n' + (
-        await asyncio.to_thread(
-            gpt.get_chat, msg=msg, uid=str(event.user_id)
-        )
+        await gpt.get_chat(msg=msg, uid=str(event.user_id))
     ).strip() if msg else 'ʕ  •ᴥ•ʔ ?'
     await ai.send(Message(text))
 
@@ -150,7 +148,7 @@ clear_all_chat = on_command(
 @clear_all_chat.got('flag', prompt='确定吗? (Y/n)')
 async def _(flag: str = ArgStr('flag')):
     if flag.lower().strip() in ['y', 'yes', 'true']:
-        msg = await asyncio.to_thread(gpt.clear_all_chat)
+        msg = await gpt.clear_all_chat()
         await clear_all_chat.finish(msg if msg else '已清空对话列表.')
     await clear_all_chat.finish('操作已取消.')
 
@@ -172,10 +170,10 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             uids = handle_msg(arg)
     if uids:
         for i in uids:
-            if res := gpt.clear_chat(i):
+            if res := await gpt.clear_chat(i):
                 break
     else:
-        res = await asyncio.to_thread(gpt.clear_chat, str(event.user_id))
+        res = await gpt.clear_chat(str(event.user_id))
     await clear_chat.finish(res if res else '对话已重置.')
 
 
