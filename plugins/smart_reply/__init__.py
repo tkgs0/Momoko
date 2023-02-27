@@ -53,8 +53,20 @@ async def _(event: PokeNotifyEvent):
 
 ai = on_message(rule=to_me(), priority=99, block=False)
 
-@ai.handle()
+@ai.handle([Cooldown(
+    30,
+    prompt=random.choice(["慢...慢一..点❤", "等..等一...下❤"]),
+    isolate_level=CooldownIsolateLevel.USER,
+)] if conf['mode'] == 2 else None)
 async def _(event: MessageEvent):
+    # 获取纯文本消息
+    msg = event.get_plaintext().strip()
+
+    if conf['mode'] == 2:
+        text = f'{MessageSegment.at(event.user_id)}\n' + (
+            await gpt.get_chat(msg=msg, uid=str(event.user_id))
+        ).strip() if msg else 'ʕ  •ᴥ•ʔ ?'
+        await ai.finish(Message(text))
 
     if conf['mode'] == 1:
         get_reply = xiaoai
@@ -63,12 +75,8 @@ async def _(event: MessageEvent):
     else:
         return
 
-    # 获取纯文本消息
-    msg = event.get_plaintext()
-
     await asyncio.sleep(random.random()*2+1)
 
-    msg = msg.strip()
     # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
     if not msg or msg in [
         '你好啊',
@@ -80,27 +88,13 @@ async def _(event: MessageEvent):
         '你好',
         '在',
     ]:
-        await ai.send(Message(random.choice(hello__reply)))
+        await ai.finish(Message(random.choice(hello__reply)))
     # 从字典里获取结果
     result = await get_chat_result(msg)
     # 如果词库没有结果，则调用对话api获取回复
     if not result:
         result = await get_reply(msg)
-    await ai.send(Message(result))
-
-@ai.handle([Cooldown(
-    60,
-    prompt=random.choice(["慢...慢一..点❤", "等..等一...下❤"]),
-    isolate_level=CooldownIsolateLevel.USER,
-)])
-async def _(event: MessageEvent):
-    if not conf['mode'] == 2:
-        return
-    msg = event.get_plaintext().strip()
-    text = f'{MessageSegment.at(event.user_id)}\n' + (
-        await gpt.get_chat(msg=msg, uid=str(event.user_id))
-    ).strip() if msg else 'ʕ  •ᴥ•ʔ ?'
-    await ai.send(Message(text))
+    await ai.finish(Message(result))
 
 
 '''
