@@ -10,6 +10,35 @@ from nonebot.log import logger
 
 from .config import config
 
+MINI_APP_REGEX = re.compile(r'"desc":("[^"哔哩]+")', re.I)
+B23_REGEX = re.compile(r"b23.tv/(\w+)|(bili(22|23|33|2233).cn)/(\w+)", re.I)
+EPID_REGEX = re.compile(r"ep_id=(\d+)", re.I)
+REGEX_PATTERNS: Dict[str, re.Pattern[str]] = {
+    "page": re.compile(r"([?&]|&amp;)p=\d+", re.I),  # 视频分p
+    "time_location": re.compile(r"([?&]|&amp;)t=\d+", re.I),  # 视频播放定位时间
+    "aid": re.compile(r"av(\d+)", re.I),  # 主站视频 av 号
+    "bvid": re.compile(r"BV([a-z\d]{10})+", re.I),  # 主站视频 bv 号
+    "epid": re.compile(r"ep(\d+)", re.I),  # 番剧视频页
+    "ssid": re.compile(r"ss(\d+)", re.I),  # 番剧剧集ssid(season_id)
+    "mdid": re.compile(r"md(\d+)", re.I),  # 番剧详细页
+    "room_id": re.compile(r"live.bilibili.com/(blanc/|h5/)?(\d+)", re.I),  # 直播间
+    "cvid": re.compile(r"(/read/(cv|mobile|native)(/|\?id=)?|^cv)(\d+)", re.I),  # 文章
+    "dynamic_id_type2": re.compile(
+        r"([tm]).bilibili.com/(\d+)\?(.*?)(&|&amp;)type=2", re.I
+    ),  # 动态
+    "dynamic_id": re.compile(r"([tm]).bilibili.com/(\d+)", re.I),  # 动态
+}
+MATCHED_URLS: Dict[str, str] = {
+    "aid": "https://api.bilibili.com/x/web-interface/view?aid={}",
+    "bvid": "https://api.bilibili.com/x/web-interface/view?bvid={}",
+    "epid": "https://bangumi.bilibili.com/view/web_api/season?ep_id={}",
+    "ssid": "https://bangumi.bilibili.com/view/web_api/season?season_id={}",
+    "mdid": "https://bangumi.bilibili.com/view/web_api/season?media_id={}",
+    "room_id": "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id={}",
+    "cvid": "https://api.bilibili.com/x/article/viewinfo?id={}&mobi_app=pc&from=web",
+    "dynamic_id_type2": "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?rid={}&type=2",
+    "dynamic_id": "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id={}",
+}
 # group_id : last_vurl
 analysis_stat: Dict[int, str] = {}
 
@@ -20,7 +49,7 @@ async def bili_keyword(group_id: Optional[int], text: str) -> Union[Message, str
         url, page, time_location = extract(text)
         # 如果是小程序就去搜索标题
         if not url:
-            if title := re.search(r'"desc":("[^"哔哩]+")', text):
+            if title := MINI_APP_REGEX.search(text):
                 if vurl := await search_bili_by_title(title[1]):
                     url, page, time_location = extract(vurl)
 
@@ -50,75 +79,53 @@ async def bili_keyword(group_id: Optional[int], text: str) -> Union[Message, str
 
 
 async def b23_extract(text: str) -> str:
-    b23 = re.compile(r"b23.tv/(\w+)|(bili(22|23|33|2233).cn)/(\w+)", re.I).search(
-        text.replace("\\", "")
-    )
+    b23 = B23_REGEX.search(text.replace("\\", ""))
     url = f"https://{b23[0]}"  # type: ignore
     async with aiohttp.request("GET", url) as resp:
         return str(resp.url)
 
 
 def extract(text: str) -> Tuple[str, Optional[Match[str]], Optional[Match[str]]]:
+    url = ""
+    page: Optional[Match[str]] = None
+    time_location: Optional[Match[str]] = None
+
     try:
-        # 视频分p
-        page = re.compile(r"([?&]|&amp;)p=\d+").search(text)
-        # 视频播放定位时间
-        time_location = re.compile(r"([?&]|&amp;)t=\d+").search(text)
-        # 主站视频 av 号
-        aid = re.compile(r"av\d+", re.I).search(text)
-        # 主站视频 bv 号
-        bvid = re.compile(r"BV([a-z\d]{10})+", re.I).search(text)
-        # 番剧视频页
-        epid = re.compile(r"ep\d+", re.I).search(text)
-        # 番剧剧集ssid(season_id)
-        ssid = re.compile(r"ss\d+", re.I).search(text)
-        # 番剧详细页
-        mdid = re.compile(r"md\d+", re.I).search(text)
-        # 直播间
-        room_id = re.compile(r"live.bilibili.com/(blanc/|h5/)?(\d+)", re.I).search(text)
-        # 文章
-        cvid = re.compile(
-            r"(/read/(cv|mobile|native)(/|\?id=)?|^cv)(\d+)", re.I
-        ).search(text)
-        # 动态
-        dynamic_id_type2 = re.compile(
-            r"([tm]).bilibili.com/(\d+)\?(.*?)(&|&amp;)type=2", re.I
-        ).search(text)
-        # 动态
-        dynamic_id = re.compile(r"([tm]).bilibili.com/(\d+)", re.I).search(text)
-        url = ""
-        if bvid:
-            url = f"https://api.bilibili.com/x/web-interface/view?bvid={bvid[0]}"
-        elif aid:
-            url = f"https://api.bilibili.com/x/web-interface/view?aid={aid[0][2:]}"
-        elif epid:
-            url = (
-                f"https://bangumi.bilibili.com/view/web_api/season?ep_id={epid[0][2:]}"
-            )
-        elif ssid:
-            url = f"https://bangumi.bilibili.com/view/web_api/season?season_id={ssid[0][2:]}"
-        elif mdid:
-            url = f"https://bangumi.bilibili.com/view/web_api/season?media_id={mdid[0][2:]}"
-        elif room_id:
-            url = f"https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id={room_id[2]}"
-        elif cvid:
-            page = cvid[4]  # type: ignore
-            url = f"https://api.bilibili.com/x/article/viewinfo?id={page}&mobi_app=pc&from=web"
-        elif dynamic_id_type2:
-            url = f"https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?rid={dynamic_id_type2[2]}&type=2"
-        elif dynamic_id:
-            url = f"https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id={dynamic_id[2]}"
+        for key, pattern in REGEX_PATTERNS.items():
+            if match := pattern.search(text):
+                if key == "bvid":
+                    url = MATCHED_URLS[key].format(match[0])
+                elif key in ["aid", "epid", "ssid", "mdid"]:
+                    url = MATCHED_URLS[key].format(match[1])
+                elif key in ["room_id", "dynamic_id_type2", "dynamic_id"]:
+                    url = MATCHED_URLS[key].format(match[2])
+                elif key == "cvid":
+                    page = match[4]  # type: ignore
+                    url = MATCHED_URLS[key].format(page)
+                else:
+                    if key == "page":
+                        page = match
+                    elif key == "time_location":
+                        time_location = match
+
         return url, page, time_location
+
     except Exception as e:
         logger.exception(e)
         return "", None, None
 
 
 async def search_bili_by_title(title: str) -> str:
+    homepage_url = "https://www.bilibili.com"
     search_url = f"https://api.bilibili.com/x/web-interface/search/all/v2?keyword={urllib.parse.quote(title)}"
 
-    async with aiohttp.request("GET", search_url) as resp:
-        result = (await resp.json())["data"]["result"]
+    async with aiohttp.ClientSession() as session:
+        # set headers
+        async with session.get(homepage_url) as resp:
+            resp.raise_for_status()
+
+        async with session.get(search_url) as resp:
+            result = (await resp.json())["data"]["result"]
 
         # 只返回第一个结果
         return next(
@@ -201,7 +208,7 @@ async def bangumi_detail(
             elif "media_id" in url:
                 vurl = f"https://www.bilibili.com/bangumi/media/md{res['media_id']}"
             else:
-                epid = re.compile(r"ep_id=\d+").search(url)[0][len("ep_id=") :]  # type: ignore
+                epid = EPID_REGEX.search(url)[1]  # type: ignore
                 for i in res["episodes"]:
                     if str(i["ep_id"]) == epid:
                         index_title = f"标题：{i['index_title']}\n"
