@@ -265,9 +265,10 @@ async def send_msg(
 
 
 def del_msg(bot: Bot, mid: int) -> None:
+    from random import random
     loop = asyncio.get_running_loop()
     loop.call_later(
-        60,  # 消息撤回等待时间 单位秒
+        round(random()*2, 2) + 60,  # 消息撤回等待时间 单位秒
         lambda: loop.create_task(bot.delete_msg(message_id=mid)),
     )
 
