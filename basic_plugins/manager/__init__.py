@@ -4,4 +4,5 @@ from . import (
     request_manage,
     friend_group,
     withdraw,
+    keyword_dan,
 )
