@@ -1,4 +1,5 @@
-import re, string
+import re, string, asyncio
+from random import random
 from typing import Literal
 from pathlib import Path
 import sqlite3
@@ -84,74 +85,6 @@ except sqlite3.OperationalError:
     '''.strip())
 
 
-def handle_db(
-    table: Literal["kwd_list", "regex_list"],
-    mode: bool,
-    gid: int,
-    msg: str,
-    ocr: bool,
-    ban_time: int,
-) -> None:
-    if mode:
-        if [ i[0] for i in kwd_db.execute(f'''
-            select BAN_TIME from {table}
-            where GROUP_ID={gid} and CONTENT='{msg}';
-        ''') ]:
-            kwd_db.execute(f'''
-                update {table} set OCR={ocr}, BAN_TIME={ban_time}
-                where GROUP_ID={gid} and CONTENT='{msg}';
-            '''.strip())
-        else:
-            kwd_db.execute(f'''
-                insert into {table}(GROUP_ID, CONTENT, OCR, BAN_TIME)
-                values({gid}, '{msg}', {ocr}, {ban_time});
-            '''.strip())
-    else:
-        kwd_db.execute(f'''
-            delete from {table} where GROUP_ID={gid} and CONTENT='{msg}';
-        '''.strip())
-    kwd_db.commit()
-
-
-def handle_msg(
-    table: Literal["kwd_list", "regex_list"],
-    mode: bool,
-    gid: int,
-    arg: Message = CommandArg(),
-) -> str:
-
-    _help: str = "发送 /keyban 查看帮助"
-
-    if not (args := arg.extract_plain_text().split("\n")):
-        return _help
-
-    ban_time: int = (
-        3600
-        if not re.search(
-            r'[1-9]\d*((个|個|箇)?(月|小?(时|時))|(天|日)|分|秒)?', args[0]
-        )
-        else b_time(Message(args.pop(0)))
-    )
-
-    if not args:
-        return _help
-
-    ocr: bool = False
-    if args[0].lower() == "ocr":
-        ocr = True
-        args.pop(0)
-
-    if not args:
-        return _help
-
-    for i in args:
-        if not i.strip():
-            continue
-        handle_db(table, mode, gid, i.strip(), ocr, ban_time)
-
-    return "我记住了~" if mode else "已删除."
-
-
 add_kwd = on_command(
     "关键词禁言",
     permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
@@ -198,36 +131,6 @@ del_regex = on_command(
 @del_regex.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await del_regex.finish(handle_msg("regex_list", False, event.group_id, args))
-
-
-async def see_list(
-    table: Literal["kwd_list", "regex_list"],
-    bot: Bot,
-    event: GroupMessageEvent
-) -> str | None:
-    name = event.sender.nickname
-    node: list = []
-    for i in kwd_db.execute(f'''
-        select CONTENT, OCR, BAN_TIME from {table}
-        where GROUP_ID={event.group_id};
-    '''.strip()):
-        node.append({
-            "type": "node",
-            "data": {
-                "name": name if name else "老色批",
-                "uin": event.user_id,
-                "content": (
-                    f"内容: {i[0]}\n"
-                    f"OCR: {True if i[1] else False}\n"
-                    f"禁言时间: {i[2]}秒"
-                )
-            }
-        })
-
-    if not node:
-        return "列表为空."
-
-    await bot.send_group_forward_msg(group_id=event.group_id, messages=node)
 
 
 see_kwd = on_command(
@@ -331,6 +234,20 @@ keyword_ban = on_message(priority=90, block=False)
 
 @keyword_ban.handle()
 async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
+    ban_time: int = await get_ban_time(bot, event)
+    if ban_time:
+        await ban_user(
+            bot=bot,
+            gid=event.group_id,
+            userlist=[event.user_id],
+            _time=ban_time
+        )
+        matcher.stop_propagation()
+
+
+
+
+async def get_ban_time(bot: Bot, event: GroupMessageEvent) -> int:
 
     msg: str = event.get_plaintext()
     ocr_text: list = []
@@ -338,12 +255,7 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     for i in event.get_message():
         try:
             if i.type == "image":
-                text: list = []
-                text_list: list = (
-                    await bot.ocr_image(image=str(i.data["file"]))
-                )["texts"]
-                for j in text_list:
-                    text.append(j["text"])
+                text: list = await ocr_image(bot, i)
                 ocr_text.append("\n".join(text))
         except ActionFailed as e:
             logger.debug(err_info(e))
@@ -382,11 +294,112 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     for i in ban:
         ban_time: int = i if i > ban_time else ban_time
 
-    if ban_time:
-        await ban_user(
-            bot=bot,
-            gid=event.group_id,
-            userlist=[event.user_id],
-            _time=ban_time
+    return ban_time
+
+
+async def ocr_image(bot: Bot, i) -> list:
+    await asyncio.sleep(random()+0.5)
+    text: list = []
+    text_list: list = (await bot.ocr_image(image=str(i.data["file"])))["texts"]
+    for j in text_list:
+        text.append(j["text"])
+    return text
+
+
+async def see_list(
+    table: Literal["kwd_list", "regex_list"],
+    bot: Bot,
+    event: GroupMessageEvent
+) -> str | None:
+    name = event.sender.nickname
+    node: list = []
+    for i in kwd_db.execute(f'''
+        select CONTENT, OCR, BAN_TIME from {table}
+        where GROUP_ID={event.group_id};
+    '''.strip()):
+        node.append({
+            "type": "node",
+            "data": {
+                "name": name if name else "老色批",
+                "uin": event.user_id,
+                "content": (
+                    f"内容: {i[0]}\n"
+                    f"OCR: {True if i[1] else False}\n"
+                    f"禁言时间: {i[2]}秒"
+                )
+            }
+        })
+
+    if not node:
+        return "列表为空."
+
+    await bot.send_group_forward_msg(group_id=event.group_id, messages=node)
+
+
+def handle_msg(
+    table: Literal["kwd_list", "regex_list"],
+    mode: bool,
+    gid: int,
+    arg: Message = CommandArg(),
+) -> str:
+
+    _help: str = "发送 /keyban 查看帮助"
+
+    if not (args := arg.extract_plain_text().split("\n")):
+        return _help
+
+    ban_time: int = (
+        3600
+        if not re.search(
+            r'[1-9]\d*((个|個|箇)?(月|小?(时|時))|(天|日)|分|秒)?', args[0]
         )
-        matcher.stop_propagation()
+        else b_time(Message(args.pop(0)))
+    )
+
+    if not args:
+        return _help
+
+    ocr: bool = False
+    if args[0].lower() == "ocr":
+        ocr = True
+        args.pop(0)
+
+    if not args:
+        return _help
+
+    for i in args:
+        if not i.strip():
+            continue
+        handle_db(table, mode, gid, i.strip(), ocr, ban_time)
+
+    return "我记住了~" if mode else "已删除."
+
+
+def handle_db(
+    table: Literal["kwd_list", "regex_list"],
+    mode: bool,
+    gid: int,
+    msg: str,
+    ocr: bool,
+    ban_time: int,
+) -> None:
+    if mode:
+        if [ i[0] for i in kwd_db.execute(f'''
+            select BAN_TIME from {table}
+            where GROUP_ID={gid} and CONTENT='{msg}';
+        ''') ]:
+            kwd_db.execute(f'''
+                update {table} set OCR={ocr}, BAN_TIME={ban_time}
+                where GROUP_ID={gid} and CONTENT='{msg}';
+            '''.strip())
+        else:
+            kwd_db.execute(f'''
+                insert into {table}(GROUP_ID, CONTENT, OCR, BAN_TIME)
+                values({gid}, '{msg}', {ocr}, {ban_time});
+            '''.strip())
+    else:
+        kwd_db.execute(f'''
+            delete from {table} where GROUP_ID={gid} and CONTENT='{msg}';
+        '''.strip())
+    kwd_db.commit()
+
