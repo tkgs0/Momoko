@@ -44,7 +44,7 @@ def save_conf() -> None:
 
 poke_ = on_notice(priority=999, block=False)
 
-@poke_.handle()
+@poke_.handle([Cooldown(10)])
 async def _(event: PokeNotifyEvent):
     if event.self_id == event.target_id:
         await asyncio.sleep(random.random()+1)
