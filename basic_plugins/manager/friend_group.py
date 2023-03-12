@@ -103,9 +103,9 @@ async def _(bot: Bot, arg: Message = CommandArg()):
             format_time(g['group_create_time'])
             if g['group_create_time'] else 'unknown'
         )
-        _level = g['group_level'] if g['group_level'] else 'unknown'
-        _member = g['member_count'] if g['member_count'] else 'unknown'
-        max_member = g['max_member_count'] if g['max_member_count'] else 'unknown'
+        _level = g['group_level'] or 'unknown'
+        _member = g['member_count'] or 'unknown'
+        max_member = g['max_member_count'] or 'unknown'
         msg.append(f"group: {g['group_id']}\n"
                    f"群名: {g['group_name']}\n"
                    f"备注: {g.get('group_memo', '')}\n"
@@ -239,7 +239,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     node = [{
         "type": "node",
         "data": {
-            "name": g["card"] if g["card"] else g["nickname"],
+            "name": g["card"] or g["nickname"] or '老色批',
             "uin": str(g["user_id"]),
             "content": f"""
 user: {g['user_id']}

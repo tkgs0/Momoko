@@ -95,7 +95,7 @@ setu = on_command(
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
 
     gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
-    uid: int = event.user_id if isinstance(event, PrivateMessageEvent) else 0
+    uid: int = event.user_id if not gid else 0
 
     if gid and str(gid) not in enabled['grouplist']:
         return
@@ -121,7 +121,7 @@ async def get__setu(
     args: Message = CommandArg()
 ) -> list:
     uid = event.user_id
-    name = name if (name := event.sender.nickname) else '群色批'
+    name = event.sender.card or event.sender.nickname or '老色批'
     keyword = args.extract_plain_text().strip().split()
     num = (
         int(keyword.pop(0))
@@ -133,7 +133,7 @@ async def get__setu(
     content = await get_api.get_setu(
         uid = uid,
         name = name,
-        keyword = keyword if keyword else ['R-18'],
+        keyword = keyword or ['R-18'],
         img = num,
         pixproxy = pixproxy,
         r18 = lolicon_r18,

@@ -149,7 +149,7 @@ clear_all_chat = on_command(
 async def _(flag: str = ArgStr('flag')):
     if flag.lower().strip() in ['y', 'yes', 'true']:
         msg = await gpt.clear_all_chat()
-        await clear_all_chat.finish(msg if msg else '已清空对话列表.')
+        await clear_all_chat.finish(msg or '已清空对话列表.')
     await clear_all_chat.finish('操作已取消.')
 
 
@@ -174,7 +174,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
                 break
     else:
         res = await gpt.clear_chat(str(event.user_id))
-    await clear_chat.finish(res if res else '对话已重置.')
+    await clear_chat.finish(res or '对话已重置.')
 
 
 def handle_msg(arg) -> list | str:

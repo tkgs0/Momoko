@@ -218,11 +218,10 @@ async def _(bot: Bot, event: MessageEvent):
     gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
     uid: int = event.user_id if not gid else 0
 
-    name = event.sender.nickname
     node: list = [{
             "type": "node",
             "data": {
-                "name": name if name else "老色批",
+                "name": event.sender.card or event.sender.nickname or '老色批',
                 "uin": event.user_id,
                 "content": __help__
             }
@@ -311,7 +310,6 @@ async def see_list(
     bot: Bot,
     event: GroupMessageEvent
 ) -> str | None:
-    name = event.sender.nickname
     node: list = []
     for i in kwd_db.execute(f'''
         select CONTENT, OCR, BAN_TIME from {table}
@@ -320,7 +318,7 @@ async def see_list(
         node.append({
             "type": "node",
             "data": {
-                "name": name if name else "老色批",
+                "name": event.sender.card or event.sender.nickname or '老色批',
                 "uin": event.user_id,
                 "content": (
                     f"内容: {i[0]}\n"

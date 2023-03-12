@@ -238,8 +238,8 @@ async def send_message_with_lock(
 async def send_msg(
     bot: Bot, event: MessageEvent, message: str, index: Optional[int] = None
 ) -> None:
-    user_id=event.user_id if isinstance(event, PrivateMessageEvent) else 0
     group_id=event.group_id if isinstance(event, GroupMessageEvent) else 0
+    user_id=event.user_id if not group_id else 0
 
     if index:
         message = f"第 {index + 1} 张图片的搜索结果：\n{message}"
@@ -251,9 +251,7 @@ async def send_msg(
             messages=[{
                 "type": "node",
                 "data": {
-                    "name": (event.sender.nickname
-                             if event.sender.nickname
-                             else '老色批'),
+                    "name": event.sender.card or event.sender.nickname or '老色批',
                     "uin": event.user_id,
                     "content": message
                 }
@@ -287,8 +285,8 @@ def err_info(e: ActionFailed) -> str:
 async def send_forward_msg(
     bot: Bot, event: MessageEvent, msg_list: List[str], index: Optional[int] = None
 ) -> None:
-    user_id=event.user_id if isinstance(event, PrivateMessageEvent) else 0
     group_id=event.group_id if isinstance(event, GroupMessageEvent) else 0
+    user_id=event.user_id if not group_id else 0
 
     if index:
         msg_list = [f"第 {index + 1} 张图片的搜索结果："] + msg_list
@@ -299,9 +297,7 @@ async def send_forward_msg(
             messages=[{
                 "type": "node",
                 "data": {
-                    "name": (event.sender.nickname
-                             if event.sender.nickname
-                             else '老色批'),
+                    "name": event.sender.card or event.sender.nickname or '老色批',
                     "uin": event.user_id,
                     "content": msg,
                 }
