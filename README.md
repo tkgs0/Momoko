@@ -626,8 +626,40 @@
    </details>
 
 6. 在命令行 `cd` 到本项目的目录
-7. 输入 `pip install -r requirements.txt` 安装环境依赖
-8. 输入 `python bot.py` 启动机器人
+7. 安装环境依赖 · 二选一
+
+   <details>
+     <summary>使用pip安装</summary>
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   </details>
+   <details>
+     <summary>使用poetry安装</summary>
+
+   ```bash
+   pip install --upgrade poetry
+   poetry install
+   ```
+
+   </details>
+
+8. 启动机器人
+   - 常规用户使用:
+     ```bash
+     python bot.py
+     ```
+   - poetry用户使用:
+     ```bash
+     poetry run python bot.py
+     ```
+     **或者**
+     ```bash
+     poetry shell
+     python bot.py
+     ```
 9. 另开一个命令行窗口, `cd` 到本项目下的 `go-cqhttp` 文件夹
 10. 运行适用于你的系统的 `go-cqhttp` 文件
     - 你也可以在 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases) 下载最新的 `go-cqhttp` 文件, 并放入该文件夹.
