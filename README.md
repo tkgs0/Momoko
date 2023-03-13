@@ -472,31 +472,6 @@
 
   </details>
 
-- [x] **拟声鸟** - mockingbird
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [白毛](https://github.com/AkashiCoin) 的 [mockingbird](https://github.com/AkashiCoin/nonebot_plugin_mockingbird)
-
-  ```
-  @Bot 说 [你想要bot说的话]
-  ```
-
-  配置不够的设备使用该功能容易死机，所以修改了权限限制仅超级用户可用。
-  如果需要开放给所有用户使用的话，请将`plugins/mockingbird/__init__.py`第78行的`permission=SUPERUSER,`删掉
-
-  ```
-  显示模型 # 显示出可供修改的模型
-  修改模型 [序号]\[模型名称]
-  重载模型 进行模型重载(并没有什么卵用，或许以后内存泄漏解决会有用？)
-  调整/修改精度 修改语音合成精度
-  调整/修改句长 修改语音合成最大句长
-  更新模型 更新模型列表
-  ```
-
-  </details>
-
 - [x] **搜图** - PicSearch
 
   <details>
