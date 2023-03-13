@@ -4,7 +4,6 @@ from typing import Literal
 from pathlib import Path
 import sqlite3
 from nonebot import logger, get_driver, on_message, on_command
-from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
@@ -232,23 +231,15 @@ async def _(bot: Bot, event: MessageEvent):
 keyword_ban = on_message(priority=90, block=False)
 
 @keyword_ban.handle()
-async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
-    ban_time: int = await get_ban_time(bot, event)
-    if ban_time:
-        await ban_user(
-            bot=bot,
-            gid=event.group_id,
-            userlist=[event.user_id],
-            _time=ban_time
-        )
-        matcher.stop_propagation()
+async def _(bot: Bot, event: GroupMessageEvent):
+    loop = asyncio.get_running_loop()
+    loop.create_task(get_ban(bot, event))
 
 
-
-
-async def get_ban_time(bot: Bot, event: GroupMessageEvent) -> int:
-
+async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
+    gid: int = event.group_id
     msg: str = event.get_plaintext()
+    uid, flag = event.user_id, nm.flag if (nm := event.anonymous) else None
     ocr_text: list = []
 
     for i in event.get_message():
@@ -263,12 +254,12 @@ async def get_ban_time(bot: Bot, event: GroupMessageEvent) -> int:
     if msg:
         ban.extend([ i[0] for i in kwd_db.execute(f'''
             select BAN_TIME from kwd_list
-            where GROUP_ID={event.group_id} and CONTENT='{msg}';
+            where GROUP_ID={gid} and CONTENT='{msg}';
         '''.strip()) ])
 
         for i in kwd_db.execute(f'''
             select CONTENT, BAN_TIME from regex_list
-            where GROUP_ID={event.group_id};
+            where GROUP_ID={gid};
         '''.strip()):
             if re.search(i[0], msg):
                 ban.append(i[1])
@@ -279,12 +270,12 @@ async def get_ban_time(bot: Bot, event: GroupMessageEvent) -> int:
         if x:
             ban.extend([ i[0] for i in kwd_db.execute(f'''
                 select BAN_TIME from kwd_list
-                where GROUP_ID={event.group_id} and CONTENT='{x}' and OCR=1;
+                where GROUP_ID={gid} and CONTENT='{x}' and OCR=1;
             '''.strip()) ])
 
             for i in kwd_db.execute(f'''
                 select CONTENT, BAN_TIME from regex_list
-                where GROUP_ID={event.group_id} and OCR=1;
+                where GROUP_ID={gid} and OCR=1;
             '''.strip()):
                 if re.search(i[0], x):
                     ban.append(i[1])
@@ -293,7 +284,8 @@ async def get_ban_time(bot: Bot, event: GroupMessageEvent) -> int:
     for i in ban:
         ban_time: int = i if i > ban_time else ban_time
 
-    return ban_time
+    if ban_time:
+        await ban_user(bot, gid, [uid], ban_time, flag)
 
 
 async def ocr_image(bot: Bot, i) -> list:
