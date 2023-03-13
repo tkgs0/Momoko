@@ -282,13 +282,13 @@
   ⚠危险操作, 谨慎使用!
 
   ```
-  >cmd {命令}
+  >shell {命令}
   ```
 
   示例:
 
   ```
-  >cmd echo "Hello World"
+  >shell echo "Hello World"
   ```
 
   </details>
@@ -315,7 +315,7 @@
 
   ［被动插件］
 
-  抄自 [mengshouer](https://github.com/mengshouer) [analysis\_bilibili](https://github.com/mengshouer/nonebot_plugin_analysis_bilibili) 的 [NekoAria修改版](https://github.com/NekoAria/nonebot_plugin_analysis_bilibili)
+  抄自 [mengshouer](https://github.com/mengshouer)/[analysis\_bilibili](https://github.com/mengshouer/nonebot_plugin_analysis_bilibili) 的 [NekoAria修改版](https://github.com/NekoAria/nonebot_plugin_analysis_bilibili)
 
   自动解析聊天中发送的 bilibili 小程序/链接
 
