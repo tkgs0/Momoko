@@ -651,7 +651,7 @@
      ```bash
      python bot.py
      ```
-   - poetry用户使用:
+   - **poetry用户使用:**
      ```bash
      poetry run python bot.py
      ```
