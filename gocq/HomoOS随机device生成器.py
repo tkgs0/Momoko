@@ -52,6 +52,9 @@ def mac(i: int = 0) -> str:
 
 
 def run(protocol: int) -> str:
+    if not 0 <= protocol < 7:
+        raise IndexError("未知的协议类型!")
+
     imei: str = get_random_imei()
     
     finger: str = ''.join([
