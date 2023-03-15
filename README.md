@@ -1,6 +1,6 @@
 
 # 桃桃Bot
-此项目是基于 [NoneBot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人
+此项目是基于 [NoneBot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人  
 借(chao)鉴(xi)了大佬们的代码，实现了一些对群友的娱乐功能和实用功能（大概
 
 <div>
