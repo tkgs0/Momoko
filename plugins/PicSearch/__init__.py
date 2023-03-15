@@ -245,7 +245,7 @@ async def send_msg(
         message = f"第 {index + 1} 张图片的搜索结果：\n{message}"
     message = f"{handle_reply_msg(event.message_id)}{message}"
     try:
-        result = await bot.send_forward_msg(
+        await bot.send_forward_msg(
             user_id=user_id,
             group_id=group_id,
             messages=[{
@@ -257,18 +257,8 @@ async def send_msg(
                 }
             }]
         )
-        del_msg(bot, result['message_id'])
     except ActionFailed as e:
         await bot.send(event=event, message=err_info(e))
-
-
-def del_msg(bot: Bot, mid: int) -> None:
-    from random import random
-    loop = asyncio.get_running_loop()
-    loop.call_later(
-        round(random()*2, 2) + 60,  # 消息撤回等待时间 单位秒
-        lambda: loop.create_task(bot.delete_msg(message_id=mid)),
-    )
 
 
 def err_info(e: ActionFailed) -> str:
@@ -291,7 +281,7 @@ async def send_forward_msg(
     if index:
         msg_list = [f"第 {index + 1} 张图片的搜索结果："] + msg_list
     try:
-        result = await bot.send_forward_msg(
+        await bot.send_forward_msg(
             user_id=user_id,
             group_id=group_id,
             messages=[{
@@ -303,7 +293,6 @@ async def send_forward_msg(
                 }
             } for msg in msg_list]
         )
-        del_msg(bot, result['message_id'])
     except ActionFailed as e:
         await bot.send(event=event, message=err_info(e))
 
