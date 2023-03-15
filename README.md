@@ -618,7 +618,7 @@
 
    </details>
    <details>
-     <summary>使用poetry安装</summary>
+     <summary>使用poetry安装(推荐)</summary>
 
    ```bash
    pip install --upgrade poetry
@@ -628,19 +628,43 @@
    </details>
 
 8. 启动机器人
-   - 常规用户使用:
+   - **根据你的安装方式选择启动方式**
+
+   <details>
+     <summary>常规启动</summary>
+
      ```bash
      python bot.py
      ```
-   - **poetry用户使用:**
+     **或者**
+     ```bash
+     nb run
+     ```
+
+   </details>
+   <details>
+     <summary>poetry启动</summary>
+
      ```bash
      poetry run python bot.py
+     ```
+     **或者**
+     ```bash
+     poetry run nb run
      ```
      **或者**
      ```bash
      poetry shell
      python bot.py
      ```
+     **或者**
+     ```bash
+     poetry shell
+     nb run
+     ```
+
+   </details>
+
 9. 另开一个命令行窗口, `cd` 到本项目下的 `go-cqhttp` 文件夹
 10. 运行适用于你的系统的 `go-cqhttp` 文件
     - 你也可以在 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases) 下载最新的 `go-cqhttp` 文件, 并放入该文件夹.
