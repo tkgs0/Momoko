@@ -618,7 +618,7 @@
 
    </details>
    <details>
-     <summary>使用poetry安装(推荐)</summary>
+     <summary>使用poetry安装 (推荐)</summary>
 
    ```bash
    pip install --upgrade poetry
