@@ -1,4 +1,4 @@
-from nonebot import on_fullmatch, logger
+from nonebot import on_command, logger
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -9,7 +9,7 @@ from nonebot.adapters.onebot.v11 import (
 )
 
 
-withdraw_msg = on_fullmatch(
+withdraw_msg = on_command(
     "撤回",
     priority=5,
     block=True,
