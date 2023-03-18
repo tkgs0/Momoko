@@ -561,12 +561,16 @@
    | Debian 11 以上 | Debian 10 以下 |
    | Ubuntu 20 以上 | Ubuntu 18 以下 |
    | Windows 10 以上 | CentOS |
+   | MacOS | |
 
 2. 安装3.9版本以上的Python, 安装ffmpeg(bot发语音需要), 并正确配置环境变量
+
 3. 下载本项目到本地
    - **需要注意的是: 请确保将本项目放在纯英文的路径下.**
    - 如果你不知道什么叫做**路径**, 建议你把电脑放进水里泡一下.
+
 4. 打开本项目所在目录
+
 5. 打开**隐藏文件** `.env`, 填写以下信息:
 
    <details>
@@ -607,6 +611,7 @@
    </details>
 
 6. 在命令行 `cd` 到本项目的目录
+
 7. 安装环境依赖 · 二选一
 
    <details>
@@ -666,31 +671,113 @@
    </details>
 
 9. 另开一个命令行窗口, `cd` 到本项目下的 `go-cqhttp` 文件夹
+
 10. 运行适用于你的系统的 `go-cqhttp` 文件
     - 你也可以在 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases) 下载最新的 `go-cqhttp` 文件, 并放入该文件夹.
-11. 用 `手机QQ` 扫码登入
-12. 登入成功后, 用你的 `超级用户` 账号 给bot发 `/ping`
+
+11. 在 gocq 的 **config.yml** 填写Bot的**帐号**和**密码**, 保存并关闭文件
+
+12. 运行**go-cqhttp**, 登入成功后, 用你的 `超级用户` 账号 给bot发 `/ping`
+
 如果bot给你回复 `I'm fine`, 那么就大功告成了.
 
 
 ### ⚠注意
-**如果你是第一次使用 go-cqhttp, 可能会遇到以下情况:**
+**你可能会遇到以下情况:**
 
 - 登录失败，提示 `请在常用的设备上登录`
 - 密码没有输错, 帐号未被冻结, 但是提示 `密码错误或账号被冻结`
+- 提示 `当前使用的QQ版本过低` 等等一些奇奇怪怪的问题导致的登入失败
 
 **你可能需要进行以下步骤:**
 
-1. 将电脑和手机处在同一IP环境下
+1. 进入 **go-cqhttp** 所在的文件夹
+
+2. 将电脑和手机处在同一IP环境下
    - 比如手机和电脑使用同一个WiFi, 或者电脑连接手机的热点.
-2. 在 gocq 的 **config.yml** 填写Bot的**帐号**和**密码**, 保存并关闭文件
-3. 重新运行**go-cqhttp**, 在弹出需要验证的提示时选择**扫码验证**
+
+3. 删除可能存在的 `device.json` `session.token` `data` 文件/文件夹
+
+- 如果你曾使用过 `1.0.0-rc4` 以及更低版本的 `go-cqhttp`,  
+  并且当前的 `go-cqhttp` 使用了旧的 `config.yml`,  
+  请删除后重新运行一遍 `go-cqhttp`, 配置好 `config.yml`, 并重复步骤**3**
+
+4. 使用 **HomoOS.py** 生成新的 **device.json**
+   - 协议类型请参考 go-cqhttp 的[设备信息](https://docs.go-cqhttp.org/guide/config.html#设备信息)
+
+   <details>
+     <summary>点击展开</summary>
+     <table>
+     <thead>
+     <tr>
+     <th>值</th>
+     <th>类型</th>
+     <th>限制</th>
+     </tr>
+     </thead>
+     <tbody>
+     <tr>
+     <td>0</td>
+     <td>Default/Unset</td>
+     <td>当前版本下默认为iPad</td>
+     </tr>
+     <tr>
+     <td>1</td>
+     <td>Android Phone</td>
+     <td>无</td>
+     </tr>
+     <tr>
+     <td>2</td>
+     <td>Android Watch</td>
+     <td>无法接收 <code>notify</code> 事件、无法接收口令红包、无法接收撤回消息</td>
+     </tr>
+     <tr>
+     <td>3</td>
+     <td>MacOS</td>
+     <td>无</td>
+     </tr>
+     <tr>
+     <td>4</td>
+     <td>企点</td>
+     <td>只能登录企点账号或企点子账号</td>
+     </tr>
+     <tr>
+     <td>5</td>
+     <td>iPad</td>
+     <td>无</td>
+     </tr>
+     <tr>
+     <td>6</td>
+     <td>aPad</td>
+     <td>无</td>
+     </tr>
+     </tbody>
+     </table>
+   </details>
+
+5. 在 [mirai-login-solver-sakura](https://github.com/KasukuSakura/mirai-login-solver-sakura/releases) 下载最新版本的 **apk-release.apk** 安装到手机
+   - 同样需要该手机**与go-cqhttp所在设备处于同一IP环境下**
+
+6. 重新运行 **go-cqhttp**, 在弹出以下提示时**输入2**, 并按下你键盘上的回车(Enter)
+   ```
+   [2023-03-18 11:45:14] [WARNING]: 登录需要滑条验证码, 请验证后重试.
+   [2023-03-18 11:45:14] [WARNING]: 请选择提交滑块ticket方式:
+   [2023-03-18 11:45:14] [WARNING]: 1. 自动提交
+   [2023-03-18 11:45:14] [WARNING]: 2. 手动抓取提交
+   [2023-03-18 11:45:14] [WARNING]: 请输入(1 - 2)：
+   2
+   ```
+   此时控制台将输出一串链接, 将该链接**完整地复制**到上一步安装的app「Sakura Login Solver」, 并点击 **下一步**,  
+   在经过1次或者2次滑块验证后, 将弹出的 token 复制并粘贴到控制台, 并按下你键盘上的回车(Enter)  
+   ||如果你笨到不知道如何将文本从电脑复制到手机, 我可以提示你一下: 你可以用电脑上登入的QQ发送文本消息给手机上登入的QQ||
 
 **服务器用户同理:**
 
-4. 下载对应你电脑系统的 **go-cqhttp** 到电脑上
-5. 按照上面的 **步骤1,2,3** 操作
-6. 登入成功后把生成的 **device.json** 和 **session.token** 拷到服务器上该项目使用的**go-cqhttp所在的文件夹里**
+7. 下载对应你电脑系统的 **go-cqhttp** 到电脑上
+
+8. 按照上面的 **步骤1~6** 操作
+
+9. 登入成功后把生成的 **device.json** 和 **session.token** 拷到服务器上该项目使用的**go-cqhttp所在的文件夹里**
 
 
 ### ⚠喜报
