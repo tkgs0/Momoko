@@ -698,9 +698,9 @@
 
 3. 删除可能存在的 `device.json` `session.token` `data` 文件/文件夹
 
-- 如果你曾使用过 `1.0.0-rc4` 以及更低版本的 `go-cqhttp`,  
-  并且当前的 `go-cqhttp` 使用了旧的 `config.yml`,  
-  请删除后重新运行一遍 `go-cqhttp`, 配置好 `config.yml`, 并重复步骤**3**
+- 如果你使用的是 `1.0.0-rc4` 以及更低版本的 `go-cqhttp` 生成的 `config.yml`,  
+  请将其删除并重新运行 `go-cqhttp` 生成新的 `config.yml`,  
+  然后正确配置 `config.yml` 并重复步骤**3**
 
 4. 运行文件夹里的 [HomoOS.py](https://github.com/tkgs0/Momoko/blob/main/gocq/HomoOS.py) 生成新的 **device.json**
    - 协议类型请参考 go-cqhttp 的[设备信息](https://docs.go-cqhttp.org/guide/config.html#设备信息)
@@ -719,7 +719,7 @@
      <tr>
      <td>0</td>
      <td>Default/Unset</td>
-     <td>当前版本下默认为iPad</td>
+     <td>当前版本下默认为aPad</td>
      </tr>
      <tr>
      <td>1</td>
@@ -770,7 +770,6 @@
    此时控制台将输出一串链接, 将该链接**完整地复制**到上一步安装的app `Sakura Login Solver`, 并点击 **下一步**,  
   
    在经过1次或者2次滑块验证后, 将弹出的 token 复制并粘贴到控制台, 并按下你键盘上的回车(Enter)  
-  
 
    <details>
      <summary>不知道如何将文本复制到手机?</summary>
@@ -779,7 +778,6 @@
 
    </details>
 
-  
 **服务器用户同理:**
 
 7. 下载对应你电脑系统的 **go-cqhttp** 到电脑上
