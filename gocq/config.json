@@ -1,9 +1,9 @@
 {
-    ".not": {
-        ".or": [
-            {
-                "message_type": "guild"
-            }
-        ]
-    }
+  ".not": {
+    ".or": [
+      {
+        "message_type": "guild"
+      }
+    ]
+  }
 }
