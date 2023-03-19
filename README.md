@@ -593,7 +593,7 @@
 
    ACGGOV_TOKEN="apikey"
 
-   ANTI_FLASH_GROUP=[""]  # 填写默认开启 反闪照 的群聊, 可留空.
+   ANTI_FLASH_GROUP=[]  # 填写默认开启 反闪照 的群聊, 可留空.
    # 可填写多个 例如: ["123456","654321"]
 
    SAUCENAO_API_KEY=""  # 在引号里填写你在 saucenao.com 申请到的 apikey
@@ -604,7 +604,7 @@
    CAIYUNAI_APIKEY=""  # 在引号里填写你的 彩云小梦 apikey
    # 缺少该项将无法正常使用小梦续写功能.
 
-   LINKER_GROUP=[""]  # 填写启用群文件直链插件的群
+   LINKER_GROUP=[]  # 填写启用群文件直链插件的群
    LINKER_COMMAND="link"  # 设置插件触发命令（默认`link`）
    ```
 
