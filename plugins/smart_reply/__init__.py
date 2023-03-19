@@ -1,7 +1,7 @@
-from nonebot import get_driver, on_command, on_message, on_notice
+from nonebot import on_command, on_message, on_notice
 from nonebot.rule import to_me
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg, ArgStr
+from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
     Message,
@@ -9,10 +9,7 @@ from nonebot.adapters.onebot.v11 import (
     PokeNotifyEvent,
     MessageSegment
 )
-from nonebot.adapters.onebot.v11.helpers import (
-    Cooldown,
-    CooldownIsolateLevel
-)
+from nonebot.adapters.onebot.v11.helpers import Cooldown
 import ujson as json
 from pathlib import Path
 import asyncio, random
@@ -23,8 +20,6 @@ from .utils import (
     xiaosi,
     xiaoai
 )
-
-from . import gpt
 
 
 confpath: Path = Path() / 'data' / 'smart_reply' / 'reply.json'
@@ -52,8 +47,7 @@ async def _(event: PokeNotifyEvent):
         await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
 
 
-ai = on_message(rule=to_me(), priority=998, block=False)
-aigpt = on_message(rule=to_me(), priority=999, block=True)
+ai = on_message(rule=to_me(), priority=999, block=False)
 
 @ai.handle()
 async def _(event: MessageEvent, matcher: Matcher):
@@ -62,10 +56,8 @@ async def _(event: MessageEvent, matcher: Matcher):
 
     if conf['mode'] == 1:
         get_reply = xiaoai
-    elif not conf['mode']:
-        get_reply = xiaosi
     else:
-        return
+        get_reply = xiaosi
 
     await asyncio.sleep(random.random()*2+1)
 
@@ -85,31 +77,9 @@ async def _(event: MessageEvent, matcher: Matcher):
     matcher.stop_propagation()
     await ai.finish(Message(result))
 
-@aigpt.handle([Cooldown(
-    60,
-    prompt=random.choice(["慢...慢一..点❤", "等..等一...下❤"]),
-    isolate_level=CooldownIsolateLevel.USER,
-)])
-async def _(event: MessageEvent):
-    # 获取纯文本消息
-    msg = event.get_plaintext().strip()
-
-    if conf['mode'] != 2:
-        return
-
-    text = f'{MessageSegment.at(event.user_id)}\n' + (
-        await gpt.get_chat(msg=msg, uid=str(event.user_id))
-    ).strip() if msg else 'ʕ  •ᴥ•ʔ ?'
-    await aigpt.finish(Message(text))
-
 
 '''
 小爱语音回复需在 .env 添加 XIAOAI_VOICE=true
-
-ChatGPT回复需在 .env 添加openai帐号和密码
-⚠注意: 插件会将openai帐密上传到**第三方API**过`人机验证`来获取令牌
-  CHATGPT_USR="xxxxx"
-  CHATGPT_PWD="xxxxx"
 '''
 set_reply = on_command(
     '设置回复模式',
@@ -126,76 +96,11 @@ async def _(arg: Message = CommandArg()):
         conf['mode'] = 0
     elif msg.startswith('小爱'):
         conf['mode'] = 1
-    elif msg.lower().startswith('gpt') or msg.lower().startswith('chatgpt'):
-        conf['mode'] = 2
     elif not msg:
-        conf['mode'] = conf['mode'] + 1 if conf['mode'] < 2 else 0
+        conf['mode'] = 0 if conf['mode'] else 1
     else:
         await set_reply.finish('模式不存在.')
     save_conf()
-    mode = ['小思', '小爱', 'ChatGPT']
+    mode = ['小思', '小爱']
     await set_reply.finish(f'已设置回复模式{mode[conf["mode"]]}')
-
-
-clear_all_chat = on_command(
-    '清空对话列表',
-    rule=to_me(),
-    permission=SUPERUSER,
-    priority=2,
-    block=True
-)
-
-@clear_all_chat.got('flag', prompt='确定吗? (Y/n)')
-async def _(flag: str = ArgStr('flag')):
-    if flag.lower().strip() in ['y', 'yes', 'true']:
-        msg = await gpt.clear_all_chat()
-        await clear_all_chat.finish(msg or '已清空对话列表.')
-    await clear_all_chat.finish('操作已取消.')
-
-
-clear_chat = on_command(
-    '重置对话',
-    rule=to_me(),
-    priority=15,
-    block=True
-)
-
-@clear_chat.handle()
-async def _(event: MessageEvent, arg: Message = CommandArg()):
-    uids = None
-    res = None
-    if str(event.user_id) in get_driver().config.superusers:
-        uids = [at.data['qq'] for at in event.get_message()['at']]
-        if not uids:
-            uids = handle_msg(arg)
-    if uids:
-        for i in uids:
-            if res := await gpt.clear_chat(i):
-                break
-    else:
-        res = await gpt.clear_chat(str(event.user_id))
-    await clear_chat.finish(res or '对话已重置.')
-
-
-def handle_msg(arg) -> list | str:
-    uids = arg.extract_plain_text().strip().split()
-    for uid in uids:
-        if not is_number(uid):
-            return '参数错误, qq号必须是数字..'
-    return uids
-
-
-def is_number(s: str) -> bool:
-    try:
-        float(s)
-        return True
-    except ValueError:
-        pass
-    try:
-        import unicodedata
-        unicodedata.numeric(s)
-        return True
-    except (TypeError, ValueError):
-        pass
-    return False
 
