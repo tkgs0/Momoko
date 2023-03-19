@@ -57,7 +57,6 @@ tinydb = ">=4.6.0"
 ujson = ">=5.2.0"
 arrow = ">=1.2.3"
 dbutils = ">=3.0.2"
-revchatgpt = ">=4.0.0"
 
 [tool.poetry.dev-dependencies]
 
