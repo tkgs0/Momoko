@@ -1,8 +1,8 @@
 import re
 from base64 import b64encode
-from typing import Any, Callable, Coroutine, List, Optional
+from typing import Any, Callable, Coroutine, Dict, List, Optional
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, TCPConnector
 from cachetools import TTLCache
 from nonebot.adapters.onebot.v11 import Bot
 from pyquery import PyQuery
@@ -14,16 +14,42 @@ from .config import config
 SEARCH_FUNCTION_TYPE = Callable[..., Coroutine[Any, Any, List[str]]]
 
 DEFAULT_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36"
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/99.0.4844.82 Safari/537.36"
+    )
 }
+
+
+def get_session_with_proxy(headers: Optional[Dict[str, str]] = None) -> ClientSession:
+    if config.proxy and config.proxy.startswith("socks"):
+        try:
+            from aiohttp_socks import ProxyConnector
+
+            connector = ProxyConnector.from_url(config.proxy)
+        except ModuleNotFoundError:
+            connector = TCPConnector()
+    else:
+        connector = TCPConnector()
+
+    session = ClientSession(connector=connector, headers=headers)
+
+    if config.proxy and not config.proxy.startswith("socks"):
+        from functools import partial
+
+        session.get = partial(session.get, proxy=config.proxy)  # type: ignore
+        session.post = partial(session.post, proxy=config.proxy)  # type: ignore
+
+    return session
 
 
 async def get_image_bytes_by_url(
     url: str, cookies: Optional[str] = None
 ) -> Optional[bytes]:
     headers = {"Cookie": cookies, **DEFAULT_HEADERS} if cookies else DEFAULT_HEADERS
-    async with ClientSession(headers=headers) as session:
-        async with session.get(url, proxy=config.proxy) as resp:
+    async with get_session_with_proxy(headers=headers) as session:
+        async with session.get(url) as resp:
             if resp.status < 400 and (image_bytes := await resp.read()):
                 return image_bytes
     return None
@@ -53,10 +79,10 @@ def handle_reply_msg(message_id: int) -> str:
 async def get_source(url: str) -> str:
     source = url
     if host := URL(source).host:
-        async with ClientSession(
+        async with get_session_with_proxy(
             headers=None if host == "danbooru.donmai.us" else DEFAULT_HEADERS
         ) as session:
-            async with session.get(source, proxy=config.proxy) as resp:
+            async with session.get(source) as resp:
                 if resp.status >= 400:
                     return ""
 
@@ -89,12 +115,12 @@ async def shorten_url(url: str) -> str:
     pid_search = re.compile(
         r"(?:pixiv.+(?:illust_id=|artworks/)|/img-original/img/(?:\d+/){6})(\d+)"
     )
-    if pid_search.search(url):
-        return confuse_url(f"https://pixiv.net/i/{pid_search.search(url)[1]}")  # type: ignore
+    if pid_match := pid_search.search(url):
+        return confuse_url(f"https://pixiv.net/i/{pid_match[1]}")
 
     uid_search = re.compile(r"pixiv.+(?:member\.php\?id=|users/)(\d+)")
-    if uid_search.search(url):
-        return confuse_url(f"https://pixiv.net/u/{uid_search.search(url)[1]}")  # type: ignore
+    if uid_match := uid_search.search(url):
+        return confuse_url(f"https://pixiv.net/u/{uid_match[1]}")
 
     if URL(url).host == "danbooru.donmai.us":
         return confuse_url(url.replace("/post/show/", "/posts/"))

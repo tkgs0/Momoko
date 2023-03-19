@@ -18,7 +18,7 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.log import logger
 from nonebot.matcher import Matcher
-from nonebot.plugin.on import on_message, on_metaevent
+from nonebot.plugin.on import on_message
 from nonebot.rule import Rule
 from PicImageSearch import Network
 from shelved_cache import PersistentCache
@@ -50,18 +50,6 @@ pic_search_cache = PersistentCache(
 
 def check_first_connect(_: LifecycleMetaEvent) -> bool:
     return True
-
-
-start_metaevent = on_metaevent(rule=check_first_connect, temp=True)
-
-
-@start_metaevent.handle()
-async def _(bot: Bot) -> None:
-    if not config.saucenao_api_key:
-        await bot.send_private_msg(
-            user_id=int(list(config.superusers)[0]),
-            message="请配置 saucenao_api_key ，否则无法正常使用搜图功能",
-        )
 
 
 def contains_image(event: MessageEvent) -> bool:
