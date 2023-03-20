@@ -23,7 +23,7 @@ github = on_message(priority=5, block=False)
 @github.handle()
 async def github_handle(event: GroupMessageEvent):
     text = unescape(event.get_plaintext())
-    if res := re.search(r"github\.com/[^/]+/[^/]+", text):
+    if res := re.search(r"github\.com/[^/]+/[^/\s]+", text):
         url = res.group()
         imageUrl = await get_github_reposity_information(url)
         assert(imageUrl != "获取信息失败")
