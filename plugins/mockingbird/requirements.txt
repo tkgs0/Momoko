@@ -1,0 +1,6 @@
+mockingbirdforuse
+torch==1.13.1
+numpy==1.23.5
+langid
+pydub
+tencentcloud-sdk-python
