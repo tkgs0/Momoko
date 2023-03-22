@@ -56,7 +56,7 @@ mockingbird_path = MOCKINGBIRD_PATH
 mocking_logger = nonebot_logger  # 覆盖使用nonebot的logger
 default_filter.level = driver.config.log_level
 
-confpath = Path() / "data" / "mockingbird" / "config.json"
+confpath = Path() / "data" / "mockingbird" / "conf.json"
 
 conf: dict = (
     json.loads(confpath.read_text("utf-8"))
