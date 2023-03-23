@@ -520,7 +520,7 @@
   <details>
     <summary>使用方法</summary>
 
-  将 [MWTJC](https://github.com/MWTJC)/[mockingbird真寻适配版](https://github.com/MWTJC/nonebot_plugin_mockingbird) 重新DIY成 nonebot 通用版
+  > 将 [MWTJC](https://github.com/MWTJC)/[mockingbird真寻适配版](https://github.com/MWTJC/nonebot_plugin_mockingbird) 重新DIY成 nonebot 通用版
 
   `@机器人` 并加上 **说** 发送你想让机器人说的话
 
