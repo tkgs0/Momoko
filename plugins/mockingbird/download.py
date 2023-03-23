@@ -22,7 +22,7 @@ async def download_url(url: str, path: Path) -> bool:
                 async with client.stream(
                     'GET', url=url, headers=headers, timeout=30
                 ) as resp:
-                    if not resp.content:
+                    if resp.status_code != 200:
                         await resp.aclose()
                         continue
                     with open(path, 'wb') as fd:  # 写入文件
