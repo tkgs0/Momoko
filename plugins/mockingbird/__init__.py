@@ -7,6 +7,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 from nonebot import get_driver, logger as nonebot_logger
+from nonebot.matcher import Matcher
 from nonebot.params import ArgStr, CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.rule import to_me
@@ -173,14 +174,11 @@ async def _(state: T_State, arg: Message = CommandArg()):
 
 
 @voice.got("words", prompt=f"想要让{NICKNAME}说什么话呢?")
-async def _(state: T_State, words: str = ArgStr("words")):
+async def get__voice(matcher: Matcher, state: T_State, words: str = ArgStr("words")):
     words = words.strip().replace("\n", "").replace("\r", "")
     if conf["use_tts"]:
         record = await get_voice(words)
-        if record:
-            await voice.finish(MessageSegment.record(record))
-        else:
-            await voice.finish("出错了，请稍后再试")
+        await matcher.finish(MessageSegment.record(record) if record else "ʕ  •ᴥ•ʔ</>")
     if langid.classify(words)[0] == "ja":
         record = await get_voice(words)
     # 加入tts英文
@@ -198,7 +196,7 @@ async def _(state: T_State, words: str = ArgStr("words")):
             Manager.get_config(config_name="voice_accuracy"),
             Manager.get_config(config_name="max_steps"),
         )
-    await voice.finish(MessageSegment.record(record))  # type: ignore
+    await matcher.finish(MessageSegment.record(record) if record else "ʕ  •ᴥ•ʔ</>")
 
 
 @view_model.handle()

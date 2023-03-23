@@ -1,9 +1,12 @@
 import json
-import aiofiles
 import httpx
 from pathlib import Path
 
 from nonebot.log import logger
+
+headers: dict = {
+    "User-Agent": "Mozilla/5.0 (Linux; arm64; Android 12; SM-S9080) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 YaBrowser/23.0.0.00.00 SA/3 Mobile Safari/537.36",
+}
 
 base_url: str = "https://pan.yropo.top/source/mockingbird/"
 
@@ -11,21 +14,25 @@ class DownloadError(Exception):
     pass
 
 async def download_url(url: str, path: Path) -> bool:
-    for i in range(3):
-        try:
-            async with httpx.AsyncClient() as Client:
-                url = (await Client.post(url)).url  # type: ignore
+    async with httpx.AsyncClient() as client:
+        for i in range(3):
+            try:
+                url = (await client.post(url, headers=headers)).url  # type: ignore
                 path.parent.mkdir(parents=True, exist_ok=True)
-                content = (await Client.get(url)).content
-                async with aiofiles.open(path, "wb") as wf:
-                        await wf.write(content)
-                        logger.info(f"Success downloading {url} .. Path：{path.absolute()}")
-                if content:
+                async with client.stream(
+                    'GET', url=url, headers=headers, timeout=30
+                ) as resp:
+                    if not resp.content:
+                        await resp.aclose()
+                        continue
+                    with open(path, 'wb') as fd:  # 写入文件
+                        async for chunk in resp.aiter_bytes(1024):
+                            fd.write(chunk)
+                    logger.info(f"Success downloading {url} .. Path：{path.absolute()}")
+                    await resp.aclose()
                     return True
-                else:
-                    continue
-        except Exception as e:
-            logger.warning(f"Error downloading {url}, retry {i}/3: {e}")
+            except Exception as e:
+                logger.warning(f"Error downloading {url}, retry {i}/3: {e}")
     return False
 
 # 下载资源
@@ -60,16 +67,26 @@ async def check_resource(root: Path, model_name: str):
 
 # 更新模型列表文件
 def get_model_list_file(file_path: Path) -> str | bool:
-    url: str = f"https://raw.fastgit.org/AkashiCoin/nonebot_plugin_mockingbird/master/nonebot_plugin_mockingbird/resource/model_list.json"
-    try:
-        with httpx.Client() as Client:
-            data = Client.get(url).json()
+    url: str = "https://github.com/AkashiCoin/nonebot_plugin_mockingbird/raw/master/nonebot_plugin_mockingbird/resource/model_list.json"
+
+    url1: str = "https://raw.fastgit.org/AkashiCoin/nonebot_plugin_mockingbird/master/nonebot_plugin_mockingbird/resource/model_list.json"
+
+    with httpx.Client() as client:
+        try:
+            try:
+                data = client.get(
+                    url, headers=headers, follow_redirects=True
+                ).json()
+            except:
+                data = client.get(url1, headers=headers).json()
             if data:
-                with open(file_path, "w", encoding="utf-8") as f:
-                    json.dump(data, f, ensure_ascii=False, indent=4)
-                    return True
+                file_path.write_text(
+                    json.dumps(data, ensure_ascii=False, indent=2),
+                    "utf-8"
+                )
+                return True
             else:
                 return "更新模型列表失败..."
-    except Exception as e:
-        logger.error(f"Error downloading {url} .. Error: {e}")
-        return "更新模型列表失败..."
+        except Exception as e:
+            logger.error(f"Error downloading {url} .. Error: {e}")
+            return "更新模型列表失败..."

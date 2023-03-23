@@ -1,6 +1,7 @@
 from nonebot import on_command, on_message, on_notice
 from nonebot.rule import to_me
 from nonebot.matcher import Matcher
+from nonebot.typing import T_State
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
@@ -50,7 +51,7 @@ async def _(event: PokeNotifyEvent):
 ai = on_message(rule=to_me(), priority=999, block=False)
 
 @ai.handle()
-async def _(event: MessageEvent, matcher: Matcher):
+async def _(state: T_State, event: MessageEvent, matcher: Matcher):
     # 获取纯文本消息
     msg = event.get_plaintext().strip()
 
@@ -75,6 +76,14 @@ async def _(event: MessageEvent, matcher: Matcher):
         result = await get_reply(msg)
 
     matcher.stop_propagation()
+
+    try:
+        from ..mockingbird import get__voice
+        if type(result) == str:
+            await get__voice(matcher, state, result)
+    except:
+        pass
+
     await ai.finish(Message(result))
 
 
