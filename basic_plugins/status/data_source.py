@@ -2,6 +2,7 @@ import os, time, psutil
 from datetime import datetime
 from typing import Tuple
 from httpx import AsyncClient
+from nonebot.log import logger
 
 
 _STATUS_MSG = """
@@ -93,7 +94,10 @@ headers = {
 
 async def get_url(url):
     async with AsyncClient() as client:
-        response = await client.get(url, headers=headers, timeout=10)
-        await response.aclose()
-        return response.status_code
-
+        try:
+            response = await client.get(url, headers=headers, timeout=10)
+            await response.aclose()
+            return response.status_code
+        except Exception as e:
+            logger.exception(e)
+            return e.__class__.__name__
