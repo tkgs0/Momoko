@@ -11,8 +11,8 @@ class Config(BaseModel, extra=Extra.ignore):
     nickname: List[str] = ["萝卜子"]
     mockingbird_path: str | Path = Path() / "data" / "mockingbird"
     super_only: Optional[bool] = True  # 是否限制仅超级用户使用
-    tencent_secret_id: str = "TENCENT_SECRET_ID"
-    tencent_secret_key: str = "TENCENT_SECRET_KEY"
+    tencent_secret_id: str = ""
+    tencent_secret_key: str = ""
 
 
 _config = Config.parse_obj(get_driver().config.dict())

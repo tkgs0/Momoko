@@ -188,21 +188,13 @@ async def _(state: T_State, arg: Message = CommandArg()):
 @voice.got("words", prompt=f"想要让{NICKNAME[0]}说什么话呢?")
 async def get__voice(matcher: Matcher, state: T_State, words: str = ArgStr("words")):
     words = words.strip().replace("\n", "").replace("\r", "")
-    if conf["use_tts"]:
+    if conf["use_tts"] or langid.classify(words)[0] == "ja":
         record = await get_voice(words)
-        await matcher.finish(MessageSegment.record(record) if record else "ʕ  •ᴥ•ʔ</>")
-    if langid.classify(words)[0] == "ja":
-        record = await get_voice(words)
-    # 加入tts英文
-    elif langid.classify(words)[0] == "en":
-        record = await get_voice(words)
-
     else:
         for i in number:
             words = words.replace(i, number[i])
         for i in ascii_lowercase + ascii_uppercase:
             words = words.replace(i, '呃')
-
         record = await asyncio.get_event_loop().run_in_executor(
             None,
             mockingbird.synthesize,
@@ -261,7 +253,7 @@ async def reload_model():
 @switch_tts.handle()
 async def _(event: MessageEvent):
     msg = event.get_plaintext().strip()
-    if not TENCENT_SECRET_KEY or TENCENT_SECRET_KEY == "TENCENT_SECRET_KEY":
+    if not TENCENT_SECRET_KEY:
         await switch_tts.finish("无法启用TTS，请先配置tencent_secret_key...")
     if msg.startswith("开启"):
         conf["use_tts"] = True
