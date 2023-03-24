@@ -13,7 +13,6 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 import ujson as json
 from pathlib import Path
-from string import ascii_lowercase, ascii_uppercase
 import asyncio, random
 from .utils import (
     # Bot_NICKNAME,
@@ -22,20 +21,6 @@ from .utils import (
     xiaosi,
     xiaoai
 )
-
-
-number: dict = {
-    "0": "零，",
-    "1": "一，",
-    "2": "二，",
-    "3": "三，",
-    "4": "四，",
-    "5": "五，",
-    "6": "六，",
-    "7": "七，",
-    "8": "八，",
-    "9": "九，"
-}
 
 
 confpath: Path = Path() / 'data' / 'smart_reply' / 'reply.json'
@@ -95,12 +80,7 @@ async def _(state: T_State, event: MessageEvent, matcher: Matcher):
     try:
         from ..mockingbird import get__voice
         if isinstance(result, str) and not result.startswith('ʕ  •ᴥ•ʔ'):
-            text = result
-            for i in number:
-                text = text.replace(i, number[i])
-            for i in ascii_lowercase + ascii_uppercase:
-                text = text.replace(i, '呃')
-            await get__voice(matcher, state, text)
+            await get__voice(matcher, state, result)
     except:
         pass
 
