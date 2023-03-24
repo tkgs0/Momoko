@@ -1,6 +1,6 @@
 import asyncio, json, langid
 from pathlib import Path
-
+from string import ascii_lowercase, ascii_uppercase
 from mockingbirdforuse import MockingBird
 from mockingbirdforuse.log import default_filter, logger as mocking_logger
 from nonebot import on_command
@@ -31,7 +31,7 @@ usage：
 """.strip()
 __plugin_des__ = "利用MockingBird生成语音并发送"
 __plugin_cmd__ = [
-    "说", f"{NICKNAME}说",
+    "说", f"{NICKNAME[0]}说",
     "MockingBird",
     "mockingbird",
 ]
@@ -48,8 +48,20 @@ usage：
 """.strip()
 __plugin_version__ = 1.0
 __plugin_author__ = "AkashiCoin"
-__plugin_block_limit__ = {"rst": f"{NICKNAME}说话没有那么快啦..."}
+__plugin_block_limit__ = {"rst": f"{NICKNAME[0]}说话没有那么快啦..."}
 
+number: dict = {
+    "0": "零",
+    "1": "幺",
+    "2": "二",
+    "3": "三",
+    "4": "四",
+    "5": "五",
+    "6": "六",
+    "7": "七",
+    "8": "八",
+    "9": "九"
+}
 
 driver = get_driver()
 
@@ -173,7 +185,7 @@ async def _(state: T_State, arg: Message = CommandArg()):
         state["words"] = args
 
 
-@voice.got("words", prompt=f"想要让{NICKNAME}说什么话呢?")
+@voice.got("words", prompt=f"想要让{NICKNAME[0]}说什么话呢?")
 async def get__voice(matcher: Matcher, state: T_State, words: str = ArgStr("words")):
     words = words.strip().replace("\n", "").replace("\r", "")
     if conf["use_tts"]:
@@ -186,10 +198,15 @@ async def get__voice(matcher: Matcher, state: T_State, words: str = ArgStr("word
         record = await get_voice(words)
 
     else:
+        for i in number:
+            words = words.replace(i, number[i])
+        for i in ascii_lowercase + ascii_uppercase:
+            words = words.replace(i, '呃')
+
         record = await asyncio.get_event_loop().run_in_executor(
             None,
             mockingbird.synthesize,
-            str(words),
+            words,
             mockingbird_path / Manager.get_config(config_name="model") / "record.wav",
             "HifiGan",
             0,
@@ -244,7 +261,7 @@ async def reload_model():
 @switch_tts.handle()
 async def _(event: MessageEvent):
     msg = event.get_plaintext().strip()
-    if not TENCENT_SECRET_KEY:
+    if not TENCENT_SECRET_KEY or TENCENT_SECRET_KEY == "TENCENT_SECRET_KEY":
         await switch_tts.finish("无法启用TTS，请先配置tencent_secret_key...")
     if msg.startswith("开启"):
         conf["use_tts"] = True
