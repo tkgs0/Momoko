@@ -52,27 +52,15 @@ async def get_setu(
             if not pics:
                 return ['\n'.join(status), False]
 
-            node = [{
-                "type": "node",
-                "data": {
-                    "name": name,
-                    "uin": str(uid),
-                    "content": '\n'.join([
-                        f'{MessageSegment.image(i[0], cache=False)}\n{i[1]}'
-                        for i in pics
-                    ])
-                }
-            }]
+            node = [MessageSegment.node_custom(
+                uid, name, '\n'.join([
+                    f'{MessageSegment.image(i[0], cache=False)}\n{i[1]}'
+                    for i in pics
+                ])
+            )]
 
             if status:
-                node.append({
-                    "type": "node",
-                    "data": {
-                        "name": name,
-                        "uin": str(uid),
-                        "content": '\n'.join(status)
-                    }
-                })
+                node.append(MessageSegment.node_custom(uid, name, '\n'.join(status)))
 
             return [node, 1]
 
