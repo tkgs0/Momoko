@@ -16,7 +16,7 @@ async def get_github_reposity_information(url: str) -> str:
             ImageUrl = f"https://image.thum.io/get/width/1280/crop/640/viewportWidth/1280/png/noanimate/https://socialify.git.ci/{UserName}/{RepoName}/image?description=1&font=Rokkitt&forks=1&issues=1&language=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark&logo={AvatarUrl}"
             await res.aclose()
             return ImageUrl
-    except:
+    except Exception:
         return "获取信息失败"
 
 

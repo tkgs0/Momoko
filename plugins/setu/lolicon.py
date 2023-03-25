@@ -82,7 +82,7 @@ async def get_setu(
         except IndexError as e:
             logger.warning(e)
             return [f'图库中没有搜到关于{keyword}的图。', False]
-        except:
+        except Exception:
             logger.exception(f'{exc_info()[0]}, {exc_info()[1]}')
             return [f'{exc_info()[0]} {exc_info()[1]}。', False]
 

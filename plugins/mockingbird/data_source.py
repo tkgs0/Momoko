@@ -1,4 +1,4 @@
-import re, json, uuid, traceback, langid, asyncio, httpx
+import re, json, uuid, langid, asyncio, httpx
 from io import BytesIO
 from typing import Optional, Union
 from pydub import AudioSegment
@@ -17,8 +17,8 @@ async def get_voice(text, type=0) -> Optional[Union[str, BytesIO]]:
         else:
             voice = await get_tx_voice(text, type)
         return voice
-    except:
-        logger.warning(traceback.format_exc())
+    except Exception as e:
+        logger.exception(e)
         return None
 
 

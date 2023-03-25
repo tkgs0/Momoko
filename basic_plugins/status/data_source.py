@@ -99,5 +99,5 @@ async def get_url(url):
             await response.aclose()
             return response.status_code
         except Exception as e:
-            logger.exception(e)
+            logger.warning(repr(e))
             return e.__class__.__name__

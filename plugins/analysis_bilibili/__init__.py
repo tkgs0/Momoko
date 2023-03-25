@@ -41,7 +41,7 @@ async def analysis_main(event: MessageEvent) -> None:
         except ActionFailed as e:
             logger.warning(err_info(e))
         except Exception as e:
-            logger.exception(repr(e))
+            logger.exception(e)
 
 
 def err_info(e: ActionFailed) -> str:

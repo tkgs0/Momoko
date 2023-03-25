@@ -77,7 +77,7 @@ def get_model_list_file(file_path: Path) -> str | bool:
                 data = client.get(
                     url, headers=headers, follow_redirects=True
                 ).json()
-            except:
+            except Exception:
                 data = client.get(url1, headers=headers).json()
             if data:
                 file_path.write_text(

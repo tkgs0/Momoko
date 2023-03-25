@@ -80,7 +80,7 @@ def ban_time(arg: Message = CommandArg()) -> int:
             time3 = time1 if time1 >= 60 else 60
         time3 = time3 - time3 % 60 + 60 if time3 % 60 else time3
         return time3 if time3 <= 2591940 else 2591940
-    except:
+    except Exception:
         return 43200
 
 

@@ -31,7 +31,7 @@ def _check(event, arg):
         try:
             res = int(requests.post(url=f'{url}{event.user_id}').json()['qz'])
             return f'查询结果: {res}'
-        except:
+        except Exception:
             return '查询失败'
 
     uids = [at.data['qq'] for at in msg['at']]
@@ -52,7 +52,7 @@ def _check(event, arg):
         try:
             res = int(requests.post(url=url+uid).json()['qz'])
             result.append(f'{uid} 查询结果: {res}')
-        except:
+        except Exception:
             result.append(f'{uid} 查询失败')
     return '\n'.join(result)
 

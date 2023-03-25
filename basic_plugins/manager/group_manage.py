@@ -114,7 +114,7 @@ async def is_reply(bot: Bot, event: MessageEvent) -> str | int | None:
         except ActionFailed as e:
             logger.warning(err_info(e))
             uid = None
-        except:
+        except Exception:
             uid = None
         return uid
     return None
