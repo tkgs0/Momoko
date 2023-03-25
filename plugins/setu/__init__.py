@@ -49,11 +49,9 @@ setu_cd = [Cooldown(cooldown, prompt='慢...慢一..点❤')] if cooldown > 0 el
 def setu_wd(bot: Bot, msg_id: int) -> None:
     if withdraw < 1:
         return
-    from random import random
-    wd = withdraw + round(random()*2, 2)
     loop = asyncio.get_running_loop()
     loop.call_later(
-        110 if wd > 120 else wd,  # 消息撤回等待时间 单位秒
+        withdraw if withdraw < 120 else 110,  # 消息撤回等待时间 单位秒
         lambda: loop.create_task(bot.delete_msg(message_id=msg_id)),
     )
 
@@ -107,13 +105,12 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if not content[1]:
         await setu.finish(content[0])
     try:
-        result = await bot.send_forward_msg(
-            user_id=uid, group_id=gid, messages=content[0]
-        )
+        setu_wd(bot, (await bot.send_forward_msg(
+            user_id=uid, group_id=gid, messages=content[0])
+        )['message_id'])
     except ActionFailed as e:
         logger.error(repr(e))
         await setu.finish(err_info(e))
-    setu_wd(bot, result['message_id'])
 
 
 async def get__setu(

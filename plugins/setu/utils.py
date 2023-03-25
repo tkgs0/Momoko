@@ -8,7 +8,8 @@ from nonebot_plugin_imageutils import BuildImage as Image
 
 def edit_img(img: bytes) -> BytesIO:
     image = Image.open(BytesIO(img))
-    image.draw_ellipse((5,5,50,50), outline='red')
+    # image.draw_ellipse((5,5,50,50), outline='red')
+    image = image.resize_width(image.width // 2)
     return image.save_png()
 
 
