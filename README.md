@@ -676,12 +676,19 @@
 
    </details>
    <details>
-     <summary>使用poetry安装 (推荐)</summary>
+     <summary>使用poetry安装</summary>
 
    ```bash
    pip install --upgrade poetry
    poetry install
    ```
+
+   ```bash
+   poetry run pip install -r install_me.txt
+   ```
+   - mockingbird插件的依赖用poetry安装时会发生冲突,  
+     poetry用户需要进入poetry环境里使用 `pip install` 来安装其所需的依赖.  
+     (~~也可以直接删除mockingbird插件~~)
 
    </details>
 
