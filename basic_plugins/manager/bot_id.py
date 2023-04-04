@@ -22,11 +22,7 @@ start_metaevent = on_metaevent(rule=check_first_connect, temp=True)
 @start_metaevent.handle()
 async def start(bot: Bot) -> None:
     user_id = await bot.get_login_info()
-    user_id = json.dumps(user_id)
-
-    with open(bot_info,"w+",encoding="utf-8") as g:
-        g.write(str(user_id))
-        g.close()
+    bot_info.write_text(json.dumps(user_id, ensure_ascii=False), 'utf-8')
     
     superusers = bot.config.superusers
 

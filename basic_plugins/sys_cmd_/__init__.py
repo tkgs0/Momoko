@@ -37,7 +37,7 @@ shell_help: str = (
 )
 
 
-_win: tuple = ('windows', 'Windows', 'win32', 'Win32', 'win16', 'Win16')
+_win: tuple = ('windows', 'win32', 'win16')
 
 
 _flmt_notice: str = choice(['慢...慢一..点❤', '冷静1下', '歇会歇会~~'])
@@ -53,7 +53,7 @@ sys_shell = on_command(
 @sys_shell.handle([Cooldown(5, prompt=_flmt_notice)])
 async def _(matcher: Matcher, args: Message = CommandArg()):
     for i in _win:
-        if system() and (system() in i or i in system()):
+        if system() and (system().lower() in i or i in system().lower()):
             await sys_shell.finish('暂不支持Windows,\n请使用同步方法 `>cmd`')
     msg: str = args.extract_plain_text()
     if msg:
