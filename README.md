@@ -290,11 +290,17 @@
   ```
   >shell {命令}
   ```
+  ```
+  >cmd {命令}
+  ```
 
   示例:
 
   ```
   >shell echo "Hello World"
+  ```
+  ```
+  >cmd echo "Hello World"
   ```
 
   </details>
