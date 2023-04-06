@@ -225,7 +225,6 @@
   设置群头像[图片]    # ⚠该API不稳定!
   ```
 
-
   **关键词禁言**  
   可批量添加多个关键词, 以换行隔开
   ```
@@ -400,7 +399,6 @@
   在控制台中输入 `alert(localStorage.cy_dream_user)` ，弹出窗口中的 uid 即为 apikey；
 
   或者进行一次续写，在 Network 中查看 novel\_ai 请求，Payload 中的 uid 项即为 apikey。
-
 
   **使用:**
   ```
