@@ -3,10 +3,12 @@ from typing import Literal
 import ujson as json
 import asyncio
 
-from nonebot import on_command, get_driver
-from nonebot.log import logger
+from nonebot import logger, get_driver, on_command
+from nonebot.matcher import Matcher
+from nonebot.message import run_preprocessor
 from nonebot.params import CommandArg, ArgStr
 from nonebot.permission import SUPERUSER
+from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
@@ -81,6 +83,20 @@ def is_number(s: str) -> bool:
     return False
 
 
+@run_preprocessor
+def setu_processor(matcher: Matcher, event: MessageEvent):
+    gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
+    uid: int = event.user_id if not gid else 0
+
+    if matcher.plugin_name == 'setu' and matcher.priority > 2:
+        if gid and str(gid) not in enabled['grouplist']:
+            logger.debug(f'未在群聊 {gid} 启用色图.')
+            raise IgnoredException('setu is disabled.')
+        if not gid and str(uid) not in enabled['userlist']:
+            logger.debug(f'未在私聊 {uid} 启用色图.')
+            raise IgnoredException('setu is disabled.')
+
+
 setu = on_command(
     '/setu',
     aliases={'涩图', '瑟图', '色图'},
@@ -94,11 +110,6 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
 
     gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
     uid: int = event.user_id if not gid else 0
-
-    if gid and str(gid) not in enabled['grouplist']:
-        return
-    if not gid and str(uid) not in enabled['userlist']:
-        return
 
     await setu.send('loading...', at_sender=True)
     content = await get__setu(event, args)
