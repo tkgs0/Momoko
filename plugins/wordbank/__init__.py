@@ -8,11 +8,15 @@ from nonebot.params import CommandArg, RegexGroup
 from nonebot.typing import T_State, T_Handler
 from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, GroupMessageEvent
-from nonebot.adapters.onebot.v11.permission import (
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    Message,
+    MessageEvent,
+    GroupMessageEvent,
     GROUP_ADMIN,
     GROUP_OWNER,
     PRIVATE_FRIEND,
+    unescape
 )
 
 from .util import to_json, parse_msg, save_and_convert_img
@@ -108,7 +112,7 @@ async def wb_set(
     index = get_session_id(event)
     index = "0" if "全局" in flag else index
     try:
-        wb.set(index, type_, Message(key), value, require_to_me)
+        wb.set(index, type_, Message(unescape(key)), value, require_to_me)
         await matcher.finish(message="我记住了~")
     except IncludeCQCodeError:
         await matcher.finish("正则匹配中不允许带有CQ码")
@@ -159,7 +163,7 @@ async def _(
 
     index = get_session_id(event)
     index = "0" if "全局" in flag else index
-    res = wb.delete(index, type_, Message(key), require_to_me)
+    res = wb.delete(index, type_, Message(unescape(key)), require_to_me)
     if res:
         await matcher.finish("删除成功~")
 
@@ -273,7 +277,7 @@ async def wb_search(
                 require_to_me = True
                 break
 
-    entrys = wb.select(index, type_, Message(key), require_to_me)
+    entrys = wb.select(index, type_, Message(unescape(key)), require_to_me)
 
     if not entrys:
         await matcher.finish("词库中未找到词条~")
