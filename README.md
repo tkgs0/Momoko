@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/badge/OneBot-v11-black.svg" alt="OneBot">
 </a>
 <a href="https://github.com/Mrs4s/go-cqhttp">
-    <img src="https://img.shields.io/badge/gocq-1.0.0-blueviolet.svg" alt="go-cqhttp">
+    <img src="https://img.shields.io/badge/gocq-1.0.1-blueviolet.svg" alt="go-cqhttp">
 </a>
 
 </div>
