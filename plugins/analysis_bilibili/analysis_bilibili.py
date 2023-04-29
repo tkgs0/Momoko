@@ -1,6 +1,6 @@
+import asyncio
 import json
 import re
-import urllib.parse
 from time import localtime, strftime
 from typing import Dict, Match, Optional, Tuple, Union
 
@@ -11,7 +11,7 @@ from nonebot.log import logger
 from .config import config
 
 MINI_APP_REGEX = re.compile(r'"desc":("[^"哔哩]+")', re.I)
-B23_REGEX = re.compile(r"b23.tv/(\w+)|(bili(22|23|33|2233).cn)/(\w+)", re.I)
+B23_REGEX = re.compile(r"b23.tv\\?/(\w+)|(bili(22|23|33|2233).cn)/(\w+)", re.I)
 EPID_REGEX = re.compile(r"ep_id=(\d+)", re.I)
 REGEX_PATTERNS: Dict[str, re.Pattern[str]] = {
     "page": re.compile(r"([?&]|&amp;)p=\d+", re.I),  # 视频分p
@@ -79,7 +79,7 @@ async def bili_keyword(group_id: Optional[int], text: str) -> Union[Message, str
 
 
 async def b23_extract(text: str) -> str:
-    b23 = B23_REGEX.search(text.replace("\\", ""))
+    b23 = B23_REGEX.search(text.replace("\\", "").replace(r"\/", "/"))
     url = f"https://{b23[0]}"  # type: ignore
     async with aiohttp.request("GET", url) as resp:
         return str(resp.url)
@@ -117,15 +117,22 @@ def extract(text: str) -> Tuple[str, Optional[Match[str]], Optional[Match[str]]]
 
 async def search_bili_by_title(title: str) -> str:
     homepage_url = "https://www.bilibili.com"
-    search_url = f"https://api.bilibili.com/x/web-interface/search/all/v2?keyword={urllib.parse.quote(title)}"
+    search_url = "https://api.bilibili.com/x/web-interface/search/all/v2"
 
     async with aiohttp.ClientSession() as session:
         # set headers
         async with session.get(homepage_url) as resp:
             resp.raise_for_status()
 
-        async with session.get(search_url) as resp:
-            result = (await resp.json())["data"]["result"]
+        async with session.get(search_url, params={"keyword": title}) as resp:
+            result = []
+            for _ in range(3):
+                if result_json := await resp.json():
+                    if data := result_json.get("data"):
+                        if result := data.get("result"):
+                            break
+                await asyncio.sleep(0.5)
+            result = result or []
 
         # 只返回第一个结果
         return next(
