@@ -1,16 +1,33 @@
+import asyncio
 import re
 from base64 import b64encode
-from typing import Any, Callable, Coroutine, Dict, List, Optional
+from collections import defaultdict
+from difflib import SequenceMatcher
+from functools import wraps
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+    DefaultDict,
+    Dict,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
-from aiohttp import ClientSession, TCPConnector
+import arrow
 from cachetools import TTLCache
+from httpx import URL, AsyncClient
 from nonebot.adapters.onebot.v11 import Bot
+from PicImageSearch.model.ehentai import EHentaiItem, EHentaiResponse
 from pyquery import PyQuery
 from shelved_cache import cachedasyncmethod
-from yarl import URL
 
 from .config import config
+from .nhentai_model import NHentaiItem, NHentaiResponse
 
+T = TypeVar("T")
 SEARCH_FUNCTION_TYPE = Callable[..., Coroutine[Any, Any, List[str]]]
 
 DEFAULT_HEADERS = {
@@ -22,36 +39,18 @@ DEFAULT_HEADERS = {
 }
 
 
-def get_session_with_proxy(headers: Optional[Dict[str, str]] = None) -> ClientSession:
-    if config.proxy and config.proxy.startswith("socks"):
-        try:
-            from aiohttp_socks import ProxyConnector
-
-            connector = ProxyConnector.from_url(config.proxy)
-        except ModuleNotFoundError:
-            connector = TCPConnector()
-    else:
-        connector = TCPConnector()
-
-    session = ClientSession(connector=connector, headers=headers)
-
-    if config.proxy and not config.proxy.startswith("socks"):
-        from functools import partial
-
-        session.get = partial(session.get, proxy=config.proxy)  # type: ignore
-        session.post = partial(session.post, proxy=config.proxy)  # type: ignore
-
-    return session
-
-
 async def get_image_bytes_by_url(
     url: str, cookies: Optional[str] = None
 ) -> Optional[bytes]:
-    headers = {"Cookie": cookies, **DEFAULT_HEADERS} if cookies else DEFAULT_HEADERS
-    async with get_session_with_proxy(headers=headers) as session:
-        async with session.get(url) as resp:
-            if resp.status < 400 and (image_bytes := await resp.read()):
-                return image_bytes
+    async with AsyncClient(
+        headers=DEFAULT_HEADERS,
+        cookies=parse_cookies(cookies),
+        proxies=config.proxy,
+        follow_redirects=True,
+    ) as session:
+        resp = await session.get(url)
+        if resp.status_code < 400:
+            return resp.content
     return None
 
 
@@ -79,23 +78,23 @@ def handle_reply_msg(message_id: int) -> str:
 async def get_source(url: str) -> str:
     source = url
     if host := URL(source).host:
-        async with get_session_with_proxy(
-            headers=None if host == "danbooru.donmai.us" else DEFAULT_HEADERS
+        headers = None if host == "danbooru.donmai.us" else DEFAULT_HEADERS
+        async with AsyncClient(
+            headers=headers, proxies=config.proxy, follow_redirects=True
         ) as session:
-            async with session.get(source) as resp:
-                if resp.status >= 400:
-                    return ""
+            resp = await session.get(source)
+            if resp.status_code >= 400:
+                return ""
 
-                html = await resp.text()
-                if host in ["danbooru.donmai.us", "gelbooru.com"]:
-                    source = PyQuery(html)(".image-container").attr(
-                        "data-normalized-source"
-                    )
+            if host in ["danbooru.donmai.us", "gelbooru.com"]:
+                source = PyQuery(resp.text)(".image-container").attr(
+                    "data-normalized-source"
+                )
 
-                elif host in ["yande.re", "konachan.com"]:
-                    source = PyQuery(html)("#post_source").attr("value")
-                    if not source:
-                        source = PyQuery(html)('a[href^="/pool/show/"]').text()
+            elif host in ["yande.re", "konachan.com"]:
+                source = PyQuery(resp.text)("#post_source").attr("value")
+                if not source:
+                    source = PyQuery(resp.text)('a[href^="/pool/show/"]').text()
 
     return source or ""
 
@@ -126,26 +125,93 @@ async def shorten_url(url: str) -> str:
         return confuse_url(url.replace("/post/show/", "/posts/"))
 
     if URL(url).host in [
-        "exhentai.org",
         "e-hentai.org",
-        "nhentai.net",
+        "exhentai.org",
         "graph.baidu.com",
+        "nhentai.net",
+        "www.google.com",
+        "yandex.com",
     ]:
         flag = len(url) > 1024
-        async with ClientSession(headers=DEFAULT_HEADERS) as session:
+        async with AsyncClient(headers=DEFAULT_HEADERS) as session:
             if not flag:
                 resp = await session.post("https://yww.uy/shorten", json={"url": url})
-                if resp.status < 400:
-                    return (await resp.json())["url"]  # type: ignore
+                if resp.status_code < 400:
+                    return resp.json()["url"]  # type: ignore
                 else:
                     flag = True
             if flag:
                 resp = await session.post(
                     "https://www.shorturl.at/shortener.php", data={"u": url}
                 )
-                if resp.status < 400:
-                    html = await resp.text()
-                    final_url = PyQuery(html)("#shortenurl").attr("value")
+                if resp.status_code < 400:
+                    final_url = PyQuery(resp.text)("#shortenurl").attr("value")
                     return f"https://{final_url}"
 
     return confuse_url(url)
+
+
+def parse_cookies(cookies_str: Optional[str] = None) -> Dict[str, str]:
+    cookies_dict: Dict[str, str] = {}
+    if cookies_str:
+        for line in cookies_str.split(";"):
+            key, value = line.strip().split("=", 1)
+            cookies_dict[key] = value
+    return cookies_dict
+
+
+def async_lock(
+    freq: float = 1,
+) -> Callable[
+    [Callable[..., Coroutine[Any, Any, T]]], Callable[..., Coroutine[Any, Any, T]]
+]:
+    def decorator(
+        func: Callable[..., Coroutine[Any, Any, T]]
+    ) -> Callable[..., Coroutine[Any, Any, T]]:
+        locks: DefaultDict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
+        call_times: DefaultDict[str, arrow.Arrow] = defaultdict(
+            lambda: arrow.now().shift(seconds=-freq)
+        )
+
+        @wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> T:
+            async with locks[func.__name__]:
+                last_call_time = call_times[func.__name__]
+                elapsed_time = arrow.now() - last_call_time
+                if elapsed_time.total_seconds() < freq:
+                    await asyncio.sleep(freq - elapsed_time.total_seconds())
+                result = await func(*args, **kwargs)
+                call_times[func.__name__] = arrow.now()
+                return result
+
+        return wrapper
+
+    return decorator
+
+
+def preprocess_search_query(query: str) -> str:
+    query = re.sub(r"●|・|~|～|〜|、|×|:::|\s+-\s+|\[中国翻訳]", " ", query)
+    # 去除独立的英文、日文、中文字符，但不去除带连字符的
+    for i in [
+        r"\b[A-Za-z]\b",
+        r"\b[\u4e00-\u9fff]\b",
+        r"\b[\u3040-\u309f\u30a0-\u30ff]\b",
+    ]:
+        query = re.sub(rf"(?<!-){i}(?!-)", "", query)
+
+    return query.strip()
+
+
+def filter_results_with_ratio(
+    res: Union[EHentaiResponse, NHentaiResponse], title: str
+) -> Union[List[EHentaiItem], List[NHentaiItem]]:
+    raw_with_ratio = [
+        (i, SequenceMatcher(lambda x: x == " ", title, i.title).ratio())
+        for i in res.raw
+    ]
+    raw_with_ratio.sort(key=lambda x: x[1], reverse=True)
+
+    if filtered := [i[0] for i in raw_with_ratio if i[1] > 0.65]:
+        return filtered
+
+    return [i[0] for i in raw_with_ratio]

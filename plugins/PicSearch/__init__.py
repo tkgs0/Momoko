@@ -1,17 +1,13 @@
-import asyncio
 import re
-from collections import defaultdict
 from contextlib import suppress
-from typing import Any, DefaultDict, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
-import arrow
-from aiohttp import ClientSession
 from cachetools import TTLCache
+from httpx import AsyncClient
 from nonebot.adapters.onebot.v11 import (
     ActionFailed,
     Bot,
     GroupMessageEvent,
-    LifecycleMetaEvent,
     Message,
     MessageEvent,
     PrivateMessageEvent,
@@ -28,6 +24,7 @@ from .ascii2d import ascii2d_search
 from .baidu import baidu_search
 from .config import config
 from .ehentai import ehentai_search
+from .google import google_search
 from .iqdb import iqdb_search
 from .saucenao import saucenao_search
 from .utils import (
@@ -36,20 +33,14 @@ from .utils import (
     get_bot_friend_list,
     handle_reply_msg,
 )
+from .yandex import yandex_search
 
-sending_lock: DefaultDict[Tuple[Union[int, str], str], asyncio.Lock] = defaultdict(
-    asyncio.Lock
-)
 pic_search_cache = PersistentCache(
     TTLCache,
     filename="pic_search_cache",
     maxsize=config.cache_expire * 100,
     ttl=config.cache_expire * 24 * 60 * 60,
 )
-
-
-def check_first_connect(_: LifecycleMetaEvent) -> bool:
-    return True
 
 
 def contains_image(event: MessageEvent) -> bool:
@@ -96,7 +87,7 @@ async def image_search(
     md5: str,
     mode: str,
     purge: bool,
-    client: ClientSession,
+    client: AsyncClient,
     index: Optional[int] = None,
 ) -> None:
     url = await get_universal_img_url(url)
@@ -124,18 +115,22 @@ async def image_search(
 
 @retry(stop=(stop_after_attempt(3) | stop_after_delay(30)), reraise=True)
 async def handle_search_mode(
-    url: str, md5: str, mode: str, client: ClientSession
+    url: str, md5: str, mode: str, client: AsyncClient
 ) -> Tuple[List[str], Optional[SEARCH_FUNCTION_TYPE]]:
     extra_handle = None
 
     if mode == "a2d":
         result = await ascii2d_search(url, client)
-    elif mode == "ex":
-        result, extra_handle = await ehentai_search(url, client)
-    elif mode == "iqdb":
-        result, extra_handle = await iqdb_search(url, client)
     elif mode == "baidu":
         result = await baidu_search(url, client)
+    elif mode == "ex":
+        result, extra_handle = await ehentai_search(url, client)
+    elif mode == "google":
+        result = await google_search(url, client)
+    elif mode == "iqdb":
+        result, extra_handle = await iqdb_search(url, client)
+    elif mode == "yandex":
+        result = await yandex_search(url, client)
     else:
         result, extra_handle = await saucenao_search(url, client, mode)
 
@@ -151,10 +146,10 @@ async def get_universal_img_url(url: str) -> str:
         )
         final_url = re.sub(r"/\d+/+\d+-\d+-", "/0/0-0-", final_url)
         final_url = re.sub(r"\?.*$", "", final_url)
-        async with ClientSession(headers=DEFAULT_HEADERS) as session:
-            async with session.get(final_url) as resp:
-                if resp.status < 400:
-                    return final_url
+        async with AsyncClient(headers=DEFAULT_HEADERS) as session:
+            resp = await session.get(final_url)
+            if resp.status_code < 400:
+                return final_url
     return url
 
 
@@ -170,7 +165,18 @@ def get_image_urls_with_md5(event: MessageEvent) -> List[Tuple[str, str]]:
 def get_args(msg: Message) -> Tuple[str, bool]:
     mode = "all"
     plain_text = msg.extract_plain_text().strip()
-    args = ["pixiv", "danbooru", "doujin", "anime", "a2d", "ex", "iqdb", "baidu"]
+    args = [
+        "a2d",
+        "anime",
+        "baidu",
+        "danbooru",
+        "doujin",
+        "ex",
+        "google",
+        "iqdb",
+        "pixiv",
+        "yandex",
+    ]
     if plain_text:
         for i in args:
             if f"--{i}" in plain_text:
@@ -191,48 +197,27 @@ async def send_result_message(
             msg.replace("❤️ 已收藏\n", "") if "已收藏" in msg else msg for msg in msg_list
         ]
 
-    if isinstance(event, GroupMessageEvent):
-        current_sending_lock = sending_lock[(event.group_id, "group")]
-    else:
-        current_sending_lock = sending_lock[(event.user_id, "private")]
-
     if flag := (config.forward_search_result and len(msg_list) > 1):
         try:
-            await send_message_with_lock(
-                bot, event, msg_list, current_sending_lock, index
-            )
+            await send_forward_msg(bot, event, msg_list, index)
         except ActionFailed:
             flag = False
     if not flag:
         for msg in msg_list:
-            await send_message_with_lock(bot, event, [msg], current_sending_lock, index)
-
-
-async def send_message_with_lock(
-    bot: Bot,
-    event: MessageEvent,
-    msg_list: List[str],
-    current_sending_lock: asyncio.Lock,
-    index: Optional[int] = None,
-) -> None:
-    start_time = arrow.now()
-    async with current_sending_lock:
-        if len(msg_list) == 1:
-            await send_msg(bot, event, msg_list[0], index)
-        else:
-            await send_forward_msg(bot, event, msg_list, index)
-        await asyncio.sleep(max(1 - (arrow.now() - start_time).total_seconds(), 0))
+            await send_msg(bot, event, msg, index)
 
 
 async def send_msg(
     bot: Bot, event: MessageEvent, message: str, index: Optional[int] = None
 ) -> None:
-    group_id=event.group_id if isinstance(event, GroupMessageEvent) else 0
-    user_id=event.user_id if not group_id else 0
 
-    if index:
+    group_id = event.group_id if isinstance(event, GroupMessageEvent) else 0
+    user_id = event.user_id if not group_id else 0
+
+    if index is not None:
         message = f"第 {index + 1} 张图片的搜索结果：\n{message}"
     message = f"{handle_reply_msg(event.message_id)}{message}"
+
     try:
         await bot.send_forward_msg(
             user_id=user_id,
@@ -264,10 +249,11 @@ def err_info(e: ActionFailed) -> str:
 async def send_forward_msg(
     bot: Bot, event: MessageEvent, msg_list: List[str], index: Optional[int] = None
 ) -> None:
-    group_id=event.group_id if isinstance(event, GroupMessageEvent) else 0
-    user_id=event.user_id if not group_id else 0
 
-    if index:
+    group_id = event.group_id if isinstance(event, GroupMessageEvent) else 0
+    user_id = event.user_id if not group_id else 0
+
+    if index is not None:
         msg_list = [f"第 {index + 1} 张图片的搜索结果："] + msg_list
     try:
         await bot.send_forward_msg(

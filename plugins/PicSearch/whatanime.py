@@ -1,14 +1,15 @@
 import math
 from typing import Any, Dict, List
 
-from aiohttp import ClientSession
+from httpx import AsyncClient
 from PicImageSearch import TraceMoe
 
 from .config import config
-from .utils import handle_img
+from .utils import async_lock, handle_img
 
 
-async def whatanime_search(url: str, client: ClientSession) -> List[str]:
+@async_lock()
+async def whatanime_search(url: str, client: AsyncClient) -> List[str]:
     whatanime = TraceMoe(client=client)
     res = await whatanime.search(url)
     if res and res.raw:

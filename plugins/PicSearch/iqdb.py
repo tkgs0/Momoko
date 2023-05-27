@@ -1,16 +1,16 @@
 from typing import List, Optional, Tuple
 
-from aiohttp import ClientSession
+from httpx import URL, AsyncClient
 from PicImageSearch import Iqdb
-from yarl import URL
 
 from .ascii2d import ascii2d_search
 from .config import config
-from .utils import SEARCH_FUNCTION_TYPE, get_source, handle_img, shorten_url
+from .utils import SEARCH_FUNCTION_TYPE, async_lock, get_source, handle_img, shorten_url
 
 
+@async_lock()
 async def iqdb_search(
-    url: str, client: ClientSession
+    url: str, client: AsyncClient
 ) -> Tuple[List[str], Optional[SEARCH_FUNCTION_TYPE]]:
     iqdb = Iqdb(client=client)
     res = await iqdb.search(url)

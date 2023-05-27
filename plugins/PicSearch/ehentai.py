@@ -1,12 +1,10 @@
 import itertools
 import re
-from asyncio import sleep
 from collections import defaultdict
-from difflib import SequenceMatcher
 from typing import Any, Dict, List, Optional, Tuple
 
 import arrow
-from aiohttp import ClientSession
+from httpx import AsyncClient
 from PicImageSearch import EHentai
 from PicImageSearch.model import EHentaiResponse
 from pyquery import PyQuery
@@ -16,35 +14,27 @@ from .config import config
 from .utils import (
     DEFAULT_HEADERS,
     SEARCH_FUNCTION_TYPE,
-    get_session_with_proxy,
+    async_lock,
+    filter_results_with_ratio,
     handle_img,
+    parse_cookies,
+    preprocess_search_query,
     shorten_url,
 )
 
-EHENTAI_HEADERS = (
-    {"Cookie": config.exhentai_cookies, **DEFAULT_HEADERS}
-    if config.exhentai_cookies
-    else DEFAULT_HEADERS
-)
 
-
+@async_lock(freq=8)
 async def ehentai_search(
-    url: str, client: ClientSession
+    url: str, client: AsyncClient
 ) -> Tuple[List[str], Optional[SEARCH_FUNCTION_TYPE]]:
     ex = bool(config.exhentai_cookies)
     ehentai = EHentai(client=client)
 
     if res := await ehentai.search(url, ex=ex):
         if "Please wait a bit longer between each file search" in res.origin:
-            await sleep(30 / 4)
             return await ehentai_search(url, client)
 
-        if not res.raw:
-            # 如果第一次没找到，使搜索结果包含被删除的部分，并重新搜索
-            resp_text, resp_url, _ = await ehentai.get(f"{res.url}&fs_exp=on")
-            res = EHentaiResponse(resp_text, resp_url)
         final_res: List[str] = await search_result_filter(res)
-
         if not res.raw and config.auto_use_ascii2d:
             final_res.append("自动使用 Ascii2D 进行搜索")
             return final_res, ascii2d_search
@@ -55,32 +45,28 @@ async def ehentai_search(
 
 
 async def ehentai_title_search(title: str) -> List[str]:
-    title = re.sub(r"●|~| ::: |[中国翻訳]", " ", title).strip()
+    query = preprocess_search_query(title)
     url = "https://exhentai.org" if config.exhentai_cookies else "https://e-hentai.org"
-    params: Dict[str, Any] = {"f_search": title}
+    params: Dict[str, Any] = {"f_search": query}
 
-    async with get_session_with_proxy(headers=EHENTAI_HEADERS) as session:
+    async with AsyncClient(
+        headers=DEFAULT_HEADERS,
+        cookies=parse_cookies(config.exhentai_cookies),
+        proxies=config.proxy,
+    ) as session:
         resp = await session.get(url, params=params)
-        if res := EHentaiResponse(await resp.text(), str(resp.url)):
+        if res := EHentaiResponse(resp.text, str(resp.url)):
             if not res.raw:
                 # 如果第一次没找到，使搜索结果包含被删除的部分，并重新搜索
                 params["advsearch"] = 1
                 params["f_sname"] = "on"
                 params["f_sh"] = "on"
                 resp = await session.get(url, params=params)
-                res = EHentaiResponse(await resp.text(), str(resp.url))
+                res = EHentaiResponse(resp.text, str(resp.url))
 
             # 只保留标题和搜索关键词相关度较高的结果，并排序，以此来提高准确度
             if res.raw:
-                raw_with_ratio = [
-                    (i, SequenceMatcher(lambda x: x == " ", title, i.title).ratio())
-                    for i in res.raw
-                ]
-                raw_with_ratio.sort(key=lambda x: x[1], reverse=True)
-                if filtered := [i[0] for i in raw_with_ratio if i[1] > 0.65]:
-                    res.raw = filtered
-                else:
-                    res.raw = [i[0] for i in raw_with_ratio]
+                res.raw = filter_results_with_ratio(res, title)
             return await search_result_filter(res)
 
         return ["EHentai 暂时无法使用"]
@@ -103,11 +89,13 @@ async def search_result_filter(
     if not_themeless_res := [i for i in res.raw if "themeless" not in " ".join(i.tags)]:
         res.raw = not_themeless_res
 
-    # 尝试过滤评分只有 1 星的
-    if not_1_star_res := [
-        i for i in res.raw if ("-64px" not in PyQuery(i.origin)("div.ir").attr("style"))
+    # 尝试过滤评分低于 3 星的
+    if above_3_star_res := [
+        i
+        for i in res.raw
+        if get_star_rating(PyQuery(i.origin)("div.ir").attr("style")) >= 3
     ]:
-        res.raw = not_1_star_res
+        res.raw = above_3_star_res
 
     # 尽可能过滤掉非预期结果(大概
     priority = defaultdict(lambda: 0)
@@ -154,3 +142,11 @@ async def search_result_filter(
         f"搜索页面：{url}",
     ]
     return ["\n".join([i for i in res_list if i])]
+
+
+def get_star_rating(css_style: str) -> float:
+    x, y = re.search(r"(-?\d+)px (-\d+)px", css_style).groups()  # type: ignore
+    star_rating = 5 - int(x.rstrip("px")) / -16
+    if y == "-21px":
+        star_rating -= 0.5
+    return star_rating

@@ -1,17 +1,15 @@
 import re
-from asyncio import sleep
 from typing import List, Optional, Tuple
 
-from aiohttp import ClientSession
+from httpx import URL, AsyncClient
 from PicImageSearch import SauceNAO
 from PicImageSearch.model import SauceNAOItem, SauceNAOResponse
-from yarl import URL
 
 from .ascii2d import ascii2d_search
 from .config import config
 from .ehentai import ehentai_title_search
 from .nhentai import nhentai_title_search
-from .utils import SEARCH_FUNCTION_TYPE, get_source, handle_img, shorten_url
+from .utils import SEARCH_FUNCTION_TYPE, async_lock, get_source, handle_img, shorten_url
 from .whatanime import whatanime_search
 
 SAUCENAO_DB = {
@@ -24,8 +22,9 @@ SAUCENAO_DB = {
 }
 
 
+@async_lock(freq=8)
 async def saucenao_search(
-    url: str, client: ClientSession, mode: str
+    url: str, client: AsyncClient, mode: str
 ) -> Tuple[List[str], Optional[SEARCH_FUNCTION_TYPE]]:
     db = SAUCENAO_DB[mode]
     if isinstance(db, list):
@@ -49,7 +48,6 @@ async def saucenao_search(
         and res.status == 429
         and "4 searches every 30 seconds" in res.origin["header"]["message"]
     ):
-        await sleep(30 / 4)
         return await saucenao_search(url, client, mode)
 
     if not res or not res.raw:
@@ -156,8 +154,9 @@ async def search_on_ehentai_and_nhentai(title: str) -> List[str]:
         and config.nhentai_useragent
         and config.nhentai_cookies
     ):
-        title_search_result.append("自动使用 NHentai 进行搜索")
-        title_search_result.extend(await nhentai_title_search(title))
+        nhentai_title_search_result = await nhentai_title_search(title)
+        if not nhentai_title_search_result[0].startswith("NHentai 搜索结果为空"):
+            title_search_result = nhentai_title_search_result
 
     return title_search_result
 
