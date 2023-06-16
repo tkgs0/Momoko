@@ -18,10 +18,29 @@ from nonebot.adapters.onebot.v11 import (
     PRIVATE_FRIEND,
     unescape
 )
+from nonebot.plugin import PluginMetadata
 
 from .util import to_json, parse_msg, save_and_convert_img
 from .models import MatchType, IncludeCQCodeError
 from .data_source import word_bank as wb
+
+try:
+    __plugin_meta__ = PluginMetadata(
+        name="nonebot-plugin-word-bank2",
+        description=r"无数据库的轻量问答插件",
+        usage="""具体看文档
+        问答教学: [模糊|全局|正则|@]问...答...
+        删除词条: 删除[模糊|全局|正则|@]词条 问句
+        删除词库: /删除词库 /删除全局词库 /删除全部词库
+        查询词条: 查询[群|用户]{id}[全局][模糊|正则]词库
+            查询[模糊|正则]词库
+        """,
+        type="application",
+        supported_adapters={"~onebot.v11"},
+        homepage="https://github.com/kexue-z/nonebot-plugin-word-bank2",
+    )
+except Exception:
+    pass
 
 reply_type = "random"
 
