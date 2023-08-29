@@ -9,12 +9,12 @@ from nonebot.params import ArgPlainText, CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.rule import to_me
 from nonebot.typing import T_State
+from nonebot_plugin_guild_patch import GUILD_ADMIN, GUILD_OWNER
 from yarl import URL
 
 from ..config import config
 from ..permission import GUILD_SUPERUSER
 from ..rss_class import Rss
-from ..utils import GUILD_ADMIN, GUILD_OWNER
 from .add_dy import add_feed
 
 rsshub_routes: Dict[str, Any] = {}
@@ -57,7 +57,7 @@ async def handle_rsshub_routes(
         await RSSHUB_ADD.reject("路由名不能为空，请重新输入")
         return
 
-    rsshub_url = URL(config.rsshub)
+    rsshub_url = URL(str(config.rsshub))
     # 对本机部署的 RSSHub 不使用代理
     local_host = [
         "localhost",

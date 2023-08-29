@@ -5,20 +5,17 @@ import re
 from contextlib import suppress
 from typing import Any, Dict, Generator, List, Mapping, Optional
 
+from aiohttp import ClientSession
 from cachetools import TTLCache
 from cachetools.keys import hashkey
-from nonebot import get_bot, require
+from nonebot import get_bot as nonebot_get_bot
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.log import logger
 
-require("nonebot_plugin_apscheduler")  # noqa
-from nonebot_plugin_apscheduler import scheduler  # noqa
-
-require("nonebot_plugin_guild_patch")  # noqa
-from nonebot_plugin_guild_patch import GuildMessageEvent  # noqa
-from nonebot_plugin_guild_patch.permission import GUILD_ADMIN, GUILD_OWNER  # noqa
-
 from .config import config
+from .parsing.utils import get_proxy
+
+bot_offline = False
 
 
 def get_http_caching_headers(
@@ -113,8 +110,18 @@ def get_torrent_b16_hash(content: bytes) -> str:
     return str(b16_hash, "utf-8")
 
 
-async def send_message_to_admin(message: str, bot: Bot) -> None:
-    await bot.send_private_msg(user_id=int(list(config.superusers)[0]), message=message)
+async def send_message_to_admin(message: str, bot: Optional[Bot] = None) -> None:
+    if bot is None:
+        bot = await get_bot()
+    if bot is None:
+        return
+    try:
+        await bot.send_private_msg(
+            user_id=int(list(config.superusers)[0]), message=message
+        )
+    except Exception as e:
+        logger.error(f"管理员消息推送失败：{e}")
+        logger.error(f"消息内容：{message}")
 
 
 async def send_msg(
@@ -129,7 +136,9 @@ async def send_msg(
 
     发送消息到私聊或群聊
     """
-    bot: Bot = get_bot()  # type: ignore
+    bot: Bot = await get_bot()  # type: ignore
+    if bot is None:
+        raise ValueError("There are not bots to get.")
     msg_id = []
     if group_ids:
         for group_id in group_ids:
@@ -208,3 +217,32 @@ def partition_list(
 ) -> Generator[List[Any], None, None]:
     for i in range(0, len(input_list), partition_size):
         yield input_list[i : i + partition_size]
+
+
+async def send_message_to_telegram_admin(message: str) -> None:
+    try:
+        async with ClientSession(raise_for_status=True) as session:
+            await session.post(
+                f"https://api.telegram.org/bot{config.telegram_bot_token}/sendMessage",
+                json={
+                    "chat_id": config.telegram_admin_ids[0],
+                    "text": message,
+                },
+                proxy=get_proxy(),
+            )
+    except Exception as e:
+        logger.error(f"发送到 Telegram 失败:\n {e}")
+
+
+async def get_bot() -> Optional[Bot]:
+    global bot_offline
+    bot: Optional[Bot] = None
+    try:
+        bot = nonebot_get_bot()  # type: ignore
+        bot_offline = False
+    except ValueError:
+        if not bot_offline and config.telegram_admin_ids and config.telegram_bot_token:
+            await send_message_to_telegram_admin("QQ Bot 已离线！")
+            logger.warning("Bot 已离线！")
+            bot_offline = True
+    return bot
