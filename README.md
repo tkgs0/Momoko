@@ -12,13 +12,13 @@
     <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
 </a>
 <a href="https://https://v2.nonebot.dev">
-    <img src="https://img.shields.io/badge/NoneBot-2.0.0-red.svg" alt="NoneBot">
+    <img src="https://img.shields.io/badge/NoneBot-2.0.1-red.svg" alt="NoneBot">
 </a>
 <a href="https://onebot.adapters.nonebot.dev">
     <img src="https://img.shields.io/badge/OneBot-v11-black.svg" alt="OneBot">
 </a>
 <a href="https://github.com/Mrs4s/go-cqhttp">
-    <img src="https://img.shields.io/badge/gocq-1.0.1-blueviolet.svg" alt="go-cqhttp">
+    <img src="https://img.shields.io/badge/gocq-1.1.0-blueviolet.svg" alt="go-cqhttp">
 </a>
 
 </div>
@@ -710,7 +710,7 @@
 9. 另开一个命令行窗口, 运行适用于你的系统的 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases) 文件.
 
 10. 在 gocq 生成的 **config.yml** 填写Bot的**帐号**和**密码**, 
-    配置 **反向ws** 监听地址 **ws://127.0.0.1:6677/onebot/v11/ws**  
+    配置 `反向ws` 监听地址 **ws://127.0.0.1:6677/onebot/v11/ws**  
     可以设置成其他端口, 需要与机器人目录下的 `.env` 配置一致.
 
 11. 保存并关闭文件
