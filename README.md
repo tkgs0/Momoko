@@ -675,30 +675,19 @@
 
 6. 在命令行 `cd` 到本项目的目录
 
-7. 安装环境依赖 · 二选一
+7. 创建一个Python3.9以上的虚拟环境, 并安装依赖
 
    <details>
      <summary>使用pip安装</summary>
 
    ```bash
-   pip install -r requirements.txt
+   pip install -r -U requirements.txt && pip install -r install_me.txt && pip install -U pikpakapi
    ```
 
    </details>
+
    <details>
-     <summary>使用poetry安装</summary>
-
-   ```bash
-   pip install --upgrade poetry
-   poetry install
-   ```
-
-   ```bash
-   poetry run pip install -r install_me.txt
-   ```
-   - mockingbird插件的依赖用poetry安装时会发生冲突,  
-     poetry用户需要进入poetry环境里使用 `pip install` 来安装其所需的依赖.  
-     (~~也可以直接删除mockingbird插件~~)
+     <summary>使用环境管理器安装</summary>
 
    </details>
 
@@ -717,173 +706,15 @@
      ```
 
    </details>
-   <details>
-     <summary>poetry启动</summary>
 
-     ```bash
-     poetry run python bot.py
-     ```
-     **或者**
-     ```bash
-     poetry run nb run
-     ```
-     **或者**
-     ```bash
-     poetry shell
-     python bot.py
-     ```
-     **或者**
-     ```bash
-     poetry shell
-     nb run
-     ```
+9. 另开一个命令行窗口, 运行适用于你的系统的 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases) 文件.
 
-   </details>
+10. 在 gocq 生成的 **config.yml** 填写Bot的**帐号**和**密码**, 
+    配置 **反向ws** 监听地址 **ws://127.0.0.1:6677/onebot/v11/ws**  
+    可以设置成其他端口, 需要与机器人目录下的 `.env` 配置一致.
 
-9. 另开一个命令行窗口, `cd` 到本项目下的 `go-cqhttp` 文件夹
-
-10. 运行适用于你的系统的 `go-cqhttp` 文件
-    - 你也可以在 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases) 下载最新的 `go-cqhttp` 文件, 并放入该文件夹.
-
-11. 在 gocq 的 **config.yml** 填写Bot的**帐号**和**密码**, 保存并关闭文件
+11. 保存并关闭文件
 
 12. 运行**go-cqhttp**, 登入成功后, 用你的 `超级用户` 账号 给bot发 `/ping`
 
 如果bot给你回复 `I'm fine`, 那么就大功告成了.
-
-
-### ⚠注意
-**你可能会遇到以下情况:**
-
-- 登录失败，提示 `请在常用的设备上登录`
-- 密码没有输错, 帐号未被冻结, 但是提示 `密码错误或账号被冻结`
-- 提示 `当前使用的QQ版本过低` 等等一些奇奇怪怪的问题导致的登入失败
-
-**你可能需要进行以下步骤:**
-
-1. 进入 **go-cqhttp** 所在的文件夹
-
-2. 将电脑和手机处在同一IP环境下
-   - 比如手机和电脑使用同一个WiFi, 或者电脑连接手机的热点.
-
-3. 删除可能存在的 `device.json` `session.token` `data` 文件/文件夹
-
-- 如果你使用的是 `1.0.0-rc4` 以及更低版本的 `go-cqhttp` 生成的 `config.yml`,  
-  请将其删除并重新运行 `go-cqhttp` 生成新的 `config.yml`,  
-  然后正确配置 `config.yml` 并重复步骤**3**
-
-4. 运行文件夹里的 [HomoOS.py](https://github.com/tkgs0/Momoko/blob/main/gocq/HomoOS.py) 生成新的 **device.json**
-   - 协议类型请参考 go-cqhttp 的[设备信息](https://docs.go-cqhttp.org/guide/config.html#设备信息)
-
-   <details>
-     <summary>点击展开</summary>
-     <table>
-     <thead>
-     <tr>
-     <th>值</th>
-     <th>类型</th>
-     <th>限制</th>
-     </tr>
-     </thead>
-     <tbody>
-     <tr>
-     <td>0</td>
-     <td>Default/Unset</td>
-     <td>当前版本下默认为aPad</td>
-     </tr>
-     <tr>
-     <td>1</td>
-     <td>Android Phone</td>
-     <td>无</td>
-     </tr>
-     <tr>
-     <td>2</td>
-     <td>Android Watch</td>
-     <td>无法接收 <code>notify</code> 事件、无法接收口令红包、无法接收撤回消息</td>
-     </tr>
-     <tr>
-     <td>3</td>
-     <td>MacOS</td>
-     <td>无</td>
-     </tr>
-     <tr>
-     <td>4</td>
-     <td>企点</td>
-     <td>只能登录企点账号或企点子账号</td>
-     </tr>
-     <tr>
-     <td>5</td>
-     <td>iPad</td>
-     <td>无</td>
-     </tr>
-     <tr>
-     <td>6</td>
-     <td>aPad</td>
-     <td>无</td>
-     </tr>
-     </tbody>
-     </table>
-   </details>
-
-5. 在 [mirai-login-solver-sakura](https://github.com/KasukuSakura/mirai-login-solver-sakura/releases) 下载最新版本的 **apk-release.apk** 安装到手机
-   - 同样需要该手机**与go-cqhttp所在设备处于同一IP环境下**
-
-6. 重新运行 **go-cqhttp**, 在弹出以下提示时**输入2**, 并按下键盘上的回车(Enter)
-   ```
-   [2023-03-18 11:45:14] [WARNING]: 登录需要滑条验证码, 请验证后重试.
-   [2023-03-18 11:45:14] [WARNING]: 请选择提交滑块ticket方式:
-   [2023-03-18 11:45:14] [WARNING]: 1. 自动提交
-   [2023-03-18 11:45:14] [WARNING]: 2. 手动抓取提交
-   [2023-03-18 11:45:14] [WARNING]: 请输入(1 - 2)：
-   2
-   ```
-   此时控制台将输出一串链接, 将该链接**完整地复制**到上一步安装的app `Sakura Login Solver`, 并点击 **下一步**,  
-  
-   在经过1次或者2次滑块验证后, 将弹出的 token 复制并粘贴到控制台, 并按下键盘上的回车(Enter)
-
-   <details>
-     <summary>不知道如何将文本复制到手机?</summary>
-
-   _  
-   如果你笨到不知道如何将文本从电脑复制到手机, 我可以提示你一下: 你可以用电脑上登入的QQ发送文本消息给手机上登入的QQ
-
-   </details>
-
-7. 你可能会看到类似以下信息:
-   ```
-   [2023-03-18 11:45:14] [WARNING]: 账号已开启设备锁，请选择验证方式:
-   [2023-03-18 11:45:14] [WARNING]: 1. 向手机 *********** 发送短信验证码
-   [2023-03-18 11:45:14] [WARNING]: 2. 使用手机QQ扫码验证.
-   [2023-03-18 11:45:14] [WARNING]: 请输入(1 - 2)：
-   1
-   ```
-   输入**1**选择**短信验证**, 并按下键盘上的回车(Enter),  
-  
-   此时你Bot绑定的手机将会收到一条验证码短信,  
-  
-   将收到的验证码输入到控制台, 并按下键盘上的回车(Enter)
-
-**服务器用户同理:**
-
-8. 下载对应你电脑系统的 **go-cqhttp** 到电脑上
-
-9. 按照上面的 **步骤1~7** 操作
-
-10. 登入成功后把生成的 **device.json** 和 **session.token** 拷到服务器上该项目使用的**go-cqhttp所在的文件夹里**
-
-
-### ⚠喜报
-你可能会遇到以下问题:
-
-- 私聊机器人能正常回复消息，但是群聊发不出
-
-此时请查看 **go-cqhttp** 的运行窗口, 你可能会看到类似这样的一条消息:
-```
-[WARNING]: 群消息发送失败: 账号可能被风控.
-```
-
-解决办法:
-
-- 多挂几天, 等风控解除
-- 企业帐号 (企业帐号不会风控)
-- 换个帐号
