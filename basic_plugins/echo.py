@@ -15,7 +15,6 @@ _help = """
 * OneBot + NoneBot + Python
 * Copyright © 2021 - 2023 tkgs0. All Rights Reserved.
 * 项目地址: https://github.com/tkgs0/Momoko
-* 使用帮助: https://deja-vu.eu.org/2022/11/15/momoko/
 """.strip()
 
 help_ = on_command(
