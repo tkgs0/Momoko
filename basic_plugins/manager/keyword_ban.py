@@ -341,10 +341,10 @@ def handle_msg(
     ban_time: int = (
         3600
         if not re.search(
-            r'[1-9]\d*((个|個|箇)?(月|小?(时|時))|(天|日)|分|秒)?', args[0]
+            r'^[1-9]\d*((个|個|箇)?(月|小?(时|時))|(天|日)|分|秒)?', args[0]
         )
         else b_time(Message(args.pop(0)))
-    )
+    ) if mode else 0
 
     if not args:
         return _help
