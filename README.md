@@ -681,7 +681,7 @@
      <summary>使用pip安装</summary>
 
    ```bash
-   pip install -r -U requirements.txt && pip install -r install_me.txt && pip install -U pikpakapi
+   pip install -U -r requirements.txt && pip install -r install_me.txt && pip install -U pikpakapi
    ```
 
    </details>
