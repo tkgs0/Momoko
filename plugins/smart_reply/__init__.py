@@ -22,6 +22,11 @@ from .utils import (
     xiaoai
 )
 
+try:
+    from ..mockingbird import get__voice
+except Exception:
+    get__voice = None
+
 
 confpath: Path = Path() / 'data' / 'smart_reply' / 'reply.json'
 confpath.parent.mkdir(parents=True, exist_ok=True)
@@ -77,12 +82,8 @@ async def _(state: T_State, event: MessageEvent, matcher: Matcher):
 
     matcher.stop_propagation()
 
-    try:
-        from ..mockingbird import get__voice
-        if isinstance(result, str) and not result.startswith('ʕ  •ᴥ•ʔ'):
+    if get__voice and isinstance(result, str) and not result.startswith('ʕ  •ᴥ•ʔ'):
             await get__voice(matcher, state, result)
-    except Exception:
-        pass
 
     await ai.finish(Message(result))
 
