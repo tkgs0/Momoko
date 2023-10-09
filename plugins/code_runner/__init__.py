@@ -1,15 +1,17 @@
 from random import choice
-from nonebot import on_command
+from nonebot import on_command, get_driver
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, ArgPlainText
 from nonebot.adapters.onebot.v11 import Message, unescape
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
+from .config import Config
 from .data_source import CodeRunner
 
 
-_flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
+glot_token = Config.parse_obj(get_driver().config.dict()).glot_token
 
+_flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
 
 code_runner = on_command('>code', priority=6, block=True)
 
@@ -32,7 +34,7 @@ async def _(opt: str = ArgPlainText("opt")):
     if opt == ">code.help":
         await code_runner.finish(CodeRunner().help())
 
-    content = str(await CodeRunner().runner(unescape(opt)))
+    content = str(await CodeRunner().runner(glot_token, unescape(opt)))
     await code_runner.finish(content, at_sender=True)
 
 

@@ -1,4 +1,4 @@
-import requests
+import httpx
 
 
 
@@ -32,6 +32,7 @@ SUPPORTED_LANGUAGES = {
 }
 
 
+
 class CodeRunner():
 
     @staticmethod
@@ -52,8 +53,12 @@ class CodeRunner():
         return msg0
 
     @staticmethod
-    async def runner(msg: str):
+    async def runner(token: str, msg: str):
+        if not token:
+            return "未配置glot.io token, 请于.env文件中配置token\n格式示例:\nGLOT_TOKEN=\"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\""
+
         args = msg.split("\n")
+
         if not args:
             return "请检查键入内容..."
 
@@ -67,16 +72,22 @@ class CodeRunner():
             return "该语言暂不支持...或者可能格式错误？"
 
         del args[0]
-        code = "\n".join(map(str, args))
+
+        headers = {
+            "Authorization": f"Token {token}",
+            "Content-type": "application/json",
+        }
+
         url = RUN_API_URL_FORMAT.format(lang)
-        js = {
+
+        json = {
             "files": [
                 {
                     "name": (
                         SUPPORTED_LANGUAGES[lang].get("name", "main")
                         + f".{SUPPORTED_LANGUAGES[lang]['ext']}"
                     ),
-                    "content": code,
+                    "content": "\n".join(map(str, args)),
                 }
             ],
             "stdin": "",
@@ -84,7 +95,7 @@ class CodeRunner():
         }
 
         try:
-            res = requests.post(url, json=js)
+            res = httpx.post(url=url, json=json, headers=headers)
         except Exception:
             return "\n出错力，可能是API寄了..."
 
