@@ -205,8 +205,7 @@ async def get__voice(matcher: Matcher, state: T_State, words: str = ArgStr("word
             Manager.get_config(config_name="voice_accuracy"),
             Manager.get_config(config_name="max_steps"),
         )
-    await matcher.send(MessageSegment.record(record) if record else "ʕ  •ᴥ•ʔ</>")
-    return
+    await matcher.finish(MessageSegment.record(record) if record else "ʕ  •ᴥ•ʔ</>")
 
 
 @view_model.handle()

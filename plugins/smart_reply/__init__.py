@@ -73,19 +73,16 @@ async def _(state: T_State, event: MessageEvent, matcher: Matcher):
         if not msg or msg in [
             '你好啊', '你好', '在吗', '在不在', '您好', '您好啊', '你好', '在']
         else None
-    )
-
+    ) or (await get_chat_result(msg)) or (await get_reply(msg))
     # 从字典里获取结果
     # 如果词库没有结果，则调用对话api获取回复
-    if not result and not (result := await get_chat_result(msg)):
-        result = await get_reply(msg)
 
-    matcher.stop_propagation()
+    # matcher.stop_propagation()
+
+    await ai.send(Message(result))
 
     if get__voice and isinstance(result, str) and not result.startswith('ʕ  •ᴥ•ʔ'):
             await get__voice(matcher, state, result)
-
-    await ai.finish(Message(result))
 
 
 '''
