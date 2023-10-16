@@ -23,8 +23,7 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     if msg:
         matcher.set_arg("opt", args)
     else:
-        content = "请键入 >code.help 以获取帮助~！"
-        await code_runner.finish(content)
+        await code_runner.finish("请发送 >code.help 以获取帮助~！")
 
 
 @code_runner.got("opt", prompt="需要运行的语言及代码？\n获取帮助：>code.help")
