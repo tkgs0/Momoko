@@ -1,7 +1,6 @@
 from random import choice
 from nonebot import on_command, get_driver
 from nonebot.params import CommandArg
-from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Message, unescape
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
@@ -17,18 +16,12 @@ code_runner = on_command('>code', priority=6, block=True)
 
 
 @code_runner.handle([Cooldown(5, prompt=_flmt_notice)])
-async def _(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
-        matcher.state["opt"] = args
+async def _(args: Message = CommandArg()):
+    opt = args.extract_plain_text()
+    if not opt:
+        await code_runner.finish("请发送 >code.help 以获取帮助~！")
 
-
-@code_runner.got("opt", prompt="需要运行的语言及代码？\n获取帮助：>code.help")
-async def _(matcher: Matcher):
-    opt = matcher.state["opt"].extract_plain_text()
-
-                        # 拯救傻瓜用户
-    if opt in ('.help', '>code.help'):
+    if opt == '.help':
         await code_runner.finish(CodeRunner().help())
 
     if opt == '.list':

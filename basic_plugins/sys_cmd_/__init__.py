@@ -5,7 +5,6 @@ from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE as AsyncPIPE
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -51,21 +50,16 @@ sys_shell = on_command(
 )
 
 @sys_shell.handle([Cooldown(5, prompt=_flmt_notice)])
-async def _(matcher: Matcher, args: Message = CommandArg()):
+async def _(args: Message = CommandArg()):
     for i in _win:
         if system() and (system().lower() in i or i in system().lower()):
             await sys_shell.finish('暂不支持Windows,\n请使用 `>cmd`')
-    msg: str = args.extract_plain_text()
-    if msg:
-        matcher.state['opt'] = args
+    opt: str = args.extract_plain_text()
 
+    if not opt:
+        await sys_shell.finish('发送 >shell.help 以获取帮助')
 
-@sys_shell.got('opt', prompt='请输入命令内容\n获取帮助：>shell.help')
-async def _(matcher: Matcher):
-    opt = matcher.state['opt'].extract_plain_text()
-
-                        # 拯救傻瓜用户
-    if opt in ('.help', '>shell.help'):
+    if opt == '.help':
         await sys_shell.finish(shell_help)
 
     content: tuple = await (await create_subprocess_shell(
@@ -97,18 +91,13 @@ sys_cmd = on_command(
 
 
 @sys_cmd.handle([Cooldown(5, prompt=_flmt_notice)])
-async def _(matcher: Matcher, args: Message = CommandArg()):
-    msg: str = args.extract_plain_text()
-    if msg:
-        matcher.state['opt'] = args
+async def _(args: Message = CommandArg()):
+    opt: str = args.extract_plain_text()
 
+    if not opt:
+        await sys_cmd.finish('发送 >cmd.help 以获取帮助')
 
-@sys_cmd.got('opt', prompt='请输入命令内容\n获取帮助：>cmd.help')
-async def _(matcher: Matcher):
-    opt = matcher.state['opt'].extract_plain_text()
-
-                        # 拯救傻瓜用户
-    if opt in ('.help', '>cmd.help'):
+    if opt == '.help':
         await sys_cmd.finish(cmd_help)
 
     content: tuple = Popen(
