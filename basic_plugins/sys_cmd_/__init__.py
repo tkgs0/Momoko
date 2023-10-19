@@ -1,12 +1,12 @@
+from random import choice
 from platform import system
 from subprocess import Popen, PIPE
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE as AsyncPIPE
-from random import choice
 from nonebot import on_command
-from nonebot.permission import SUPERUSER
+from nonebot.params import CommandArg
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg, ArgPlainText
+from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
@@ -54,17 +54,18 @@ sys_shell = on_command(
 async def _(matcher: Matcher, args: Message = CommandArg()):
     for i in _win:
         if system() and (system().lower() in i or i in system().lower()):
-            await sys_shell.finish('暂不支持Windows,\n请使用同步方法 `>cmd`')
+            await sys_shell.finish('暂不支持Windows,\n请使用 `>cmd`')
     msg: str = args.extract_plain_text()
     if msg:
-        matcher.set_arg('opt', args)
+        matcher.state['opt'] = args
 
 
 @sys_shell.got('opt', prompt='请输入命令内容\n获取帮助：>shell.help')
-async def _(opt: str = ArgPlainText('opt')):
+async def _(matcher: Matcher):
+    opt = matcher.state['opt'].extract_plain_text()
 
-    # 拯救傻瓜用户
-    if opt.startswith('>shell.help'):
+                        # 拯救傻瓜用户
+    if opt in ('.help', '>shell.help'):
         await sys_shell.finish(shell_help)
 
     content: tuple = await (await create_subprocess_shell(
@@ -99,14 +100,15 @@ sys_cmd = on_command(
 async def _(matcher: Matcher, args: Message = CommandArg()):
     msg: str = args.extract_plain_text()
     if msg:
-        matcher.set_arg('opt', args)
+        matcher.state['opt'] = args
 
 
 @sys_cmd.got('opt', prompt='请输入命令内容\n获取帮助：>cmd.help')
-async def _(opt: str = ArgPlainText('opt')):
+async def _(matcher: Matcher):
+    opt = matcher.state['opt'].extract_plain_text()
 
-    # 拯救傻瓜用户
-    if opt.startswith('>cmd.help'):
+                        # 拯救傻瓜用户
+    if opt in ('.help', '>cmd.help'):
         await sys_cmd.finish(cmd_help)
 
     content: tuple = Popen(
@@ -127,14 +129,6 @@ async def _(opt: str = ArgPlainText('opt')):
     else :
         msg: str = f'\nstdout:\n{content[0]}\nstderr:\n{content[1]}\n>执行完毕'
     await sys_cmd.finish(msg, at_sender=True)
-
-
-sys_cmd_helper = on_command('>cmd.help', priority=5, block=True)
-
-@sys_cmd_helper.handle()
-async def _():
-    await sys_cmd_helper.finish(cmd_help)
-
 
 
 
