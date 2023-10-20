@@ -1,7 +1,6 @@
 from nonebot import on_metaevent
 from nonebot.adapters.onebot.v11 import (
     Bot,
-    Message,
     LifecycleMetaEvent
 )
 
@@ -11,7 +10,7 @@ async def check_first_connect(_: LifecycleMetaEvent) -> bool:
 
 start_metaevent = on_metaevent(rule=check_first_connect, temp=True)
 @start_metaevent.handle()
-async def start(bot: Bot) -> None:
+async def _(bot: Bot) -> None:
     bot_info = await bot.get_login_info()
     
     superusers = bot.config.superusers
@@ -25,6 +24,6 @@ async def start(bot: Bot) -> None:
     for superuser in superusers:
         await bot.send_private_msg(
             user_id=int(superuser),
-            message=Message("Bot启动成功")
+            message="Bot启动成功"
         )
 
