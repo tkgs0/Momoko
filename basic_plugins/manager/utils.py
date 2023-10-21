@@ -1,4 +1,5 @@
 import re, time, random
+from pathlib import Path
 from nonebot import logger
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
@@ -9,6 +10,9 @@ from nonebot.adapters.onebot.v11 import (
     ActionFailed,
 )
 
+
+datapath = Path() / 'data' / 'manager'
+datapath.mkdir(parents=True, exist_ok=True)
 
 flmt_notice = random.choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
 

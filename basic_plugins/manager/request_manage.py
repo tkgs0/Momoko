@@ -1,10 +1,6 @@
 import time, random, asyncio
-from pathlib import Path
 from typing import Literal
-try:
-    import ujson as json
-except ModuleNotFoundError:
-    import json
+import ujson as json
 
 from nonebot import logger, on_notice, on_request, on_command
 from nonebot.permission import SUPERUSER
@@ -25,11 +21,10 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
+from .utils import flmt_notice, err_info, is_number, format_time, datapath
 
-from .utils import flmt_notice, err_info, is_number, format_time
 
-
-filepath = Path() / 'data' / 'reqlist' / 'reqlist.json'
+filepath = datapath / 'reqlist.json'
 filepath.parent.mkdir(parents=True, exist_ok=True)
 
 reqlist = (
@@ -613,6 +608,42 @@ async def _():
     await reset_auto.finish('已重置请求自动处理开关')
 
 
+
+switch_list_file = datapath / 'group_member_notice_switch_list.json'
+
+switch_list = (
+    json.loads(switch_list_file.read_text('utf-8'))
+    if switch_list_file.is_file()
+    else {}
+)
+
+
+def save_switch_list() -> None:
+    switch_list_file.write_text(
+        json.dumps(
+            switch_list,
+            ensure_ascii=False,
+            escape_forward_slashes=False,
+            indent=2
+        ),
+        encoding='utf-8'
+    )
+
+
+def check_self_id(self_id) -> str:
+    self_id = f'{self_id}'
+    if not switch_list.get(self_id):
+        switch_list.update({
+            self_id: {
+                'Increase': {},
+                'Decrease': []
+            }
+        })
+        save_switch_list()
+
+    return self_id
+
+
 group_member_event = on_notice(priority=1)
 
 @group_member_event.handle()
@@ -624,15 +655,102 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
                 await group_member_event.send('⚠Error!!!\n群聊邀请与入群时间差小于2秒, 触发自动退群机制!')
                 await bot.set_group_leave(group_id=event.group_id)
     else:
-        await asyncio.sleep(random.random()*2+1)
-        # msg = '欢迎~, 以下为本群群规\n' + \
-        #     MessageSegment.image(file='https://code.gitlink.org.cn/SmartBrain/test/raw/branch/main/7f9b8412f8332096cea00a563aba54ac.jpg')
-        await group_member_event.finish('欢迎~', at_sender=True)
+        self_id = check_self_id(event.self_id)
+
+        if msg := switch_list[self_id]['Increase'].get(f'{event.group_id}'):
+            await asyncio.sleep(random.random()*2+1)
+            await group_member_event.finish(msg, at_sender=True)
 
 @group_member_event.handle()
 async def _(event: GroupDecreaseNoticeEvent):
-    await asyncio.sleep(random.random()*2+1)
-    msg = f'一位不愿透露姓名的网友({event.user_id})离开了我们...'
-    await group_member_event.finish(msg)
+    self_id = check_self_id(event.self_id)
+
+    if f'{event.group_id}' in switch_list[self_id]['Decrease']:
+        await asyncio.sleep(random.random()*2+1)
+        msg = f'一位不愿透露姓名的网友({event.user_id})离开了我们...'
+        await group_member_event.finish(msg)
 
 
+increase = on_command(
+    '/入群欢迎',
+    permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
+    priority=1,
+    block=True
+)
+
+@increase.handle()
+async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
+    self_id = check_self_id(event.self_id)
+    switch = arg.extract_plain_text().strip()
+    flag = False
+
+    if switch == '开':
+        switch_list[self_id]['Increase'].update({
+            f'{event.group_id}': '欢迎~'
+        })
+        flag = True
+    if switch == '关':
+        switch_list[self_id]['Increase'].pop(f'{event.group_id}', None)
+
+    save_switch_list()
+    await increase.finish(f'入群欢迎已{"开启" if flag else "关闭"}.')
+
+
+
+decrease = on_command(
+    '/退群播报',
+    permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
+    priority=1,
+    block=True
+)
+
+@decrease.handle()
+async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
+    self_id = check_self_id(event.self_id)
+    switch = arg.extract_plain_text().strip()
+    flag = False
+
+    if switch == '开':
+        switch_list[self_id]['Decrease'].append(f'{event.group_id}')
+        switch_list[self_id]['Decrease'] = list(set(switch_list[self_id]['Decrease']))
+        flag = True
+    if switch == '关':
+        switch_list[self_id]['Decrease'] = [i for i in switch_list[self_id]['Decrease'] if not i == f'{event.group_id}']
+
+    save_switch_list()
+    await decrease.finish(f'退群播报已{"开启" if flag else "关闭"}.')
+
+
+set_welcome_msg = on_command(
+    '/设置欢迎词',
+    aliases={'/设置欢迎语'},
+    permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
+    priority=1,
+    block=True
+)
+
+@set_welcome_msg.handle()
+async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
+    self_id = check_self_id(event.self_id)
+    msg = unescape(str(arg))
+
+    switch_list[self_id]['Increase'].update({
+        f'{event.group_id}': msg
+    })
+    save_switch_list()
+    await set_welcome_msg.finish(Message(f'入群欢迎已开启, 已设置欢迎词:\n\n{msg}'))
+
+
+get_welcome_msg = on_command(
+    '/查看欢迎词',
+    aliases={'/查看欢迎语'},
+    permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
+    priority=1,
+    block=True
+)
+
+@get_welcome_msg.handle()
+async def _(event: GroupMessageEvent):
+    self_id = check_self_id(event.self_id)
+    msg = switch_list[self_id]['Increase'].get(f'{event.group_id}')
+    await get_welcome_msg.finish(msg or '未设置入群欢迎词.')

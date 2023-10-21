@@ -1,9 +1,6 @@
 import time
 from pathlib import Path
-try:
-    import ujson as json
-except ModuleNotFoundError:
-    import json
+import ujson as json
 from nonebot import on_command, on_message, logger
 from nonebot.rule import to_me
 from nonebot.matcher import Matcher

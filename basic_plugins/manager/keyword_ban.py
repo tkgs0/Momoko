@@ -1,8 +1,8 @@
 import re, string, asyncio
 from random import random
 from typing import Literal
-from pathlib import Path
 import sqlite3
+import ujson as json
 from nonebot import logger, get_driver, on_message, on_command
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
@@ -16,7 +16,7 @@ from nonebot.adapters.onebot.v11 import (
     ActionFailed
 )
 
-from .utils import is_number, err_info, ban_user, ban_time as b_time
+from .utils import is_number, err_info, datapath,  ban_user, ban_time as b_time
 
 
 __help__:str = """
@@ -58,7 +58,7 @@ __help__:str = """
 
 superusers = get_driver().config.superusers
 
-filepath = Path() / "data" / "keyword_ban" / "keyword.db"
+filepath = datapath / "keyword_ban.db"
 filepath.parent.mkdir(parents=True, exist_ok=True)
 filepath.touch(exist_ok=True)
 
@@ -228,10 +228,82 @@ async def _(bot: Bot, event: MessageEvent):
     await bot.send_forward_msg(group_id=gid, user_id=uid, messages=node)
 
 
+
+switch_list_file = datapath / 'keyword_ban_switch_list.json'
+
+switch_list = (
+    json.loads(switch_list_file.read_text('utf-8'))
+    if switch_list_file.is_file()
+    else {}
+)
+
+
+def save_switch_list() -> None:
+    switch_list_file.write_text(
+        json.dumps(
+            switch_list,
+            ensure_ascii=False,
+            escape_forward_slashes=False,
+            indent=2
+        ),
+        encoding='utf-8'
+    )
+
+
+def check_self_id(self_id) -> str:
+    self_id = f'{self_id}'
+
+    if not switch_list.get(self_id):
+        switch_list.update({
+            self_id: []
+        })
+        save_switch_list()
+
+    return self_id
+
+
+enable_keyban = on_command(
+    '/启用keyban',
+    aliases={'/开启keyban'},
+    permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
+    priority=2,
+    block=True
+)
+
+@enable_keyban.handle()
+async def _(event: GroupMessageEvent):
+    self_id = check_self_id(event.self_id)
+    switch_list[self_id].append(f'{event.group_id}')
+    switch_list[self_id] = list(set(switch_list[self_id]))
+    save_switch_list()
+    await enable_keyban.finish('已启用关键词禁言服务')
+
+
+disable_keyban = on_command(
+    '/禁用keyban',
+    aliases={'/关闭keyban'},
+    permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
+    priority=2,
+    block=True
+)
+
+@disable_keyban.handle()
+async def _(event: GroupMessageEvent):
+    self_id = check_self_id(event.self_id)
+    switch_list[self_id] = [i for i in switch_list[self_id] if not i == f'{event.group_id}']
+    save_switch_list()
+    await disable_keyban.finish('已禁用关键词禁言服务.')
+
+
 keyword_ban = on_message(priority=90, block=False)
 
 @keyword_ban.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
+    self_id = check_self_id(event.self_id)
+
+    if not f'{event.group_id}' in switch_list[self_id]:
+        return
+
     loop = asyncio.get_running_loop()
     loop.create_task(get_ban(bot, event))
 
