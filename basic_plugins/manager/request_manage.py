@@ -185,10 +185,7 @@ async def friend(
     if len(bytes(remark, encoding='utf-8')) > 60:
         return '备注太长啦!'
 
-    try:
-        req = reqlist['user'].pop(int(uid))
-    except KeyError:
-        req = {'user_id': 'NaN'}
+    req = reqlist['user'].pop(uid, {'user_id': 'NaN'})
     save_reqlist()
 
     try:
@@ -233,10 +230,7 @@ async def group(
     if group and group != req['group_id']:
         return '事件已走丢, 请尝试手动处理.'
 
-    try:
-        reqlist['group'][mode].pop(flag)
-    except KeyError:
-        pass
+    reqlist['group'][mode].pop(flag, None)
     save_reqlist()
 
     try:
@@ -356,7 +350,7 @@ async def _():
     msg = ''
     for i in reqlist['user']:
         user = reqlist['user'].get(i)
-        msg += f'\nuser: {user["user_id"]}\n验证信息: {user["comment"]}'
+        msg += f'\nFLAG: {user["flag"]}\n请求人: {user["user_id"]}\n验证信息: {user["comment"]}'
     
     await read_fdreq.finish(
         f'自动处理: {reqlist["auto_approve"]["user"]}'
@@ -539,10 +533,7 @@ off_autogra = on_command(
 
 @off_autogra.handle([Cooldown(5, prompt=flmt_notice)])
 async def _(event: GroupMessageEvent):
-    try:
-        reqlist['auto_approve']['group'][0].pop(event.group_id)
-    except KeyError:
-        pass
+    reqlist['auto_approve']['group'][0].pop(event.group_id, None)
     save_reqlist()
     await off_autogra.finish('已关闭自动处理入群请求.')
 
