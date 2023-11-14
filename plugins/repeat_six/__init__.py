@@ -7,7 +7,7 @@ six = on_regex(r"^6+$", priority=5, block=False)
 
 @six.handle()
 async def _(event: Event):
-    if not random()*10//1%6:
+    if random()*10//1 == 6.0:
         await six.finish(event.get_message())
 
 
@@ -19,5 +19,5 @@ nonsense = on_regex(
 
 @nonsense.handle()
 async def _(event: Event):
-    if not random()*10//1%6:
+    if random()*10//1 == 6.0:
         await nonsense.finish(event.get_message())
