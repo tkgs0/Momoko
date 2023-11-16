@@ -10,7 +10,6 @@ from nonebot.adapters.onebot.v11 import (
     PokeNotifyEvent,
     MessageSegment
 )
-from nonebot.adapters.onebot.v11.helpers import Cooldown
 import ujson as json
 from pathlib import Path
 import asyncio, random
@@ -45,12 +44,13 @@ def save_conf() -> None:
 
 poke_ = on_notice(priority=999, block=False)
 
-@poke_.handle([Cooldown(10)])
+@poke_.handle()
 async def _(event: PokeNotifyEvent):
     if event.self_id == event.target_id:
-        await asyncio.sleep(random.random()+1)
-        # await poke_.finish(f'请不要戳{Bot_NICKNAME}>_<')
-        await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
+        if not random.random()*10//1%6:
+            await asyncio.sleep(random.random()+1)
+            # await poke_.finish(f'请不要戳{Bot_NICKNAME}>_<')
+            await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
 
 
 ai = on_message(rule=to_me(), priority=999, block=False)
