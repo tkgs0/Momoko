@@ -15,6 +15,8 @@ NICKNAME: str = list(config.nickname)[0]  # bot的nickname
 MASTER: str = list(config.superusers)[0]  # bot的主人id
 XIAOAI: bool = config.xiaoai_voice
 
+nullpo = MessageSegment.image(file=(Path(__file__).parent / 'resource' / 'nullpo.png'), cache=False)
+
 # 载入词库(这个词库有点涩)
 AnimeThesaurus = json.loads(
     (Path(__file__).parent / 'resource' / 'data.json').read_text('utf-8')
@@ -35,7 +37,7 @@ async def get_chat_result(text: str) -> str | None:
 
 
 # 从思知api拿到消息
-async def xiaosi(msg: str) -> str:
+async def xiaosi(msg: str) -> str | MessageSegment:
 
     # 将半角标点和空白符号换成全角空格
     for i in punctuation + whitespace:
@@ -62,7 +64,7 @@ async def xiaosi(msg: str) -> str:
             return 'ʕ  •ᴥ•ʔ……'
         except Exception as e:
             logger.error(repr(e))
-            return 'ʕ  •ᴥ•ʔ</>'
+            return nullpo
 
 
 # 从小爱api拿到消息
@@ -95,12 +97,12 @@ async def xiaoai(msg: str) -> str | MessageSegment:
                     if XIAOAI
                     else res.replace('小爱', NICKNAME).replace('小米智能助理', '猫')
                 )
-                return content if content else 'ʕ  •ᴥ•ʔ</>'
+                return content if content else nullpo
             logger.error(res)
 
         except Exception as e:
             logger.error(repr(e))
-        return 'ʕ  •ᴥ•ʔ</>'
+        return nullpo
 
 
 async def get_voice(url: str) -> MessageSegment | None:

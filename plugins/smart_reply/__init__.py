@@ -79,7 +79,10 @@ async def _(state: T_State, event: MessageEvent, matcher: Matcher):
 
     # matcher.stop_propagation()
 
-    await ai.send(Message(result))
+    try:
+        await ai.send(Message(result))
+    except Exception:
+        await ai.finish('ʕ  •ᴥ•ʔ<Err>')
 
     if get__voice and isinstance(result, str) and not result.startswith('ʕ  •ᴥ•ʔ'):
             await get__voice(matcher, state, result)
