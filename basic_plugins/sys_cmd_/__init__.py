@@ -82,7 +82,7 @@ async def _(args: Message = CommandArg()):
     await sys_shell.finish(
         msg
             if len(msg) <= 4500
-            else msg[:4400] + '\n......\n......\n......\n\n(太多了发不出...)'
+            else msg[:4400] + '\n......\n......\n......\n(太多了发不出...)'
         ,
         at_sender=True
     )
@@ -126,7 +126,7 @@ async def _(args: Message = CommandArg()):
     await sys_cmd.finish(
         msg
             if len(msg) <= 4500
-            else msg[:4400] + '\n......\n......\n......\n\n(太多了发不出...)'
+            else msg[:4400] + '\n......\n......\n......\n(太多了发不出...)'
         ,
         at_sender=True
     )
