@@ -79,7 +79,13 @@ async def _(args: Message = CommandArg()):
         msg: str = (f'\nstdout:\n{content[0].decode()}'
                f'\nstderr:\n{content[1].decode()}'
                '\n>执行完毕')
-    await sys_shell.finish(msg, at_sender=True)
+    await sys_shell.finish(
+        msg
+            if len(msg) <= 4500
+            else msg[:4400] + '\n......\n......\n......\n\n(太多了发不出...)'
+        ,
+        at_sender=True
+    )
 
 
 sys_cmd = on_command(
@@ -117,7 +123,13 @@ async def _(args: Message = CommandArg()):
         msg: str = f'\nstderr:\n{content[1]}'
     else :
         msg: str = f'\nstdout:\n{content[0]}\nstderr:\n{content[1]}\n>执行完毕'
-    await sys_cmd.finish(msg, at_sender=True)
+    await sys_cmd.finish(
+        msg
+            if len(msg) <= 4500
+            else msg[:4400] + '\n......\n......\n......\n\n(太多了发不出...)'
+        ,
+        at_sender=True
+    )
 
 
 
