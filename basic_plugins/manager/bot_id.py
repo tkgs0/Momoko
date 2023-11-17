@@ -24,6 +24,6 @@ async def _(bot: Bot) -> None:
     for superuser in superusers:
         await bot.send_private_msg(
             user_id=int(superuser),
-            message="Bot启动成功"
+            message="早ﾉ🌞"
         )
 
