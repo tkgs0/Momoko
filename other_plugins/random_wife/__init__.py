@@ -91,7 +91,7 @@ def get_wife(uid: str, _time: int) -> Path | None:
     if not wifelist:
         return None
     img = random.choice(wifelist)
-    registers["registers"][uid] = [img.name, _time]
+    registers["registers"][uid] = [_time, img.name]
     save_file()
     return img
 
