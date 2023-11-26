@@ -77,7 +77,7 @@ async def _(event: MessageEvent):
         clean_list(img)
         img = get_wife(uid, _time)
 
-    await randwife.finish(Message(f"{event.sender.card or event.sender.nickname or uid}今天的wife是\n{MessageSegment.image(img.read_bytes())}\n哦~" if img else "没有找到wife (悲"))
+    await randwife.finish(Message(f"{event.sender.card or event.sender.nickname or uid}今天的wife是\n{img.name}\n{MessageSegment.image(img.read_bytes())}\n哦~" if img else "没有找到wife (悲"))
 
 
 def clean_list(img: Path) -> None:
@@ -87,7 +87,7 @@ def clean_list(img: Path) -> None:
         pass
 
 
-def get_wife(uid: str, _time: float) -> Path | None:
+def get_wife(uid: str, _time: int) -> Path | None:
     if not wifelist:
         return None
     img = random.choice(wifelist)
