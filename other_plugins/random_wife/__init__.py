@@ -77,7 +77,7 @@ async def _(event: MessageEvent):
         clean_list(img)
         img = get_wife(uid, _time)
 
-    await randwife.finish(f"{event.sender.card or event.sender.nickname or uid}今天的wife是\n{MessageSegment.image(img.read_bytes())}\n哦~" if img else "没有找到wife (悲")
+    await randwife.finish(Message(f"{event.sender.card or event.sender.nickname or uid}今天的wife是\n{MessageSegment.image(img.read_bytes())}\n哦~" if img else "没有找到wife (悲"))
 
 
 def clean_list(img: Path) -> None:
@@ -117,7 +117,7 @@ async def _(args: str = ArgPlainText('ARGS')):
     if not (name := args.strip()):
         await search_wife.reject()
     _file = wifedir / name
-    await search_wife.finish(f"{name}\n{MessageSegment.image(_file.read_bytes())}" if _file.is_file() else "没有找到这个wife (悲")
+    await search_wife.finish(Message(f"{name}\n{MessageSegment.image(_file.read_bytes())}" if _file.is_file() else "没有找到这个wife (悲"))
 
 
 del_all_wife = on_command(
@@ -181,7 +181,7 @@ async def _(args: str = ArgPlainText('ARGS')):
     file = wifedir / _file
     file.unlink(missing_ok=True)
     clean_list(file)
-    await del_wife.finish(f"已尝试删除1个wife.")
+    await del_wife.finish("已尝试删除1个wife.")
 
 
 add_wife = on_command(
