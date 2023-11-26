@@ -193,7 +193,8 @@ add_wife = on_command(
 
 @add_wife.handle()
 async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()) -> None:
-    matcher.state["ARGS"] = args.extract_plain_text().strip()
+    if arg := args.extract_plain_text().strip():
+        matcher.state["ARGS"] = arg
     if contains_image(event):
         matcher.state["IMAGES"] = event
 
