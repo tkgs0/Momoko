@@ -64,11 +64,11 @@ async def _(event: MessageEvent):
     else:
         img = get_img(uid, _time)
 
-    while not img.is_file():
+    while img and not img.is_file():
         clean_list(img)
         img = get_img(uid, _time)
 
-    await eat.finish(MessageSegment.image(img.read_bytes()))
+    await eat.finish(MessageSegment.image(img.read_bytes()) if img else "喝西北风喵.")
 
 
 def clean_list(img: Path) -> None:
@@ -77,7 +77,9 @@ def clean_list(img: Path) -> None:
     except ValueError:
         pass
 
-def get_img(uid: str, _time: float) -> Path:
+def get_img(uid: str, _time: float) -> Path | None:
+    if not imgs:
+        return None
     img = random.choice(imgs)
     records["user"][uid] = [img.name, _time]
     save_file()
@@ -94,6 +96,8 @@ see_imgs = on_command(
 
 @see_imgs.handle()
 async def _(bot: Bot, event: MessageEvent):
+    if not imgs:
+        await see_imgs.finish("什么也没有哦.")
 
     gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
     uid: int = event.user_id if not gid else 0
