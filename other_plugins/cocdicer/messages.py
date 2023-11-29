@@ -1,7 +1,7 @@
 class Help_messages():
     def __init__(self):
         self.main = "本骰娘由 NoneBot2 强力驱动\n\n" \
-            ".help 帮助信息\n" \
+            ".h 帮助信息\n" \
             ".r    投掷指令 todo\n" \
             "    d   制定骰子面数\n" \
             "    a   检定\n" \
@@ -19,7 +19,7 @@ class Help_messages():
             ".show 角色卡查询\n" \
             ".sa   快速检定\n" \
             ".del  删除数据\n" \
-            "输入.help+指令名获取详细信息"
+            "\n输入.h+指令名获取详细信息"
         self.r = ".r[dah#bp] a_number [+/-]ex_number\n" \
             "d：骰子设定指令,标准格式为xdy，x为骰子数量y为骰子面数；\n" \
             "a：检定指令，根据后续a_number设定数值检定；\n" \

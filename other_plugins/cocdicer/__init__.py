@@ -35,7 +35,7 @@ def is_group_message() -> Rule:
     return Rule(_is_group_message)
 
 
-rdhelp = on_startswith(".help", priority=2, block=True)
+rdhelp = on_startswith(".h", priority=2, block=True)
 stcommand = on_startswith(".st", priority=2, block=True)
 encommand = on_startswith(".en", priority=2, block=True)
 ticommand = on_startswith(".ti", priority=2, block=True)
@@ -52,7 +52,7 @@ delcommand = on_startswith(".del", priority=5, block=True)
 
 @rdhelp.handle()
 async def rdhelphandler(matcher: Matcher, event: MessageEvent):
-    args = str(event.get_message())[5:].strip()
+    args = str(event.get_message())[2:].strip()
     await matcher.finish(help_message(args))
 
 
