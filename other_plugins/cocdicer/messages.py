@@ -1,6 +1,7 @@
 class Help_messages():
     def __init__(self):
-        self.main = "本骰娘由nonebot2强力驱动\n" \
+        self.main = "本骰娘由 NoneBot2 强力驱动\n\n" \
+            ".h 帮助信息\n" \
             ".r    投掷指令 todo\n" \
             "    d   制定骰子面数\n" \
             "    a   检定\n" \
@@ -13,7 +14,6 @@ class Help_messages():
             ".ti   临时疯狂症状\n" \
             ".li   总结疯狂症状\n" \
             ".coc  coc角色作成\n" \
-            ".help 帮助信息\n" \
             ".en   技能成长\n" \
             ".set  角色卡设定\n" \
             ".show 角色卡查询\n" \
