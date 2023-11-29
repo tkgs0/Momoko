@@ -35,7 +35,7 @@ def is_group_message() -> Rule:
     return Rule(_is_group_message)
 
 
-rdhelp = on_startswith(".h", priority=2, block=True)
+rdhelp = on_startswith(".help", priority=2, block=True)
 stcommand = on_startswith(".st", priority=2, block=True)
 encommand = on_startswith(".en", priority=2, block=True)
 ticommand = on_startswith(".ti", priority=2, block=True)

@@ -1,7 +1,7 @@
 class Help_messages():
     def __init__(self):
         self.main = "本骰娘由 NoneBot2 强力驱动\n\n" \
-            ".h 帮助信息\n" \
+            ".help 帮助信息\n" \
             ".r    投掷指令 todo\n" \
             "    d   制定骰子面数\n" \
             "    a   检定\n" \
