@@ -8,6 +8,7 @@ aiofiles>=22.1.0
 aiohttp[speedups]>=3.8.3
 cachetools>=5.0.0
 deep-translator>=1.8.0
+diro-py>=0.1.0
 diskcache>=5.4.0
 emoji>=2.0.0
 feedparser>=6.0.3
