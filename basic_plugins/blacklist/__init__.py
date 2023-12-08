@@ -98,7 +98,7 @@ def blacklist_processor(event: Event):
         raise IgnoredException('黑名单用户')
 
     if not str(vars(event).get('group_id', None)):
-        if not blacklist['private'] or uid in blacklist[self_id]['privlist']:
+        if not blacklist[self_id]['private'] or uid in blacklist[self_id]['privlist']:
             logger.debug(f'私聊 {uid} 在 {self_id} 黑名单中, 忽略本次消息')
             raise IgnoredException('黑名单会话')
 
