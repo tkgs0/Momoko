@@ -11,6 +11,7 @@ from nonebot.adapters.onebot.v11 import (
     Message,
     MessageSegment,
     MessageEvent,
+    ActionFailed
 )
 
 
@@ -55,6 +56,16 @@ def save_file() -> None:
         json.dumps(registers, indent=2, ensure_ascii=False), "utf-8")
 
 
+def err_info(e: ActionFailed) -> str:
+    e1 = 'Failed: '
+    if e2 := e.info.get('wording'):
+        return e1 + e2
+    elif e2 := e.info.get('msg'):
+        return e1 + e2
+    else:
+        return repr(e)
+
+
 randwife = on_command(
     "抽wife",
     aliases={"抽老婆", "随机wife", "随机老婆", "今日wife", "今日老婆"},
@@ -77,7 +88,11 @@ async def _(event: MessageEvent):
         clean_list(img)
         img = get_wife(uid, _time)
 
-    await randwife.finish(Message(f"{event.sender.card or event.sender.nickname or uid}今天的wife是\n{img.name}\n{MessageSegment.image(img.read_bytes())}\n哦~" if img else "没有找到wife (悲"))
+    try:
+        await randwife.finish(Message(f"{event.sender.card or event.sender.nickname or uid}今天的wife是\n{img.name}\n{MessageSegment.image(img.read_bytes())}\n哦~" if img else "没有找到wife (悲"))
+    except ActionFailed as e:
+        logger.error(repr(e))
+        await randwife.finish(err_info(e))
 
 
 def clean_list(img: Path) -> None:
@@ -117,7 +132,11 @@ async def _(args: str = ArgPlainText('ARGS')):
     if not (name := args.strip()):
         await search_wife.reject()
     _file = wifedir / name
-    await search_wife.finish(Message(f"{name}\n{MessageSegment.image(_file.read_bytes())}" if _file.is_file() else "没有找到这个wife (悲"))
+    try:
+        await search_wife.finish(Message(f"{name}\n{MessageSegment.image(_file.read_bytes())}" if _file.is_file() else "没有找到这个wife (悲"))
+    except ActionFailed as e:
+        logger.error(repr(e))
+        await randwife.finish(err_info(e))
 
 
 del_all_wife = on_command(
