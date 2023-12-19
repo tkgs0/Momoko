@@ -76,7 +76,7 @@ def check_self_id(self_id) -> str:
             })
             save_switch()
         for i in template:
-            if not switch[self_id].get(i):
+            if switch[self_id].get(i) == None:
                 switch[self_id].update({i: temp[i]})
                 save_switch()
     except Exception:

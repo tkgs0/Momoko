@@ -64,7 +64,7 @@ def check_self_id(self_id) -> str:
             })
             save_blacklist()
         for i in template:
-            if not blacklist[self_id].get(i):
+            if blacklist[self_id].get(i) == None:
                 blacklist[self_id].update({i: temp[i]})
                 save_blacklist()
     except Exception:
