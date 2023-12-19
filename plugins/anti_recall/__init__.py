@@ -219,11 +219,7 @@ async def check_user_list(event: MessageEvent):
     self_id = check_self_id(event.self_id)
     uids = switch[self_id]['private']
     gids = switch[self_id]['group']
-    msg = f"""
-    服务状态: {'启用' if switch[self_id]['enable'] else '禁用'}
-    private: {', '.join(uids)}
-    group: {', '.join(gids)}
-    """
+    msg = f"服务状态: {'启用' if switch[self_id]['enable'] else '禁用'}\nprivate: {', '.join(uids)}\ngroup: {', '.join(gids)}"
     await check_private.finish(msg)
 
 
