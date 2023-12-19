@@ -394,6 +394,13 @@
 
   移植自 [摸](https://github.com/Kyomotoi) 的 [ATRI](https://github.com/Kyomotoi/ATRI)
 
+  ```
+  禁用(启用)反撤回
+  禁用(启用)私聊(群聊)反撤回 qq qq1 qq2 ...
+  重置反撤回
+  反撤回状态
+  ```
+
   将检测到的撤回消息转发给超级用户
 
   </details>
