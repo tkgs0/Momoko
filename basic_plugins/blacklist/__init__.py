@@ -54,17 +54,24 @@ def save_blacklist() -> None:
 
 def check_self_id(self_id) -> str:
     self_id = f'{self_id}'
+    temp: dict = {}
+    temp.update(template)
 
-    if not blacklist.get(self_id):
+    try:
+        if not blacklist.get(self_id):
+            blacklist.update({
+                self_id: temp
+            })
+            save_blacklist()
+        for i in template:
+            if not blacklist[self_id].get(i):
+                blacklist[self_id].update({i: temp[i]})
+                save_blacklist()
+    except Exception:
         blacklist.update({
-            self_id: {}.update(template)
+            self_id: temp
         })
         save_blacklist()
-
-    for i in template:
-        if not blacklist[self_id].get(i):
-            blacklist[self_id].update({i: template[i]})
-            save_blacklist()
 
     return self_id
 

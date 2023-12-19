@@ -66,20 +66,22 @@ def save_switch() -> None:
 
 def check_self_id(self_id) -> str:
     self_id = f'{self_id}'
+    temp: dict = {}
+    temp.update(template)
 
     try:
         if not switch.get(self_id):
             switch.update({
-                self_id: {}.update(template)
+                self_id: temp
             })
             save_switch()
         for i in template:
             if not switch[self_id].get(i):
-                switch[self_id].update({i: template[i]})
+                switch[self_id].update({i: temp[i]})
                 save_switch()
     except Exception:
         switch.update({
-            self_id: {}.update(template)
+            self_id: temp
         })
         save_switch()
 
