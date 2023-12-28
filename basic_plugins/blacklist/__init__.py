@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Literal
 
 from nonebot import get_driver, on_command, on_notice
+from nonebot.plugin import PluginMetadata
 from nonebot.log import logger
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import (
@@ -19,6 +20,26 @@ from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
 
 import ujson as json
+
+
+__plugin_meta__ = PluginMetadata(
+    name="黑名单",
+    description="黑名单插件",
+    usage=(
+        "指令表:\n"
+        "·拉黑(解禁)用户(群/私聊) qq qq1 qq2 ...\n"
+        "·拉黑(解禁)所有好友(群) -- 只对已添加的好友/群生效\n"
+        "·响应(静默)私聊 / 启用(禁用)私聊\n"
+        "·查看用户(群聊/私聊)黑名单\n"
+        "·重置黑名单\n"
+        "·重置所有黑名单\n"
+        "·自觉静默开(关)\n"
+        '\n#群内发送 "/静默" "/响应" 可快捷拉黑/解禁当前群聊'
+    ),
+    type="application",
+    homepage="https://github.com/tkgs0/nonebot-plugin-blacklist"
+)
+
 
 superusers = get_driver().config.superusers
 

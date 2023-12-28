@@ -10,26 +10,6 @@ from nonebot.permission import SUPERUSER
 
 
 
-_help = """
-⛦ 🍑 Momoko 开源 Project ⛥
-* OneBot + NoneBot + Python
-* Copyright © 2021 - 2023 tkgs0. All Rights Reserved.
-* 项目地址: https://github.com/tkgs0/Momoko
-""".strip()
-
-help_ = on_command(
-    "help",
-    rule=to_me(),
-    aliases={"帮助","menu","菜单"},
-    priority=5, block=True
-)
-
-@help_.handle()
-async def _():
-    await help_.finish(_help)
-
-
-
 echo = on_command(
     "：",
     aliases={":", "曰"},
