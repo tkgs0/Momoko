@@ -1,16 +1,7 @@
 import asyncio
-from io import BytesIO
 from httpx import AsyncClient
 from nonebot import logger, require
 require("nonebot_plugin_imageutils")
-from nonebot_plugin_imageutils import BuildImage as Image
-
-
-def edit_img(img: bytes) -> BytesIO:
-    image = Image.open(BytesIO(img))
-    # image.draw_ellipse((5,5,50,50), outline='red')
-    image = image.resize_width(image.width // 2)
-    return image.save_png()
 
 
 async def down_pic(content, pixproxy) -> tuple[list, list]:
@@ -43,7 +34,7 @@ async def down_pic(content, pixproxy) -> tuple[list, list]:
                     timeout=30
                 )
                 if res.status_code == 200:
-                    imgs[i["pid"]] = [edit_img(res.content), i['caption']]
+                    imgs[i["pid"]] = [res.content, i['caption']]
                     logger.success(f'获取图片 {i["pid"]} 成功')
                 else:
                     status[i["pid"]] = f'获取图片 {i["pid"]} 失败: {res.status_code}'

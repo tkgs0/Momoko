@@ -22,7 +22,7 @@ async def get_setu(
         params = {
             'tag': keyword,
             'r18': r18,
-            'size': 'regular',
+            'size': 'small',
             'num': img if img < 11 else 1
         }
         try:
@@ -36,7 +36,7 @@ async def get_setu(
 
             content = [{
                 'pid': i['pid'],
-                'url': i['urls']['regular'],
+                'url': i['urls']['small'],
                 'caption': (
                     f'标题: {i["title"]}\n'
                     f'pid: {i["pid"]}\n'
