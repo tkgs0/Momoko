@@ -8,7 +8,7 @@ from .cards import _cachepath, cards, cache_cards, set_handler, show_handler, sa
 from nonebot import get_driver, get_bot
 from nonebot.rule import Rule
 from nonebot.matcher import Matcher
-from nonebot.plugin import on_startswith
+from nonebot.plugin import on_startswith, PluginMetadata
 from nonebot.adapters import Bot as Bot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.onebot.v12 import Bot as V12Bot
@@ -17,6 +17,14 @@ from nonebot.adapters.onebot.v12 import Bot as V12Bot
 import os
 
 driver = get_driver()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="骰娘",
+    description="",
+    usage="发送 .h 查看帮助",
+    type="application"
+)
 
 
 @driver.on_startup

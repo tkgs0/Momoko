@@ -4,6 +4,7 @@ from pathlib import Path
 import ujson as json
 from httpx import AsyncClient
 from nonebot import logger, on_command
+from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, ArgPlainText
 from nonebot.permission import SUPERUSER
@@ -15,7 +16,7 @@ from nonebot.adapters.onebot.v11 import (
 )
 
 
-__help__: str = """
+usage: str = """
 
 随机wife
 随机老婆
@@ -29,7 +30,16 @@ __help__: str = """
 清空wife库
 重置wife库
 
-"""
+""".strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="每日Wife",
+    description="四斋蒸鹅心",
+    usage=usage,
+    type="application"
+)
+
 
 initial: Path = Path(__file__).parent / "resource"
 

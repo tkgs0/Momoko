@@ -5,6 +5,7 @@ from pathlib import Path
 import ujson as json
 from httpx import AsyncClient
 from nonebot import logger, on_regex, on_command
+from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, ArgPlainText
 from nonebot.permission import SUPERUSER
@@ -17,17 +18,23 @@ from nonebot.adapters.onebot.v11 import (
 )
 
 
-__help__: str = """
+usage: str = """
 
-查看吃库
-
-添加到吃库 [图片]
-
-从吃库删除 文件名
-
-吃什么
+指令表:
+    查看吃库
+    添加到吃库 [图片]
+    从吃库删除 文件名
+    吃什么
 
 """.strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="what_to_eat",
+    description="",
+    usage=usage,
+    type="application"
+)
 
 
 imgdir: Path = Path(__file__).parent / "resource"
