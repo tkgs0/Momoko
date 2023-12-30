@@ -4,6 +4,7 @@ from string import ascii_lowercase, ascii_uppercase
 from mockingbirdforuse import MockingBird
 from mockingbirdforuse.log import default_filter, logger as mocking_logger
 from nonebot import on_command
+from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 from nonebot import get_driver, logger as nonebot_logger
@@ -22,6 +23,7 @@ from .config import (
     NICKNAME,
     Manager
 )
+
 
 __zx_plugin_name__ = "MockingBird"
 __plugin_usage__ = """
@@ -49,6 +51,15 @@ usage：
 __plugin_version__ = 1.0
 __plugin_author__ = "AkashiCoin"
 __plugin_block_limit__ = {"rst": f"{NICKNAME[0]}说话没有那么快啦..."}
+
+
+__plugin_meta__ = PluginMetadata(
+    name="拟声鸟",
+    description=__plugin_des__,
+    usage=__plugin_usage__ + '\n' + __plugin_superuser_usage__,
+    type="application"
+)
+
 
 number: dict = {
     "0": "零",

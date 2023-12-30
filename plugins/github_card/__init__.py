@@ -1,4 +1,5 @@
 from nonebot import on_message, get_driver
+from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     MessageSegment,
@@ -12,7 +13,12 @@ from .data_source import (
 )
 
 
-__plugin_name__ = "Github仓库信息卡片"
+__plugin_meta__ = PluginMetadata(
+    name="Github卡片",
+    description="Github仓库信息卡片",
+    usage="被动触发",
+    type="application"
+)
 
 
 global_config = get_driver().config

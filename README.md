@@ -357,36 +357,6 @@
 
   </details>
 
-- [x] **反闪照** - anti flash
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [KafCoppelia](https://github.com/MinatoAquaCrews) 的 [AntiFlash](https://github.com/MinatoAquaCrews/nonebot_plugin_antiflash)
-
-  在`env`内设置：
-
-  ```python
-  ANTI_FLASH_ON=true                          # 全局开关
-  ANTI_FLASH_GROUP=["123456789", "987654321"] # 默认开启的群聊，但可通过指令开关
-  ANTI_FLASH_PATH="your-path-to-config.json"  # 配置文件路径，默认同插件代码路径
-  ```
-
-  `ANTI_FLASH_GROUP` 会在每次初始化时写入配置文件，在群组启用反闪照，可通过指令更改。
-
-  **修改** 配置文件即读即改，可后台修改。
-
-  - 全局开关**仅超管**配置，不支持指令修改全局开关；
-  - 各群聊均配置开关，需**管理员及超管权限**进行修改；
-
-  指令:
-
-  ```
-  开启/启用/禁用反闪照
-  ```
-
-  </details>
-
 - [x] **反撤回** - anti recall
 
   <details>
@@ -679,9 +649,6 @@
    # 留空为直连 i.pximg.net
 
    ACGGOV_TOKEN="apikey"
-
-   ANTI_FLASH_GROUP=[]  # 填写默认开启 反闪照 的群聊, 可留空.
-   # 可填写多个 例如: ["123456","654321"]
 
    SAUCENAO_API_KEY=""  # 在引号里填写你在 saucenao.com 申请到的 apikey
    # 缺少该项将无法正常使用搜图.

@@ -20,7 +20,7 @@ usage: str = """
 
 
 __plugin_meta__ = PluginMetadata(
-    name="说",
+    name="echo",
     description="啊吧啊吧",
     usage=usage,
     type="application"

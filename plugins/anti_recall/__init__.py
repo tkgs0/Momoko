@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal
 from nonebot import on_notice, on_command
 from nonebot.log import logger
+from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
@@ -18,22 +19,22 @@ from nonebot.adapters.onebot.v11 import (
 from .utils import recall_msg_dealer, MessageChecker
 
 
-__help__: str = """
+usage: str = """
 
 禁用(启用)反撤回
 禁用(启用)私聊(群聊)反撤回 qq qq1 qq2 ...
 重置反撤回
 反撤回状态
 
-{
-    "self_id": {
-        enable: True,
-        private: [],
-        group: []
-    }
-}
+""".strip()
 
-"""
+
+__plugin_meta__ = PluginMetadata(
+    name="anti_recall",
+    description="",
+    usage=usage,
+    type="application"
+)
 
 
 switch_file = Path() / 'data' / 'anti_recall' / 'anti_recall.json'

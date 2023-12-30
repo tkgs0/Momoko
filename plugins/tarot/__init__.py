@@ -4,8 +4,25 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
 )
 from nonebot.rule import to_me
-from nonebot.plugin import on_command
+from nonebot.plugin import on_command, PluginMetadata
 from .utils import Tarot
+
+
+usage: str = """
+
+指令表:
+    @Bot 抽塔罗牌
+
+""".strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="塔罗牌",
+    description="",
+    usage=usage,
+    type="application"
+)
+
 
 _tarot = on_command("抽塔罗牌", to_me(), priority=5, block=True)
 

@@ -5,22 +5,25 @@ from nonebot.params import CommandArg
 from nonebot.internal.adapter import Message
 
 
-usage: str =(
-    "⛦ 🍑 Momoko 开源 Project ⛥\n"
-    "* OneBot + NoneBot + Python\n"
-    "* Copyright © 2021 - 2023 tkgs0. All Rights Reserved.\n"
-    "* 项目地址: https://github.com/tkgs0/Momoko\n"
-    "\n菜单指令:\n"
-    "·help list    # 查看服务列表\n"
-    "·help <服务名>    # 查看指定服务的帮助信息"
-)
+usage: str ="""
+
+⛦ 🍑 Momoko 开源 Project ⛥
+* OneBot + NoneBot + Python
+* Copyright © 2021 - 2023 tkgs0. All Rights Reserved.
+* 项目地址: https://github.com/tkgs0/Momoko
+
+菜单指令:
+·help list    # 查看服务列表
+·help <服务名>    # 查看指定服务的帮助信息
+
+""".strip()
 
 
 # 本插件抄自 https://github.com/XZhouQD/nonebot-plugin-help
 
 __plugin_meta__ = PluginMetadata(
-    name="帮助",
-    description="菜单插件",
+    name="插件菜单",
+    description="",
     usage=usage,
     type="application"
 )

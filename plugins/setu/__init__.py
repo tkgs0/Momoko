@@ -4,6 +4,7 @@ import ujson as json
 import asyncio
 
 from nonebot import logger, get_driver, on_command
+from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.params import CommandArg, ArgStr
@@ -21,6 +22,34 @@ from nonebot.adapters.onebot.v11.helpers import Cooldown
 
 from .config import Config
 from . import lolicon, acggov
+
+usage: str = """
+
+指令表:
+    /setu {数量} {关键词}
+
+    私聊(群聊)启用(禁用)涩图 qq qq1 qq2 ...
+    查看涩图设置
+    切换涩图api
+    启用(禁用)涩图
+    重置涩图
+
+示例:
+    /setu
+    /setu 3
+    /setu 阿波尼亚
+    /setu 3 阿波尼亚
+    /setu 3 R-18 阿波尼亚 水着
+
+""".strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="setu",
+    description="🥵",
+    usage=usage,
+    type="application"
+)
 
 
 setu_config = Config.parse_obj(get_driver().config.dict())

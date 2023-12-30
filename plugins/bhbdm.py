@@ -1,9 +1,26 @@
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.plugin import on_command
+from nonebot.plugin import on_command, PluginMetadata
 from urllib.parse import quote
 import base64 as b64
 
+
+usage: str = """
+
+指令表:
+    /百度搜索 xxx
+    /谷歌搜索 xxx
+    /毛哥搜索 xxx
+
+""".strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="不会百度吗",
+    description="",
+    usage=usage,
+    type="application"
+)
 
 
 url = [

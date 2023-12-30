@@ -1,5 +1,5 @@
 from random import choice
-from nonebot.plugin import on_command
+from nonebot.plugin import on_command, PluginMetadata
 from nonebot.permission import SUPERUSER
 from nonebot.matcher import Matcher
 from nonebot.params import ArgPlainText, CommandArg
@@ -12,6 +12,27 @@ from nonebot.adapters.onebot.v11.helpers import Cooldown
 
 from .data_source import Funny
 
+
+usage: str = """
+
+使用方法:
+    /fakemsg
+    qq号-昵称-消息内容
+
+example:
+    /fakemsg
+    123456789-桃桃酱-不可以色色
+    987654321-路人甲-我就要色色
+
+""".strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="合并转发",
+    description="赝作合并转发消息",
+    usage=usage,
+    type="application"
+)
 
 
 _fake_flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
