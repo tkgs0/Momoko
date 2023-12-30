@@ -11,7 +11,7 @@
 <a href="https://www.python.org">
     <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
 </a>
-<a href="https://https://v2.nonebot.dev">
+<a href="https://nonebot.dev">
     <img src="https://img.shields.io/badge/NoneBot-2.0.1-red.svg" alt="NoneBot">
 </a>
 <a href="https://onebot.adapters.nonebot.dev">
@@ -27,8 +27,8 @@
 # NoneBot2
 
 <div>
-<a href="https://v2.nonebot.dev">
-    <img style="height: 150px;width: 150px;" src="https://camo.githubusercontent.com/0ef71e86056da694c540790aa4a4e314396884d6c4fdb95362a7538b27a1b034/68747470733a2f2f76322e6e6f6e65626f742e6465762f6c6f676f2e706e67" alt="NoneBot">
+<a href="https://nonebot.dev">
+    <img style="height: 150px;width: 150px;" src="https://nonebot.dev/logo.png" alt="NoneBot">
 </a>
 
 非常 [ **[NICE](https://github.com/nonebot/nonebot2)** ] 的Bot框架

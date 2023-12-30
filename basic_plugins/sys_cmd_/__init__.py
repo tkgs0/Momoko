@@ -4,6 +4,7 @@ from subprocess import Popen, PIPE
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE as AsyncPIPE
 from nonebot import on_command
+from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
@@ -15,6 +16,13 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.adapters.onebot.v11.helpers import Cooldown
 
+
+__plugin_meta__ = PluginMetadata(
+    name="命令行",
+    description="操作Bot所在系统的命令行",
+    usage="发送 >shell.help 或 >cmd.help 查看帮助",
+    type="application"
+)
 
 
 cmd_help: str = (
@@ -53,7 +61,7 @@ sys_shell = on_command(
 async def _(args: Message = CommandArg()):
     for i in _win:
         if system() and (system().lower() in i or i in system().lower()):
-            await sys_shell.finish('暂不支持Windows,\n请使用 `>cmd`')
+            await sys_shell.finish('暂不支持Windows,\n请尝试使用 `>cmd`')
     opt: str = args.extract_plain_text()
 
     if not opt:

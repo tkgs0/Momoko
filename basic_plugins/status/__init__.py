@@ -1,10 +1,27 @@
 from nonebot import on_metaevent, on_command, get_bot
 from nonebot.log import logger
+from nonebot.plugin import PluginMetadata
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import LifecycleMetaEvent
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from .data_source import get_status
+
+
+usage: str = """
+
+发送 /status 查看Bot运行状态
+
+""".strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="状态",
+    description="状态检查",
+    usage=usage,
+    type="application"
+)
+
 
 scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
 
