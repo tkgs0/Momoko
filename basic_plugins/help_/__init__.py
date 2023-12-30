@@ -32,7 +32,7 @@ __plugin_meta__ = PluginMetadata(
 h = on_command(
     "help",
     rule=to_me(),
-    aliases={"帮助"},
+    aliases={"帮助", "服务", "幫助", "服務"},
     priority=2, block=True
 )
 
@@ -42,7 +42,7 @@ async def _(args: Message = CommandArg()):
     if not (arg := args.extract_plain_text()):
         await h.finish(usage)
 
-    if arg.lower() in ['ls', 'list']:
+    if arg.lower() in ['ls', 'list', '列表']:
         plugins = nonebot.get_loaded_plugins()
         plugin_names = []
         for plugin in plugins:
