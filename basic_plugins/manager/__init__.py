@@ -1,6 +1,7 @@
 from pathlib import Path
 from nonebot.plugin import on_command, PluginMetadata
-from nonebot.adapters.onebot.v11 import MessageSegment
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Message, MessageSegment
 from . import (
     bot_id,
     group_manage,
@@ -19,8 +20,9 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-m = on_command("mamager.help", priority=2, block=True)
+m = on_command("mamager", priority=2, block=False)
 
 @m.handle()
-async def _():
-    await m.finish(MessageSegment.image(Path(__file__).parent / "manager_help.png", cache=False))
+async def _(args: Message = CommandArg()):
+    if args.extract_plain_text().strip() == ".help":
+        await m.finish(MessageSegment.image(Path(__file__).parent / "manager_help.png", cache=False))
