@@ -389,7 +389,7 @@ async def reset_list(event: MessageEvent, matcher: Matcher):
 async def _(bot: Bot, event: GroupBanNoticeEvent):
     self_id = check_self_id(event.self_id)
 
-    if event.is_tome() and event.duration:
+    if event.is_tome() and event.duration > 0:
         msg = f"在群聊 {event.group_id} 受到 {event.operator_id} 禁言"
         logger.info(f'{self_id} {msg}')
         if blacklist[self_id]['ban_auto_sleep']:
