@@ -12,13 +12,13 @@
     <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
 </a>
 <a href="https://nonebot.dev">
-    <img src="https://img.shields.io/badge/NoneBot-2.0.1-red.svg" alt="NoneBot">
+    <img src="https://img.shields.io/badge/NoneBot-2.0.1+-red.svg" alt="NoneBot">
 </a>
 <a href="https://onebot.adapters.nonebot.dev">
     <img src="https://img.shields.io/badge/OneBot-v11-black.svg" alt="OneBot">
 </a>
 <a href="https://github.com/Mrs4s/go-cqhttp">
-    <img src="https://img.shields.io/badge/gocq-1.1.0-blueviolet.svg" alt="go-cqhttp">
+    <img src="https://img.shields.io/badge/gocq-1.1.0+-blueviolet.svg" alt="go-cqhttp">
 </a>
 
 </div>
