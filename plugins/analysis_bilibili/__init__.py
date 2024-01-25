@@ -126,9 +126,8 @@ async def get_msg(event: Event, text: str, search: bool = False) -> List[str]:
             # 说明是错误信息
             await analysis_bili.finish(msg)
 
-        if group_id in desc_blacklist:
-            if msg[-1].startswith("简介"):
-                msg[-1] = ""
+        if msg[-1].startswith("简介"):
+            msg[-1] = ""
 
         return msg
 
