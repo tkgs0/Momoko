@@ -642,8 +642,9 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
     _time = time.time()
     if event.user_id == event.self_id:
         for i in reqlist['group']['invite']:
-            if (j := reqlist['group']['invite'].get(i,{})).get('group_id') == event.group_id and str(j['user_id']) not in bot.config.superusers and _time - j['time'] < 2:
-                await group_member_event.send('⚠Error!!!\n群聊邀请与入群时间差小于2秒, 触发自动退群机制!')
+            if (j := reqlist['group']['invite'].get(i,{})).get('group_id') == event.group_id and not str(j['user_id']) in bot.config.superusers and _time - j['time'] < 3:
+                await asyncio.sleep(random.random()*2+1)
+                await group_member_event.send('⚠Error!!!\n群聊邀请与入群时间差小于3秒, 触发自动退群机制!')
                 await bot.set_group_leave(group_id=event.group_id)
     else:
         self_id = check_self_id(event.self_id)
