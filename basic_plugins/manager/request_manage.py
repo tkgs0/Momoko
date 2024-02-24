@@ -651,7 +651,7 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
 
         if msg := switch_list[self_id]['Increase'].get(f'{event.group_id}'):
             await asyncio.sleep(random.random()*2+1)
-            await group_member_event.finish(msg, at_sender=True)
+            await group_member_event.finish(Message(msg), at_sender=True)
 
 @group_member_event.handle()
 async def _(event: GroupDecreaseNoticeEvent):
