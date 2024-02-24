@@ -745,4 +745,4 @@ get_welcome_msg = on_command(
 async def _(event: GroupMessageEvent):
     self_id = check_self_id(event.self_id)
     msg = switch_list[self_id]['Increase'].get(f'{event.group_id}')
-    await get_welcome_msg.finish(msg or '未设置入群欢迎词.')
+    await get_welcome_msg.finish(Message(msg) or '未设置入群欢迎词.')
