@@ -9,10 +9,10 @@
     <img src="https://img.shields.io/github/license/tkgs0/Momoko.svg" alt="License">
 </a>
 <a href="https://www.python.org">
-    <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
+    <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python">
 </a>
 <a href="https://nonebot.dev">
-    <img src="https://img.shields.io/badge/NoneBot-2.0.1+-red.svg" alt="NoneBot">
+    <img src="https://img.shields.io/badge/NoneBot-2.2.1+-red.svg" alt="NoneBot">
 </a>
 <a href="https://onebot.adapters.nonebot.dev">
     <img src="https://img.shields.io/badge/OneBot-v11-black.svg" alt="OneBot">
