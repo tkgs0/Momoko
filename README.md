@@ -487,51 +487,6 @@
 
   </details>
 
-- [x] **拟声鸟** - mockingbird
-
-  <details>
-    <summary>使用方法</summary>
-
-  > 将 [MWTJC](https://github.com/MWTJC)/[mockingbird真寻适配版](https://github.com/MWTJC/nonebot_plugin_mockingbird) 重新DIY成 nonebot 通用版
-
-  `@机器人` 并加上 **说** 发送你想让机器人说的话
-
-  ```
-  @桃桃酱 说xxxxx
-  ```
-
-  更多设置:
-  ```
-  显示模型
-  修改模型 [序号]\[模型名称]
-  开启/关闭tts 切换使用腾讯TTS(需要配置secret_key)
-  重载模型 进行模型重载(并没有什么卵用，或许以后内存泄漏解决会有用？)
-  调整/修改精度 修改语音合成精度(对TTS无效)
-  调整/修改句长 修改语音合成最大句长(对TTS无效)
-  更新模型 更新模型列表
-  ```
-
-  <details>
-    <summary>可选配置</summary>
-
-  可在 `.env` 中添加如下配置
-  ```env
-  mockingbird_path="xxx/xxx/xxx"  # 存放mockingbird资源文件的路径
-  # 默认为 "<bot所在文件夹>/data/mockingbird"
-
-  super_only=true  # 是否限制仅超级用户使用
-  # 默认为 true
-
-  tencent_secret_id="TENCENT_SECRET_ID"
-  tencent_secret_key=""
-  # TTS模式需要配置腾讯云 SECRET_ID 和 SECRET_KEY
-  ```
-  **没有自定义需求的变量请不要写进 .env**
-
-  </details>
-
-  </details>
-
 - [x] **闲聊** - smart reply
 
   <details>
