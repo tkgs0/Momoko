@@ -375,38 +375,6 @@
 
   </details>
 
-- [x] **彩云小梦** - caiyun ai
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [wq佬](https://github.com/MeetWq) 的 [caiyunai](https://github.com/noneplugin/nonebot-plugin-caiyunai)
-
-  **配置:**
-
-  需要在 `.env` 文件中添加彩云小梦apikey：
-
-  ```
-  CAIYUNAI_APIKEY=xxx
-  ```
-
-  apikey获取：
-
-  前往 http://if.caiyunai.com/dream 注册彩云小梦用户；
-
-  注册完成后，F12打开开发者工具；
-
-  在控制台中输入 `alert(localStorage.cy_dream_user)` ，弹出窗口中的 uid 即为 apikey；
-
-  或者进行一次续写，在 Network 中查看 novel\_ai 请求，Payload 中的 uid 项即为 apikey。
-
-  **使用:**
-  ```
-  @机器人 续写/彩云小梦 xxx
-  ```
-
-  </details>
-
 - [x] **在线跑代码** - code runner
 
   <details>

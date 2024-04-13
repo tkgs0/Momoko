@@ -3,7 +3,7 @@ from typing import Literal
 import ujson as json
 import asyncio
 
-from nonebot import logger, get_driver, on_command
+from nonebot import logger, on_command, get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
@@ -52,7 +52,7 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-setu_config = Config.parse_obj(get_driver().config.dict())
+setu_config = get_plugin_config(Config)
 
 cooldown: int = setu_config.setu_cooldown
 withdraw: int = setu_config.setu_withdraw

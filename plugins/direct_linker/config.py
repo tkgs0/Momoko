@@ -1,16 +1,12 @@
-from pydantic import BaseModel, Extra
-from typing import List
-from nonebot import get_driver
+from nonebot import get_driver, logger
+
+config = get_driver().config.dict()
+
+if 'linker_group' not in config:
+    logger.warning('[直链提取] 未发现配置项 `linker_group` , 采用默认值: []')
+if 'linker_command' not in config:
+    logger.warning('[直链提取] 未发现配置项 `linker_command` , 采用默认值: "link"')
 
 
-class Config(BaseModel, extra=Extra.ignore):
-    linker_group: List[int] = []
-    linker_command: str = 'link'
-
-
-config = Config.parse_obj(get_driver().config.dict())
-
-
-linker_group = config.linker_group
-linker_command = config.linker_command
-
+linker_group = config.get('linker_group', [])
+linker_command = config.get('linker_command', "link")

@@ -4,12 +4,12 @@ import ujson as json
 from httpx import AsyncClient
 from string import punctuation, whitespace
 
-from nonebot import get_driver, logger
+from nonebot import logger, get_plugin_config
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from .config import Config
 
-config = Config.parse_obj(get_driver().config.dict())
+config = get_plugin_config(Config)
 
 NICKNAME: str = list(config.nickname)[0]  # bot的nickname
 MASTER: str = list(config.superusers)[0]  # bot的主人id
@@ -67,6 +67,9 @@ async def xiaosi(msg: str) -> str | MessageSegment:
             return nullpo
 
 
+#############
+# API已失效 #
+#############
 # 从小爱api拿到消息
 # 语音回复需在 .env 添加 XIAOAI_VOICE=true
 async def xiaoai(msg: str) -> str | MessageSegment:

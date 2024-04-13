@@ -1,4 +1,4 @@
-from nonebot import on_message, get_driver
+from nonebot import on_message
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
@@ -6,7 +6,6 @@ from nonebot.adapters.onebot.v11 import (
     unescape
 )
 import re
-from .config import Config
 from .data_source import (
     get_github_reposity_information,
     get_url,
@@ -21,8 +20,6 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-global_config = get_driver().config
-config = Config(**global_config.dict())
 github = on_message(priority=5, block=False)
 
 

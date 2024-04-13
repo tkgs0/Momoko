@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, ConfigDict
 
 
-class Config(BaseModel, extra=Extra.ignore):
+class Config(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     glot_token: str = ""

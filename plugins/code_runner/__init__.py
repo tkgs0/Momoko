@@ -1,5 +1,5 @@
 from random import choice
-from nonebot import on_command, get_driver
+from nonebot import on_command, get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, unescape
@@ -32,7 +32,7 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-glot_token = Config.parse_obj(get_driver().config.dict()).glot_token
+glot_token = get_plugin_config(Config).glot_token
 
 _flmt_notice = choice(["慢...慢一..点❤", "冷静1下", "歇会歇会~~"])
 
