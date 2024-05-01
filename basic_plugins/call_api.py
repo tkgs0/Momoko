@@ -62,7 +62,9 @@ callapi = on_command(
 async def _(args: Message = CommandArg()):
     if not args:
         await callapi.finish(usage)
-    url, arg = args.extract_plain_text().split(maxsplit=1)
+    content = args.extract_plain_text().split(maxsplit=1)
+    url = content[0]
+    arg = content[1] if len(content) > 1 else ""
     try:
         params, headers, cookies = handle_params(arg)
         res = await get_api(url, params, headers, cookies)
