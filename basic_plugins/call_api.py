@@ -23,7 +23,8 @@ class Config(BaseModel):
 usage='''
 
 /api url
-param=XXX
+params:
+  xxx: xxx
 
 example:
   /api http://127.0.0.1:8080/send_msg
