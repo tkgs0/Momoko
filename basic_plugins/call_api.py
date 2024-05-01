@@ -95,11 +95,11 @@ async def get_api(
             if "application/json" == response.headers.get("Content-Type"):
                 res = json.dumps(response.json(), indent=2, ensure_ascii=False)
             elif "audio" in response.headers.get("Content-Type"):
-                res = MessageSegment.record(response.content)
+                res = MessageSegment.record(response.content, cache=False)
             elif "video" in response.headers.get("Content-Type"):
-                res = MessageSegment.video(response.content)
+                res = MessageSegment.video(response.content, cache=False)
             elif "image" in response.headers.get("Content-Type"):
-                res = MessageSegment.image(response.content)
+                res = MessageSegment.image(response.content, cache=False)
             else:
                 res = response.content.decode()
             await response.aclose()
