@@ -10,7 +10,7 @@ from nonebot import on_command
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
-from nonebot.adapters.onebot.v11 import Message
+from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 
 class Config(BaseModel):
@@ -82,17 +82,24 @@ async def get_api(
     params: dict,
     headers: dict,
     cookies: dict
-) -> str:
+) -> str | MessageSegment:
     if not url.startswith('http://') and not url.startswith('https://'):
         url = 'http://' + url
 
     async with AsyncClient() as client:
         try:
             response = await client.get(url=url, params=params, headers=headers, cookies=cookies, follow_redirects=True, timeout=60)
-            try:
-                res: str = json.dumps(response.json(), indent=2, ensure_ascii=False)
-            except:
-                res: str = response.text
+
+            if "application/json" == response.headers.get("Content-Type"):
+                res = json.dumps(response.json(), indent=2, ensure_ascii=False)
+            elif "audio" in response.headers.get("Content-Type"):
+                res = MessageSegment.record(response.content)
+            elif "video" in response.headers.get("Content-Type"):
+                res = MessageSegment.video(response.content)
+            elif "image" in response.headers.get("Content-Type"):
+                res = MessageSegment.image(response.content)
+            else:
+                res = response.content.decode()
             await response.aclose()
             return res
         except Exception as e:
