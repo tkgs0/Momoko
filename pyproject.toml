@@ -34,6 +34,7 @@ python = ">=3.9, <3.12"
 nb-cli = ">=1.4.1"
 nonebot2 = {extras = ["fastapi"], version = "^2.2.1"}
 nonebot-adapter-onebot = "^2.4.3"
+nonebot-plugin-alconna = ">=0.40.1"
 nonebot-plugin-apscheduler = ">=0.4.0"
 nonebot-plugin-imageutils = ">=0.1.17"
 nonebot-plugin-send-anything-anywhere = [{ version = ">=0.6.1" }]
@@ -41,6 +42,7 @@ aiofiles = ">=23.2.1"
 aiohttp = {extras = ["speedups"], version = ">=3.9.4"}
 arrow = ">=1.3.0"
 cachetools = ">=5.3.3"
+dbutils = ">=3.1.0"
 deep-translator = ">=1.11.4"
 diro-py = ">=0.1.1"
 diskcache = ">=5.6.3"
@@ -51,6 +53,7 @@ langid = ">=1.1.6"
 magneturi = ">=1.3"
 picimagesearch = ">=3.9.7"
 pikpakapi = ">=0.1.6"
+pil-utils = ">=0.1.7"
 psutil = ">=5.9.8"
 pydub = ">=0.25.1"
 python-qbittorrent = ">=0.4.3"
@@ -58,7 +61,6 @@ shelved-cache = ">=0.3.1"
 tenacity = ">=8.2.3"
 tinydb = ">=4.8.0"
 ujson = ">=5.9.0"
-dbutils = ">=3.1.0"
 
 [tool.poetry.dev-dependencies]
 

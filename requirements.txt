@@ -1,12 +1,15 @@
 nb-cli>=1.4.1
 nonebot2[fastapi]>=2.2.1
 nonebot-adapter-onebot>=2.4.1
+nonebot-plugin-alconna
 nonebot-plugin-apscheduler
 nonebot-plugin-imageutils
 nonebot-plugin-send-anything-anywhere
 aiofiles
 aiohttp[speedups]
+arrow
 cachetools
+dbutils
 deep-translator
 diro-py
 diskcache
@@ -16,6 +19,8 @@ imagehash
 langid
 magneturi
 picimagesearch
+pikpakapi
+pil-utils
 psutil
 pydub
 python-qbittorrent
@@ -23,6 +28,3 @@ shelved-cache
 tenacity
 tinydb
 ujson
-arrow
-dbutils
-pikpakapi
