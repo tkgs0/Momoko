@@ -83,7 +83,7 @@ async def get_api(
     headers: dict,
     cookies: dict
 ) -> str:
-    if not url.startswith('http://') or not url.startswith('https://'):
+    if not url.startswith('http://') and not url.startswith('https://'):
         url = 'http://' + url
 
     async with AsyncClient() as client:
