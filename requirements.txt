@@ -8,6 +8,7 @@ nonebot-plugin-send-anything-anywhere
 aiofiles
 aiohttp[speedups]
 arrow
+async_timeout
 cachetools
 dbutils
 deep-translator
