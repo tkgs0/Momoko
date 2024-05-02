@@ -30,5 +30,5 @@ async def github_handle(event: GroupMessageEvent):
         url = res.group()
         imageUrl = await get_github_reposity_information(url)
         assert(imageUrl != "获取信息失败")
-        await github.send(MessageSegment.image(await get_url(imageUrl), cache=False))
+        await github.finish(MessageSegment.image(await get_url(imageUrl), cache=False))
         # await github.finish(MessageSegment.image(await get_url(f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/https://{url}"), cache=False))
