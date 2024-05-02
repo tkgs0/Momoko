@@ -7,7 +7,7 @@ from . import (
     request_manage,
     friend_group,
     withdraw,
-    # keyword_ban,
+    keyword_ban,
 )
 
 
