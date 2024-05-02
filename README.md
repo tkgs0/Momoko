@@ -515,17 +515,6 @@
 
   </details>
 
-- [x] **词库问答** (你问我答) - wordbank
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [kexue](https://github.com/kexue-z) 的 [wordbank2](https://github.com/kexue-z/nonebot-plugin-word-bank2)
-
-  [▶使用方法](https://github.com/kexue-z/nonebot-plugin-word-bank2#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8)
-
-  </details>
-
 
 ## 部署方式
 1. 安装系统
