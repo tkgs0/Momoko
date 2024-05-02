@@ -502,12 +502,6 @@
   设置回复模式 小思/小爱
   ```
 
-  **注意事项**
-  - 文本消息默认调用 mockingbird 生成语音
-  - 如不需要可以直接将 mockingbird 移动到别的 plugins 文件夹里 (或者直接删除 mockingbird)
-  - 本插件的小爱语音功能非 mockingbird 控制
-  - 小爱语音需在 .env 添加 `XIAOAI_VOICE=true`
-
   </details>
 
 - [x] **塔罗牌** - tarot
@@ -592,13 +586,17 @@
      <summary>使用pip安装</summary>
 
    ```bash
-   pip install -U -r requirements.txt && pip install -r install_me.txt && pip install -U pikpakapi
+   pip install -U -r requirements.txt
    ```
 
    </details>
 
    <details>
      <summary>使用环境管理器安装</summary>
+
+   ```bash
+   poetry install
+   ```
 
    </details>
 
@@ -608,13 +606,44 @@
    <details>
      <summary>常规启动</summary>
 
-     ```bash
-     python bot.py
-     ```
-     **或者**
-     ```bash
-     nb run
-     ```
+   ```bash
+   python bot.py
+   ```
+
+   **或者**
+
+   ```bash
+   nb run
+   ```
+
+   </details>
+
+   <details>
+     <summary>环境管理器启动</summary>
+
+   ```bash
+   poetry run python bot.py
+   ```
+
+   **或者**
+
+   ```bash
+   poetry run nb run
+   ```
+
+   **或者**
+
+   ```bash
+   poetry shell
+   python bot.py
+   ```
+
+   **或者**
+
+   ```bash
+   poetry shell
+   nb run
+   ```
 
    </details>
 
