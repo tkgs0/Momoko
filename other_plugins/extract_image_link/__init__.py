@@ -4,9 +4,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
-    Message,
     MessageEvent,
-    MessageSegment,
     ActionFailed
 )
 
@@ -46,13 +44,9 @@ async def _(event: MessageEvent) -> None:
         await extract.send("图呢?")
         await extract.reject()
     try:
-        await extract.finish(Message([MessageSegment.image(i[0], cache=False) for i in image_urls]))
+        await extract.finish("\n\n".join([i[0] for i in image_urls]))
     except ActionFailed as e:
-        err_info(e)
-        try:
-            await extract.finish("\n\n".join([i[0] for i in image_urls]))
-        except ActionFailed as e:
-            await extract.finish(err_info(e))
+        await extract.finish(err_info(e))
 
 
 def err_info(e: ActionFailed) -> str:
