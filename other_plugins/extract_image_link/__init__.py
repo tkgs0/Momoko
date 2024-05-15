@@ -1,15 +1,28 @@
+from pathlib import Path
 from typing import List, Tuple
-from nonebot import on_keyword, logger
+from httpx import AsyncClient
+from nonebot import on_keyword, logger, get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
+    Message,
     MessageEvent,
+    MessageSegment,
     ActionFailed
 )
+from pydantic import BaseModel, ConfigDict
 
 
-usage: str = """
+class Config(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    extract_images_path: str | Path = Path() / "extracted_images"
+
+
+usage: str = r"""
+如需自定义图片保存路径:
+  在 Bot目录/.env 里添加变量 EXTRACT_IMAGES_PATH
+  示例: EXTRACT_IMAGES_PATH="C:\setu"
 
 指令表:
   提取图片[图片]
@@ -22,6 +35,11 @@ __plugin_meta__ = PluginMetadata(
     usage=usage,
     type="application"
 )
+
+
+extract_images_path = get_plugin_config(Config).extract_images_path
+imgdir: Path = Path(extract_images_path)
+imgdir.mkdir(parents=True, exist_ok=True)
 
 
 extract = on_keyword(
@@ -43,8 +61,17 @@ async def _(event: MessageEvent) -> None:
     if not image_urls:
         await extract.send("图呢?")
         await extract.reject()
+    imglist, status = await image_download(image_urls)
+
+    msg = Message(
+        "\n".join([
+            f"{MessageSegment.image(i,cache=False)}\n本地路径: {i}"
+            for i in imglist
+        ]) +\
+        f"\n\n下载完毕:\n{len(imglist)}个成功, {len(status)}个失败"
+    )
     try:
-        await extract.finish("\n\n".join([i[0] for i in image_urls]))
+        await extract.finish(msg)
     except ActionFailed as e:
         await extract.finish(err_info(e))
 
@@ -72,3 +99,31 @@ def get_image_urls(event: MessageEvent) -> List[Tuple[str, str]]:
         for i in message
         if i.type == "image" and i.data.get("url")
     ]
+
+
+async def image_download(
+    imglist: List[Tuple[str,str]]
+) -> Tuple[List[Path], List[str]]:
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+    }
+    pics, status = [], []
+    for i in imglist:
+        async with AsyncClient().stream(
+            "GET", url = i[0],
+            headers=headers,
+            follow_redirects=True,
+            timeout=30
+        ) as res:
+            if res.status_code == 200:
+                img = imgdir / i[1]
+                with open(img, 'wb') as fd:  # 写入文件
+                    async for chunk in res.aiter_bytes(1024):
+                        fd.write(chunk)
+                logger.success(f'获取图片 {i[1]} 成功')
+                pics.append(img)
+            else:
+                logger.error(sc := f'获取图片 {i[1]} 失败: {res.status_code}')
+                status.append(sc)
+            await res.aclose()
+    return pics, status
