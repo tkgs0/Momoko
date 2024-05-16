@@ -1,5 +1,4 @@
-from nonebot.rule import to_me
-from nonebot.plugin import on_startswith, PluginMetadata
+from nonebot.plugin import on_keyword, PluginMetadata
 
 from .utils import Look
 
@@ -7,7 +6,7 @@ from .utils import Look
 usage: str = """
 
 指令表:
-    @Bot 你看我像
+    你看我像
 
 """.strip()
 
@@ -20,7 +19,7 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-look_like = on_startswith("你看我像", to_me(), priority=5, block=True)
+look_like = on_keyword({"你看我像"}, priority=99, block=True)
 
 @look_like.handle()
 async def _():
