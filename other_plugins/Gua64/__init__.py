@@ -64,6 +64,8 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     except UnicodeDecodeError as e:
         logger.error(repr(e))
         await de64Gua.finish("解码失败: 无法转换成有效的utf-8字符串文本")
+    if not msg:
+        await de64Gua.finish("解码成功, 但是文本为空")
 
     gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
     uid: int = event.user_id if not gid else 0
