@@ -15,9 +15,9 @@ from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 class Config(BaseModel):
     model_config = ConfigDict(extra="ignore")
-    params: Dict = {}
-    headers: Dict = {}
-    cookies: Dict = {}
+    params: Dict | None = None
+    headers: Dict | None = None
+    cookies: Dict | None = None
 
 
 usage='''
@@ -64,7 +64,7 @@ async def _(args: Message = CommandArg()):
         await callapi.finish(usage)
     content = args.extract_plain_text().split(maxsplit=1)
     url = content[0]
-    arg = content[1] if len(content) > 1 else ""
+    arg = content[1] if len(content) > 1 else "params:"
     try:
         params, headers, cookies = handle_params(arg)
         res = await get_api(url, params, headers, cookies)
