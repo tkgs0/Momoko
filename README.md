@@ -41,7 +41,7 @@
 
 
 ## 功能表
-本项目支持使用 `nb-cli` 从 [nonebot插件商店](https://v2.nonebot.dev/store) 安装插件
+本项目支持使用 `nb-cli` 从 [nonebot插件商店](https://nonebot.dev/store) 安装插件
 
 - [ ] **插件控制**  
   ~~暂时没有~~
