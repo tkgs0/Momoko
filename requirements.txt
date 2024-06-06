@@ -9,6 +9,7 @@ aiofiles
 aiohttp[speedups]
 arrow
 async_timeout
+binance-connector
 cachetools
 dbutils
 deep-translator

@@ -42,6 +42,7 @@ aiofiles = ">=23.2.1"
 aiohttp = {extras = ["speedups"], version = ">=3.9.4"}
 arrow = ">=1.3.0"
 async_timeout = ">=4.0.3"
+binance-connector = ">=3.7.0"
 cachetools = ">=5.3.3"
 dbutils = ">=3.1.0"
 deep-translator = ">=1.11.4"
