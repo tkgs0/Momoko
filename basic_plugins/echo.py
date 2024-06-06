@@ -1,7 +1,6 @@
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import (
     Message,
-    MessageSegment,
     unescape
 )
 from nonebot.params import CommandArg
@@ -40,22 +39,3 @@ echo = on_command(
 async def echo_escape(arg: Message = CommandArg()):
     msg = unescape(str(arg))
     await echo.finish(Message(msg))
-
-
-
-_snapshot = on_command(
-    "/快照",
-    priority=5,
-    block=True,
-    permission=SUPERUSER
-)
-
-@_snapshot.handle()
-async def _(arg: Message = CommandArg()):
-    url = arg.extract_plain_text()
-    url = f"https://image.thum.io/get/width/1280/crop/1440/viewportWidth/1280/png/noanimate/{url}"
-    try:
-        await _snapshot.send(MessageSegment.image(url))
-    except Exception as e:
-        await _snapshot.finish(repr(e))
-
