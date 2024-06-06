@@ -1,19 +1,21 @@
-import re, unicodedata
+import time, re, unicodedata
 from pathlib import Path
 import ujson as json
 from binance.spot import Spot
 from binance.error import ClientError
 
-from nonebot import on_command, on_regex, logger, get_plugin_config
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+from nonebot import on_metaevent, on_command, on_regex, logger, get_bot, get_plugin_config
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import (
-    Bot,
     Message,
     MessageSegment,
     MessageEvent,
     GroupMessageEvent,
+    LifecycleMetaEvent,
     ActionFailed,
     GROUP_ADMIN,
     GROUP_OWNER,
@@ -34,7 +36,7 @@ usage: str = """
 
 __plugin_meta__ = PluginMetadata(
     name="BN",
-    description="批价查询",
+    description="BN查询",
     usage=usage,
     type="application"
 )
@@ -56,6 +58,21 @@ client = (
     if account.binance_key and account.binance_secret_key
     else Spot()
 )
+
+
+scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
+
+
+def check_first_connect(_: LifecycleMetaEvent) -> bool:
+    return True
+
+@on_metaevent(rule=check_first_connect, temp=True).handle()
+async def _():
+    if not scheduler.running:
+        try:
+            scheduler.start()
+        except Exception as e:
+            logger.error(f"scheduler启动失败!\n{repr(e)}")
 
 
 def save_config() -> None:
@@ -125,7 +142,7 @@ def handle_enabled(
         else:
             enabled[self_id].update({uid: [symbol]})
 
-        msg = f"已添加. {res}"
+        msg = f"已添加, 当前值: {res}"
     else:
         if arg := enabled[self_id].get(uid):
             enabled[self_id][uid] = [i for i in arg if i != symbol]
@@ -138,7 +155,7 @@ def handle_enabled(
 
 
 enable_bn = on_command(
-    "启用BN推送",
+    "添加BN推送",
     permission=SUPERUSER|GROUP_OWNER|GROUP_ADMIN,
     priority=2,
     block=True
@@ -153,7 +170,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 disable_bn = on_command(
-    "禁用BN推送",
+    "删除BN推送",
     permission=SUPERUSER|GROUP_OWNER|GROUP_ADMIN,
     priority=2,
     block=True
@@ -189,3 +206,42 @@ async def _(event: MessageEvent):
     except ActionFailed as e:
         logger.error(err_info(e))
 
+
+@scheduler.scheduled_job(
+    "interval",
+    id="BN推送",
+    name="BN推送",
+    hours=3,
+    misfire_grace_time=15
+)
+async def _():
+    logger.info("正在推送BN币价...")
+    for self_id in enabled:
+        try:
+            bot = get_bot(self_id)
+        except Exception:
+            bot = None
+
+        if bot:
+            for uid in enabled[self_id]:
+                try:
+                    node = []
+                    for symbol in enabled[self_id][uid]:
+                        try:
+                            res: str = client.ticker_price(symbol)["price"]
+                            node.append(
+                                MessageSegment.node_custom(
+                                    2854196310,
+                                    "Q群管家",
+                                    time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime()) + f"\n{symbol}: {res}"
+                                )
+                            )
+                        except Exception:
+                            continue
+
+                    await bot.send_forward_msg(
+                        group_id=uid, messages=node
+                    )
+                except Exception:
+                    continue
+    logger.info("BN币价推送完毕...")
