@@ -224,6 +224,8 @@ async def _():
 
         if bot:
             for uid in enabled[self_id]:
+                if not enabled[self_id][uid]:
+                    continue
                 try:
                     node = []
                     for symbol in enabled[self_id][uid]:
