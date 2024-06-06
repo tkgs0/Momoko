@@ -211,7 +211,7 @@ async def _(event: MessageEvent):
     "interval",
     id="BN推送",
     name="BN推送",
-    hours=3,
+    hours=1,
     misfire_grace_time=15
 )
 async def _():
@@ -233,7 +233,7 @@ async def _():
                                 MessageSegment.node_custom(
                                     2854196310,
                                     "Q群管家",
-                                    time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime()) + f"\n{symbol}: {res}"
+                                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n{symbol}: {res}"
                                 )
                             )
                         except Exception:
