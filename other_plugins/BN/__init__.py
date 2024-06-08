@@ -121,31 +121,31 @@ def handle_enabled(
     args: Message,
 ) -> str:
     self_id = check_self_id(self_id)
-
-    try:
-        a, b = args.extract_plain_text().upper().split("/")
-        if a == b:
-            return "1:1"
-        symbol = a + b
-    except Exception:
-        return "格式错误."
+    text = args.extract_plain_text().upper()
 
     if mode:
+        try:
+            a, b = text.split("/")
+            if a == b:
+                return "1:1"
+            symbol = a + b
+        except Exception:
+            return "格式错误."
         try:
             res: str = client.ticker_price(symbol)["price"]
         except ClientError as e:
             logger.debug(err := e.error_message)
             return err
         if arg := enabled[self_id].get(uid):
-            arg.append(symbol)
+            arg.append(text)
             enabled[self_id][uid] = list(set(arg))
         else:
-            enabled[self_id].update({uid: [symbol]})
+            enabled[self_id].update({uid: [text]})
 
         msg = f"已添加, 当前值: {res}"
     else:
         if arg := enabled[self_id].get(uid):
-            enabled[self_id][uid] = [i for i in arg if i != symbol]
+            enabled[self_id][uid] = [i for i in arg if i != text]
         else:
             enabled[self_id].update({uid: []})
         msg = "已删除."
@@ -185,7 +185,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 get_b = on_regex(
-    r"^[A-z]{2,}/(usdt|btc|eth|bnb)$",
+    r"^[A-z]{2,}/[A-z]{2,}$",
     flags=re.I,
     priority=5,
     block=False
@@ -230,7 +230,7 @@ async def _():
                     node = []
                     for symbol in enabled[self_id][uid]:
                         try:
-                            res: str = client.ticker_price(symbol)["price"]
+                            res: str = client.ticker_price(symbol.replace("/", ""))["price"]
                             node.append(
                                 MessageSegment.node_custom(
                                     2854196310,
