@@ -2,7 +2,6 @@ from pathlib import Path
 from nonebot.plugin import on_command, PluginMetadata
 from nonebot.adapters.onebot.v11 import MessageSegment
 from . import (
-    bot_id,
     group_manage,
     request_manage,
     friend_group,
