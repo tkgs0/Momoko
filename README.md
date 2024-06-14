@@ -534,38 +534,7 @@
 
 4. 打开本项目所在目录
 
-5. 打开**隐藏文件** `.env`, 填写以下信息:
-
-   <details>
-     <summary>点击展开</summary>
-
-   ```env
-   SUPERUSERS=[""]  # 填写用于控制bot的超级用户QQ
-   # 可填写多个 例如: ["123456","654321"]
-
-   NICKNAME=["桃桃", "桃桃酱"]  # 机器人的昵称
-
-   SETU_COOLDOWN=60  # 涩图的响应cd 为0则无冷却
-   SETU_WITHDRAW=60  # 涩图的撤回cd < 120 为0则不撤回
-
-   LOLICON_R18=2  # Lolicon API设置
-   # 0为非R18，1为R18，2为混合（在库中的分类，不等同于作品本身的 R-18 标识）
-
-   PIXPROXY=""  # pximg图片代理, 需要填写前缀 https:// 或 http://
-   # 留空为直连 i.pximg.net
-
-   ACGGOV_TOKEN="apikey"
-
-   SAUCENAO_API_KEY=""  # 在引号里填写你在 saucenao.com 申请到的 apikey
-   # 缺少该项将无法正常使用搜图.
-
-   EXHENTAI_COOKIES=""  # 在引号里填写你的 exhentai cookies, 可留空.
-
-   LINKER_GROUP=[]  # 填写启用群文件直链插件的群
-   LINKER_COMMAND="link"  # 设置插件触发命令（默认`link`）
-   ```
-
-   </details>
+5. 打开**隐藏文件** `.env`, 按注释填写相关项
 
 6. 在命令行 `cd` 到本项目的目录
 
