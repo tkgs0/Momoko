@@ -1,7 +1,9 @@
+import re
 from pathlib import Path
 from typing import List, Tuple
 from httpx import AsyncClient
-from nonebot import on_keyword, logger, get_plugin_config
+from nonebot import on_message, logger, get_plugin_config
+from nonebot.rule import Rule
 from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
@@ -42,8 +44,15 @@ imgdir: Path = Path(extract_images_path)
 imgdir.mkdir(parents=True, exist_ok=True)
 
 
-extract = on_keyword(
-    {"提取图片", "提取圖片"},
+def message_needs_handling(event: MessageEvent) -> bool:
+    plain_text = event.message.extract_plain_text().strip()
+    if re.search(r"^提取(图|圖)片(\s+)?(--\w+)?$", plain_text):
+        return True
+    return False
+
+
+extract = on_message(
+    rule=Rule(message_needs_handling),
     permission=SUPERUSER,
     priority=5,
     block=True
