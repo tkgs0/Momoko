@@ -45,13 +45,11 @@ async def xiaosi(msg: str) -> str | MessageSegment:
 
     url = f'https://api.ownthink.com/bot'
     params = {
-        'appid': 'xiaosi',
-        'userid': 'user',
-        'spoken': msg,
+        'spoken': msg
     }
     headers = {
         'referer': 'https://www.ownthink.com/',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
 
     async with AsyncClient() as client:
