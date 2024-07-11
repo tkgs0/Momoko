@@ -73,7 +73,7 @@ async def _(state: T_State, event: MessageEvent, matcher: Matcher):
         if not msg or msg in [
             '你好啊', '你好', '在吗', '在不在', '您好', '您好啊', '你好', '在']
         else None
-    ) or (await get_chat_result(msg)) or (await get_reply(msg))
+    ) or (await get_chat_result(msg)) or (await get_reply(msg, f'{event.user_id}'))
     # 从字典里获取结果
     # 如果词库没有结果，则调用对话api获取回复
 

@@ -7,3 +7,5 @@ class Config(BaseModel):
     nickname: List[str] = ['小思']
     superusers: List[str] = []
     xiaoai_voice: bool = False
+    sizhi_appid: str = ""
+    ownthink_appid: str = sizhi_appid

@@ -14,6 +14,7 @@ config = get_plugin_config(Config)
 NICKNAME: str = list(config.nickname)[0]  # bot的nickname
 MASTER: str = list(config.superusers)[0]  # bot的主人id
 XIAOAI: bool = config.xiaoai_voice
+APPID = config.ownthink_appid
 
 nullpo = MessageSegment.image(file=(Path(__file__).parent / 'resource' / 'nullpo.png'), cache=False)
 
@@ -37,7 +38,7 @@ async def get_chat_result(text: str) -> str | None:
 
 
 # 从思知api拿到消息
-async def xiaosi(msg: str) -> str | MessageSegment:
+async def xiaosi(msg: str, user_id: str) -> str | MessageSegment:
 
     # 将半角标点和空白符号换成全角空格
     for i in punctuation + whitespace:
@@ -45,6 +46,8 @@ async def xiaosi(msg: str) -> str | MessageSegment:
 
     url = f'https://api.sizhi.com/bot'
     params = {
+        'appid': APPID,
+        'userid': user_id,
         'spoken': msg
     }
     headers = {
@@ -70,7 +73,7 @@ async def xiaosi(msg: str) -> str | MessageSegment:
 #############
 # 从小爱api拿到消息
 # 语音回复需在 .env 添加 XIAOAI_VOICE=true
-async def xiaoai(msg: str) -> str | MessageSegment:
+async def xiaoai(msg: str, use_id: str) -> str | MessageSegment:
 
     # 将半角标点和空白符号换成全角空格
     for i in punctuation + whitespace:
