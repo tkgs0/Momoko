@@ -43,12 +43,12 @@ async def xiaosi(msg: str) -> str | MessageSegment:
     for i in punctuation + whitespace:
         msg = msg.replace(i, '　')
 
-    url = f'https://api.ownthink.com/bot'
+    url = f'https://api.sizhi.com/bot'
     params = {
         'spoken': msg
     }
     headers = {
-        'referer': 'https://www.ownthink.com/',
+        'referer': 'https://www.sizhi.com/',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
 
