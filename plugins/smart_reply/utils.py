@@ -55,7 +55,7 @@ async def xiaosi(msg: str) -> str | MessageSegment:
     async with AsyncClient() as client:
         try:
             response = await client.get(url=url, params=params, headers=headers, timeout=15)
-            if response.json()['data']['type'] == 5000:
+            if response.json()['status'] == 0:
                 res = response.json()['data']['info']['text'].replace('小思', NICKNAME)
                 await response.aclose()
                 return res
