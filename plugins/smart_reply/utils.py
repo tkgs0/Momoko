@@ -14,7 +14,7 @@ config = get_plugin_config(Config)
 NICKNAME: str = list(config.nickname)[0]  # bot的nickname
 MASTER: str = list(config.superusers)[0]  # bot的主人id
 XIAOAI: bool = config.xiaoai_voice
-APPID = config.ownthink_appid
+APPID = config.sizhi_appid or config.ownthink_appid
 
 nullpo = MessageSegment.image(file=(Path(__file__).parent / 'resource' / 'nullpo.png'), cache=False)
 

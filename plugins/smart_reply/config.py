@@ -8,4 +8,4 @@ class Config(BaseModel):
     superusers: List[str] = []
     xiaoai_voice: bool = False
     sizhi_appid: str = ""
-    ownthink_appid: str = sizhi_appid
+    ownthink_appid: str = ""
