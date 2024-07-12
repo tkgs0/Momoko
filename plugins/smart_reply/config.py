@@ -6,6 +6,6 @@ class Config(BaseModel):
     model_config = ConfigDict(extra="ignore")
     nickname: List[str] = ['小思']
     superusers: List[str] = []
-    xiaoai_voice: bool = False
     sizhi_appid: str = ""
     ownthink_appid: str = ""
+    xiaoai_voice: bool = False

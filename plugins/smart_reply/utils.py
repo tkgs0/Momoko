@@ -13,8 +13,8 @@ config = get_plugin_config(Config)
 
 NICKNAME: str = list(config.nickname)[0]  # bot的nickname
 MASTER: str = list(config.superusers)[0]  # bot的主人id
-XIAOAI: bool = config.xiaoai_voice
 APPID = config.sizhi_appid or config.ownthink_appid
+XIAOAI: bool = config.xiaoai_voice
 
 nullpo = MessageSegment.image(file=(Path(__file__).parent / 'resource' / 'nullpo.png'), cache=False)
 
@@ -59,7 +59,9 @@ async def xiaosi(msg: str, user_id: str) -> str | MessageSegment:
         try:
             response = await client.get(url=url, params=params, headers=headers, follow_redirects=True, timeout=30)
             if response.json()['status'] == 0:
-                res = response.json()['data']['info']['text'].replace('小思', NICKNAME)
+                res = response.json()['data']['info']['text']
+                for i in ['思知', '小思']:
+                    res = res.replace(i, NICKNAME)
                 await response.aclose()
                 return res
             return 'ʕ  •ᴥ•ʔ……'
