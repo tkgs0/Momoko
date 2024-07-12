@@ -13,7 +13,8 @@ config = get_plugin_config(Config)
 
 NICKNAME: str = list(config.nickname)[0]  # bot的nickname
 MASTER: str = list(config.superusers)[0]  # bot的主人id
-APPID = config.sizhi_appid or config.ownthink_appid
+SIZHI_APPID: str = config.sizhi_appid
+SIZHI_TIMEOUT: int = config.sizhi_timeout
 XIAOAI: bool = config.xiaoai_voice
 
 nullpo = MessageSegment.image(file=(Path(__file__).parent / 'resource' / 'nullpo.png'), cache=False)
@@ -46,7 +47,7 @@ async def xiaosi(msg: str, user_id: str) -> str | MessageSegment:
 
     url = f'https://api.sizhi.com/bot'
     params = {
-        'appid': APPID,
+        'appid': SIZHI_APPID,
         'userid': user_id,
         'spoken': msg
     }
@@ -57,7 +58,7 @@ async def xiaosi(msg: str, user_id: str) -> str | MessageSegment:
 
     async with AsyncClient() as client:
         try:
-            response = await client.get(url=url, params=params, headers=headers, follow_redirects=True, timeout=30)
+            response = await client.get(url=url, params=params, headers=headers, follow_redirects=True, timeout=SIZHI_TIMEOUT)
             if response.json()['status'] == 0:
                 res = response.json()['data']['info']['text']
                 for i in ['思知', '小思']:
