@@ -1,7 +1,5 @@
 from nonebot import on_command, on_message, on_notice
 from nonebot.rule import to_me
-from nonebot.matcher import Matcher
-from nonebot.typing import T_State
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
@@ -15,16 +13,10 @@ from pathlib import Path
 import asyncio, random
 from .utils import (
     # Bot_NICKNAME,
+    MODE_LIST,
     hello__reply,
-    get_chat_result,
-    xiaosi,
-    xiaoai
+    get_chat_result
 )
-
-try:
-    from ..mockingbird import get__voice  # type: ignore
-except Exception:
-    get__voice = None
 
 
 confpath: Path = Path() / 'data' / 'smart_reply' / 'reply.json'
@@ -56,36 +48,38 @@ async def _(event: PokeNotifyEvent):
 ai = on_message(rule=to_me(), priority=999, block=False)
 
 @ai.handle()
-async def _(state: T_State, event: MessageEvent, matcher: Matcher):
+async def _(event: MessageEvent):
     # 获取纯文本消息
     msg = event.get_plaintext().strip()
 
-    if conf['mode'] == 1:
-        get_reply = xiaoai
-    else:
-        get_reply = xiaosi
-
-    await asyncio.sleep(random.random()*2+1)
-
-    # 如果是光艾特bot(没消息返回)或者打招呼的话,就回复以下内容
     result = (
         random.choice(hello__reply)
         if not msg or msg in [
-            '你好啊', '你好', '在吗', '在不在', '您好', '您好啊', '你好', '在']
-        else None
-    ) or (await get_chat_result(msg)) or (await get_reply(msg, f'{event.self_id}{event.user_id}'))
-    # 从字典里获取结果
-    # 如果词库没有结果，则调用对话api获取回复
+            '你好啊',
+            '你好',
+            '在吗',
+            '在不在',
+            '您好',
+            '您好啊',
+            '你好',
+            '在'
+        ] else None
+    ) or (
+        await get_chat_result(
+            conf['mode'],
+            msg,
+            f'{event.self_id}{event.user_id}'
+        )
+    )
 
     # matcher.stop_propagation()
+
+    await asyncio.sleep(random.random()*2+2)
 
     try:
         await ai.send(Message(result))
     except Exception:
         await ai.finish('ʕ  •ᴥ•ʔ<Err>')
-
-    if get__voice and isinstance(result, str) and not result.startswith('ʕ  •ᴥ•ʔ'):
-            await get__voice(matcher, state, result)
 
 
 '''
@@ -102,15 +96,13 @@ set_reply = on_command(
 @set_reply.handle()
 async def _(arg: Message = CommandArg()):
     msg = arg.extract_plain_text().strip()
-    if msg.startswith('思知') or msg.startswith('小思'):
-        conf['mode'] = 0
-    elif msg.startswith('小爱'):
-        conf['mode'] = 1
-    elif not msg:
-        conf['mode'] = 0 if conf['mode'] else 1
+    if msg:
+        try:
+            conf['mode'] = MODE_LIST.index(msg[:2])
+        except ValueError:
+            await set_reply.finish('模式不存在.')
     else:
-        await set_reply.finish('模式不存在.')
+        conf['mode'] = (conf['mode'] + 1) % len(MODE_LIST)
     save_conf()
-    mode = ['小思', '小爱']
-    await set_reply.finish(f'已设置回复模式{mode[conf["mode"]]}')
+    await set_reply.finish(f"已设置回复模式{MODE_LIST[conf['mode']]}")
 

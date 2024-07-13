@@ -19,7 +19,7 @@ XIAOAI: bool = config.xiaoai_voice
 
 nullpo = MessageSegment.image(file=(Path(__file__).parent / 'resource' / 'nullpo.png'), cache=False)
 
-# 载入词库(这个词库有点涩)
+# 载入骚话
 AnimeThesaurus = json.loads(
     (Path(__file__).parent / 'resource' / 'data.json').read_text('utf-8')
 )
@@ -31,11 +31,21 @@ hello__reply = [
 
 
 # 从字典里返还消息, 借鉴(抄)的zhenxun-bot
-async def get_chat_result(text: str) -> str | None:
-    if len(text) < 7:
+async def get_chat_result(mode: int, text: str, user_id: str) -> str | None | MessageSegment:
+
+    mode_list: list = [xiaosi, xiaoai]
+    # 此列表必须与 MODE_LIST 等长
+
+    if len(text) < 10:
         for key in AnimeThesaurus.keys():
             if key in text:
                 return random.choice(AnimeThesaurus[key])
+
+    return (await mode_list[mode](text, user_id))
+
+
+MODE_LIST: list = ['思知', '小爱']
+# 此列表必须与 mode_list 等长
 
 
 # 从思知api拿到消息
