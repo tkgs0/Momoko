@@ -2,17 +2,15 @@ from pathlib import Path
 from typing import List, Optional
 
 from nonebot import get_plugin_config
-from nonebot.config import Config
 from nonebot.log import logger
-from pydantic import AnyHttpUrl
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict
 
-DATA_PATH = Path.cwd() / "data"
+DATA_PATH = Path.cwd() / "data" / "ELF_RSS"
 JSON_PATH = DATA_PATH / "rss.json"
 
 
-class ELFConfig(Config):
-    class Config:
-        extra = "allow"
+class ELFConfig(BaseModel):
+    model_config = ConfigDict(extra="allow")
 
     # 代理地址
     rss_proxy: Optional[str] = None
