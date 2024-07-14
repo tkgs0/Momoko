@@ -344,7 +344,7 @@ leavegroup = on_command(
     "退群",
     rule=to_me(),
     permission=SUPERUSER,
-    priority=1,
+    priority=2,
     block=True
 )
 

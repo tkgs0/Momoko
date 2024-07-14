@@ -3,6 +3,7 @@ from typing import Literal
 import ujson as json
 
 from nonebot import logger, on_notice, on_request, on_command
+from nonebot.rule import to_me
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
@@ -249,8 +250,9 @@ async def group(
 
 
 approve_friend = on_command(
-    '/同意好友',
-    aliases={'/接受好友'},
+    '同意好友',
+    aliases={'接受好友'},
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -264,7 +266,8 @@ async def _(bot: Bot, args: Message = CommandArg()):
 
 
 reject_friend = on_command(
-    '/拒绝好友',
+    '拒绝好友',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -278,8 +281,8 @@ async def _(bot: Bot, args: Message = CommandArg()):
 
 
 approve_group_a = on_command(
-    '/同意入群',
-    aliases={'/接受入群'},
+    '同意入群',
+    aliases={'接受入群'},
     permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER,
     priority=1,
     block=True
@@ -293,7 +296,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 reject_group_a = on_command(
-    '/拒绝入群',
+    '拒绝入群',
     permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER,
     priority=1,
     block=True
@@ -307,8 +310,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 approve_group_i = on_command(
-    '/同意拉群',
-    aliases={'/接受拉群'},
+    '同意拉群',
+    aliases={'接受拉群'},
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -322,7 +326,8 @@ async def _(bot: Bot, args: Message = CommandArg()):
 
 
 reject_group_i = on_command(
-    '/拒绝拉群',
+    '拒绝拉群',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -336,8 +341,9 @@ async def _(bot: Bot, args: Message = CommandArg()):
 
 
 read_fdreq = on_command(
-    '/查看好友请求',
-    aliases={'/查看好友申请'},
+    '查看好友请求',
+    aliases={'查看好友申请'},
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -359,8 +365,9 @@ async def _():
 
 
 read_grreq = on_command(
-    '/查看群聊请求',
-    aliases={'/查看群聊申请'},
+    '查看群聊请求',
+    aliases={'查看群聊申请'},
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -400,8 +407,9 @@ async def _():
 
 
 reset_fdreq = on_command(
-    '/清空好友请求',
-    aliases={'/清空好友申请'},
+    '清空好友请求',
+    aliases={'清空好友申请'},
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -416,8 +424,9 @@ async def _():
 
 
 reset_grreqa = on_command(
-    '/清空入群请求',
-    aliases={'/清空入群申请'},
+    '清空入群请求',
+    aliases={'清空入群申请'},
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -432,8 +441,9 @@ async def _():
 
 
 reset_grreqi = on_command(
-    '/清空拉群请求',
-    aliases={'/清空拉群邀请'},
+    '清空拉群请求',
+    aliases={'清空拉群邀请'},
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -448,7 +458,8 @@ async def _():
 
 
 approve_autofd = on_command(
-    '/好友自动同意',
+    '好友自动同意',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -463,7 +474,8 @@ async def _():
 
 
 reject_autofd = on_command(
-    '/好友自动拒绝',
+    '好友自动拒绝',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -479,7 +491,8 @@ async def _():
 
 
 off_autofd = on_command(
-    '/关闭好友自动',
+    '关闭好友自动',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -494,7 +507,7 @@ async def _():
 
 
 approve_autogra = on_command(
-    '/入群自动同意',
+    '入群自动同意',
     permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER,
     priority=1,
     block=True
@@ -509,7 +522,7 @@ async def _(event: GroupMessageEvent):
 
 
 reject_autogra = on_command(
-    '/入群自动拒绝',
+    '入群自动拒绝',
     permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER,
     priority=1,
     block=True
@@ -524,7 +537,7 @@ async def _(event: GroupMessageEvent):
 
 
 off_autogra = on_command(
-    '/关闭入群自动',
+    '关闭入群自动',
     permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER,
     priority=1,
     block=True
@@ -539,7 +552,8 @@ async def _(event: GroupMessageEvent):
 
 
 approve_autogri = on_command(
-    '/拉群自动同意',
+    '拉群自动同意',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -554,7 +568,8 @@ async def _():
 
 
 reject_autogri = on_command(
-    '/拉群自动拒绝',
+    '拉群自动拒绝',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -569,7 +584,8 @@ async def _():
 
 
 off_autogri = on_command(
-    '/关闭拉群自动',
+    '关闭拉群自动',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -584,7 +600,8 @@ async def _():
 
 
 reset_auto = on_command(
-    '/重置请求自动',
+    '重置请求自动',
+    rule=to_me(),
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -664,7 +681,7 @@ async def _(event: GroupDecreaseNoticeEvent):
 
 
 increase = on_command(
-    '/入群欢迎',
+    '入群欢迎',
     permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
     priority=1,
     block=True
@@ -690,7 +707,7 @@ async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
 
 
 decrease = on_command(
-    '/退群播报',
+    '退群播报',
     permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
     priority=1,
     block=True
@@ -714,8 +731,8 @@ async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
 
 
 set_welcome_msg = on_command(
-    '/设置欢迎词',
-    aliases={'/设置欢迎语'},
+    '设置欢迎词',
+    aliases={'设置欢迎语'},
     permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
     priority=1,
     block=True
@@ -734,8 +751,8 @@ async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
 
 
 get_welcome_msg = on_command(
-    '/查看欢迎词',
-    aliases={'/查看欢迎语'},
+    '查看欢迎词',
+    aliases={'查看欢迎语'},
     permission=SUPERUSER | GROUP_OWNER | GROUP_ADMIN,
     priority=1,
     block=True
