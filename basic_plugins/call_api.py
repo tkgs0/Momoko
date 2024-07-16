@@ -18,6 +18,7 @@ class Config(BaseModel):
     params: Dict | None = None
     headers: Dict | None = None
     cookies: Dict | None = None
+    timeout: float | None = 60.0
 
 
 usage='''
@@ -37,6 +38,7 @@ example:
     user-agent: xxx
   cookies:
     session: xxx
+  timeout: 60.0
 
 ⓘ暂不支持ws/wss
 
@@ -66,31 +68,32 @@ async def _(args: Message = CommandArg()):
     url = content[0]
     arg = content[1] if len(content) > 1 else "params:"
     try:
-        params, headers, cookies = handle_params(arg)
-        res = await get_api(url, params, headers, cookies)
+        params, headers, cookies, timeout = handle_params(arg)
+        res = await get_api(url, params, headers, cookies, timeout)
     except Exception as e:
         res = repr(e)
     await callapi.finish(Message(res))
 
 
-def handle_params(msg: str) ->Tuple:
+def handle_params(msg: str) -> Tuple:
     conf = yaml.safe_load(msg)
     config = Config.model_validate(conf)
-    return config.params, config.headers, config.cookies
+    return config.params, config.headers, config.cookies, config.timeout
 
 
 async def get_api(
     url: str,
     params: dict,
     headers: dict,
-    cookies: dict
+    cookies: dict,
+    timeout: float | None
 ) -> str | MessageSegment:
     if not url.startswith('http://') and not url.startswith('https://'):
         url = 'http://' + url
 
     async with AsyncClient() as client:
         try:
-            response = await client.get(url=url, params=params, headers=headers, cookies=cookies, follow_redirects=True, timeout=60)
+            response = await client.get(url=url, params=params, headers=headers, cookies=cookies, follow_redirects=True, timeout=timeout)
 
             if "application/json" == response.headers.get("Content-Type"):
                 res = json.dumps(response.json(), indent=2, ensure_ascii=False)
