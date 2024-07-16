@@ -14,7 +14,7 @@ config = get_plugin_config(Config)
 NICKNAME: str = list(config.nickname)[0]  # bot的nickname
 MASTER: str = list(config.superusers)[0]  # bot的主人id
 SIZHI_APPID: str = config.sizhi_appid
-SIZHI_TIMEOUT: int = config.sizhi_timeout
+SIZHI_TIMEOUT: float | None = config.sizhi_timeout
 XIAOAI: bool = config.xiaoai_voice
 
 nullpo = MessageSegment.image(file=(Path(__file__).parent / 'resource' / 'nullpo.png'), cache=False)
