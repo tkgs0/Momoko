@@ -312,19 +312,19 @@
   ⚠危险操作, 谨慎使用!
 
   ```
-  >shell {命令}
+  /sh {命令}
   ```
   ```
-  >cmd {命令}
+  /cmd {命令}
   ```
 
   示例:
 
   ```
-  >shell echo "Hello World"
+  /sh echo "Hello World"
   ```
   ```
-  >cmd echo "Hello World"
+  /cmd echo "Hello World"
   ```
 
   </details>
