@@ -11,31 +11,45 @@ from nonebot.internal.adapter import Message
 from .utils import unescape
 
 
+usage: str = '''
+发送 /sh 或 /cmd 查看帮助,
+如果Bot项目的 .env* 里只设置了命令前缀 "/",
+那么命令应该为 //sh 和 //cmd
+'''.strip()
+
+
 __plugin_meta__ = PluginMetadata(
     name="命令行",
     description="操作Bot所在系统的命令行",
-    usage="发送 /sh 或 /cmd 查看帮助",
-    type="application"
+    usage=usage,
+    type="application",
+    homepage="https://github.com/tkgs0/nonebot-plugin-system-command"
 )
 
 
-cmd_help: str = (
-    '调用系统命令行\n'
-    '⚠危险操作, 谨慎使用!\n\n'
-    '/cmd {命令}\n'
-    'For example:\n'
-    '/cmd echo "Hello World"'
-)
+cmd_help: str = '''
+调用系统命令行
+⚠危险操作, 谨慎使用!
+/cmd {命令}
+For example:
+/cmd echo "Hello World
+
+如果Bot项目的 .env* 里只设置了命令前缀 "/"
+那么命令应该为 //cmd`
+'''.strip()
 
 
-shell_help: str = (
-    '调用系统命令行\n'
-    '(不支持Windows)\n'
-    '⚠危险操作, 谨慎使用!\n\n'
-    '/sh {命令}\n'
-    'For example:\n'
-    '/sh echo "Hello World"'
-)
+shell_help: str = '''
+调用系统命令行
+(不支持Windows)
+⚠危险操作, 谨慎使用!
+/sh {命令}
+For example:
+/sh echo "Hello World"
+
+如果Bot项目的 .env* 里只设置了命令前缀 "/"
+那么命令应该为 //sh
+'''.strip()
 
 
 _win: tuple = ('windows', 'win32', 'win16')
