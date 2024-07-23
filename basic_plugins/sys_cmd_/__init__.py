@@ -68,7 +68,7 @@ async def _(args: Message = CommandArg()):
     if content == (b'', b''):
         msg: str = '没有任何输出呢~'
     elif content[1] == b'':
-        msg: str = f'stdout:\n{content[0].decode()}\n'
+        msg: str = f'stdout:\n{content[0].decode()}'
     elif content[0] == b'':
         msg: str = f'stderr:\n{content[1].decode()}'
     else :
