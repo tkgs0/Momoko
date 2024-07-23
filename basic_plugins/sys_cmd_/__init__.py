@@ -12,9 +12,10 @@ from .utils import unescape
 
 
 usage: str = '''
-发送 /sh 或 /cmd 查看帮助,
-如果Bot项目的 .env* 里只设置了命令前缀 "/",
-那么命令应该为 //sh 和 //cmd
+发送 /sh 或 /cmd 查看帮助.
+
+如果 COMMAND_START=["/"]
+那么 `/sh` `/cmd` 应该写作 `//sh` `//cmd`
 '''.strip()
 
 
@@ -30,12 +31,13 @@ __plugin_meta__ = PluginMetadata(
 cmd_help: str = '''
 调用系统命令行
 ⚠危险操作, 谨慎使用!
+
 /cmd {命令}
 For example:
-/cmd echo "Hello World
+/cmd echo "Hello World"
 
-如果Bot项目的 .env* 里只设置了命令前缀 "/"
-那么命令应该为 //cmd`
+如果 COMMAND_START=["/"]
+那么 /cmd 应该写作 //cmd
 '''.strip()
 
 
@@ -43,12 +45,13 @@ shell_help: str = '''
 调用系统命令行
 (不支持Windows)
 ⚠危险操作, 谨慎使用!
+
 /sh {命令}
 For example:
 /sh echo "Hello World"
 
-如果Bot项目的 .env* 里只设置了命令前缀 "/"
-那么命令应该为 //sh
+如果 COMMAND_START=["/"]
+那么 /sh 应该写作 //sh
 '''.strip()
 
 
