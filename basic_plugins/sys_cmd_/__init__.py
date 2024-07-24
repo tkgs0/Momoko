@@ -3,55 +3,51 @@ from subprocess import Popen, PIPE
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE as AsyncPIPE
 from nonebot import on_command
-from nonebot.plugin import PluginMetadata
+from nonebot.config import Config as nonebotConfig
+from nonebot.plugin import PluginMetadata, get_plugin_config
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.internal.adapter import Message
 
+from .config import Config
 from .utils import unescape
 
 
-usage: str = '''
-发送 /sh 或 /cmd 查看帮助.
+cmd_start: str = min(list(get_plugin_config(nonebotConfig).command_start))
 
-如果 COMMAND_START=["/"]
-那么 `/sh` `/cmd` 应该写作 `//sh` `//cmd`
-'''.strip()
+config = get_plugin_config(Config)
+cmd_cmd: str = config.sys_cmd_cmd
+cmd_sh: str = config.sys_cmd_sh
 
 
 __plugin_meta__ = PluginMetadata(
     name="命令行",
-    description="操作Bot所在系统的命令行",
-    usage=usage,
+    description="操作Bot所在环境的系统命令行",
+    usage=f"发送 {cmd_start}{cmd_sh} 或 {cmd_start}{cmd_cmd} 查看帮助.",
     type="application",
-    homepage="https://github.com/tkgs0/nonebot-plugin-system-command"
+    homepage="https://github.com/tkgs0/nonebot-plugin-system-command",
+    config=Config
 )
 
 
-cmd_help: str = '''
+cmd_help: str = f'''
 调用系统命令行
 ⚠危险操作, 谨慎使用!
 
-/cmd {命令}
+{cmd_start}{cmd_cmd} 命令
 For example:
-/cmd echo "Hello World"
-
-如果 COMMAND_START=["/"]
-那么 /cmd 应该写作 //cmd
+{cmd_start}{cmd_cmd} echo "Hello World"
 '''.strip()
 
 
-shell_help: str = '''
+shell_help: str = f'''
 调用系统命令行
 (不支持Windows)
 ⚠危险操作, 谨慎使用!
 
-/sh {命令}
+{cmd_start}{cmd_sh} 命令
 For example:
-/sh echo "Hello World"
-
-如果 COMMAND_START=["/"]
-那么 /sh 应该写作 //sh
+{cmd_start}{cmd_sh} echo "Hello World"
 '''.strip()
 
 
@@ -59,7 +55,7 @@ _win: tuple = ('windows', 'win32', 'win16')
 
 
 sys_shell = on_command(
-    '/sh',
+    cmd_sh,
     permission=SUPERUSER,
     priority=1,
     block=True
@@ -102,7 +98,7 @@ async def _(args: Message = CommandArg()):
 
 
 sys_cmd = on_command(
-    '/cmd',
+    cmd_cmd,
     priority=1,
     block=True,
     permission=SUPERUSER
