@@ -10,7 +10,6 @@ from nonebot.permission import SUPERUSER
 from nonebot.internal.adapter import Message
 
 from .config import Config
-from .utils import unescape
 
 
 cmd_start: str = min(list(get_plugin_config(nonebotConfig).command_start))
@@ -26,7 +25,8 @@ __plugin_meta__ = PluginMetadata(
     usage=f"发送 {cmd_start}{cmd_sh} 或 {cmd_start}{cmd_cmd} 查看帮助.",
     type="application",
     homepage="https://github.com/tkgs0/nonebot-plugin-system-command",
-    config=Config
+    config=Config,
+    supported_adapters=None
 )
 
 
@@ -72,7 +72,7 @@ async def _(args: Message = CommandArg()):
         await sys_shell.finish(shell_help)
 
     content: tuple = await (await create_subprocess_shell(
-        unescape(opt),
+        opt,
         stdin=AsyncPIPE,
         stdout=AsyncPIPE,
         stderr=AsyncPIPE
@@ -113,7 +113,7 @@ async def _(args: Message = CommandArg()):
         await sys_cmd.finish(cmd_help)
 
     content: tuple = Popen(
-        unescape(opt),
+        opt,
         stdin=PIPE,
         stdout=PIPE,
         stderr=PIPE,

@@ -24,6 +24,25 @@ from nonebot.adapters.onebot.v11 import (
 from .config import Config
 
 
+"""
+cron 格式
+
+* * * * *
+秒 分 时 日 月
+
+month (1-12)
+
+day of month (1-31)
+
+hour (0-23)
+
+minute (0-59)
+
+second (0-59)
+
+"""
+
+
 usage: str = """
 
 指令表:
@@ -207,11 +226,19 @@ async def _(event: MessageEvent):
         logger.error(err_info(e))
 
 
+class _cron:
+    second, minute, hour, day, month = account.binance_cron.split()
+
+
 @scheduler.scheduled_job(
-    "interval",
+    "cron",
     id="BN推送",
     name="BN推送",
-    hours=1,
+    second=_cron.second,
+    minute=_cron.minute,
+    hour=_cron.hour,
+    day=_cron.day,
+    month=_cron.month,
     misfire_grace_time=15
 )
 async def _():

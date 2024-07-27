@@ -48,7 +48,8 @@ __plugin_meta__ = PluginMetadata(
     description="🥵",
     usage=usage,
     type="application",
-    homepage="https://github.com/tkgs0/nonebot-plugin-dicky-pk"
+    homepage="https://github.com/tkgs0/nonebot-plugin-dicky-pk",
+    supported_adapters={"~onebot.v11"}
 )
 
 
