@@ -32,7 +32,7 @@ __plugin_meta__ = PluginMetadata(
 h = on_command(
     "help",
     rule=to_me(),
-    aliases={"帮助", "服务", "幫助", "服務"},
+    aliases={"帮助", "服务", "幫助", "服務", "菜单", "菜單"},
     priority=2, block=True
 )
 
