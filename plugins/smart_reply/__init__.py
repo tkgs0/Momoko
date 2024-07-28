@@ -1,5 +1,5 @@
 from nonebot import on_command, on_message, on_notice
-from nonebot.rule import to_me
+from nonebot.rule import Rule, to_me
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import (
@@ -34,15 +34,18 @@ def save_conf() -> None:
     confpath.write_text(json.dumps(conf), encoding='utf-8')
 
 
-poke_ = on_notice(priority=999, block=False)
+def poke_to_me(event: PokeNotifyEvent) -> bool:
+    return event.self_id == event.target_id
+
+
+poke_ = on_notice(rule=Rule(poke_to_me), priority=999, block=False)
 
 @poke_.handle()
 async def _(event: PokeNotifyEvent):
-    if event.self_id == event.target_id:
-        if not random.random()*10//1%6:
-            await asyncio.sleep(random.random()+1)
-            # await poke_.finish(f'请不要戳{Bot_NICKNAME}>_<')
-            await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
+    if not random.random()*10//1%6:
+        await asyncio.sleep(random.random()+1)
+        # await poke_.finish(f'请不要戳{Bot_NICKNAME}>_<')
+        await poke_.finish(MessageSegment('poke', {'qq': event.user_id}))
 
 
 ai = on_message(rule=to_me(), priority=999, block=False)
