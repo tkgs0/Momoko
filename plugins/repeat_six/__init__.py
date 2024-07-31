@@ -7,7 +7,7 @@ from nonebot.internal.adapter import Event
 __plugin_meta__ = PluginMetadata(
     name="six",
     description="",
-    usage="当有人发送 6 或者 蚌|蜯|草|艹|乐|樂|寄|典|孝|急|麻 时概率触发复读",
+    usage="当有人发送 6 或者 主|蚌|蜯|草|艹|乐|樂|寄|典|孝|急|麻 时概率触发复读",
     type="application"
 )
 
@@ -21,7 +21,7 @@ async def _(event: Event):
 
 
 nonsense = on_regex(
-    r"^(蚌|蜯|草|艹|乐|樂|寄|典|孝|急|麻)$",
+    r"^(主|蚌|蜯|草|艹|乐|樂|寄|典|孝|急|麻)$",
     priority=5,
     block=False
 )
