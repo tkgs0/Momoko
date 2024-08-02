@@ -1,7 +1,6 @@
 import asyncio
 from httpx import AsyncClient
-from nonebot import logger, require
-require("nonebot_plugin_imageutils")
+from nonebot import logger
 
 
 async def down_pic(content, pixproxy) -> tuple[list, list]:
