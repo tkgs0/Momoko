@@ -1,7 +1,6 @@
-from nonebot import logger, on_regex, on_command
+from nonebot import logger, on_command
 from nonebot.plugin import PluginMetadata
-from nonebot.matcher import Matcher
-from nonebot.params import CommandArg, ArgPlainText
+from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
@@ -10,6 +9,8 @@ from nonebot.adapters.onebot.v11 import (
     ActionFailed
 )
 from nonebot.adapters.onebot.v11.helpers import Cooldown
+
+from .utils import edit_img
 
 
 usage: str = """
@@ -47,5 +48,14 @@ ouen = on_command(
 
 
 @ouen.handle([Cooldown(30, prompt='慢...慢一..点❤')])
-async def _(event: MessageEvent, args: Message = CommandArg()):
-    text = event.get_message()
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
+    text = f"{args}"
+    if uids := [at.data['qq'] for at in event.get_message()['at']]:
+        for i in uids:
+            info = await bot.get_stranger_info(user_id=i, no_cache=True)
+            text = text.replace(f"[CQ:at,qq={i}]", info['nickname'])
+    try:
+        await ouen.finish(Message(MessageSegment.image(edit_img(text), cache=False)))
+    except ActionFailed as e:
+        logger.error(e)
+        await ouen.finish(err_info(e))
