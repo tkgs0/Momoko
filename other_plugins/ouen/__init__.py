@@ -55,7 +55,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
             info = await bot.get_stranger_info(user_id=i, no_cache=True)
             text = text.replace(f"[CQ:at,qq={i}]", info['nickname'])
     try:
-        await ouen.finish(Message(MessageSegment.image(edit_img(text), cache=False)))
+        await ouen.finish(Message(MessageSegment.image(edit_img(text.strip()), cache=False)))
     except ActionFailed as e:
         logger.error(e)
         await ouen.finish(err_info(e))
