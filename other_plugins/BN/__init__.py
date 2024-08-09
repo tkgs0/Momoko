@@ -270,12 +270,21 @@ async def _():
                                     time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n{symbol}: {res}"
                                 )
                             )
-                        except Exception:
+                        except Exception as e:
+                            logger.error(e)
                             continue
 
-                    await bot.send_forward_msg(
-                        group_id=uid, messages=node
-                    )
-                except Exception:
+                    await bot.send_forward_msg(group_id=uid, messages=node)
+
+                except ActionFailed as e:
+                    logger.error(e)
+                    if e.info.get('msg') == "GROUP_NOT_FOUND":
+                        enabled[self_id].pop(uid)
+                        save_config()
                     continue
+
+                except Exception as e:
+                    logger.error(e)
+                    continue
+
     logger.info("BN币价推送完毕...")
