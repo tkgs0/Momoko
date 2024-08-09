@@ -1,9 +1,10 @@
-from nonebot import on_metaevent, on_command, get_bot
+from nonebot import on_metaevent, on_command, get_bot, require
 from nonebot.log import logger
 from nonebot.plugin import PluginMetadata
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import LifecycleMetaEvent
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+require("nonebot_plugin_apscheduler")
+from nonebot_plugin_apscheduler import scheduler
 
 from .data_source import get_status
 
@@ -23,9 +24,6 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
-
-
 def check_first_connect(_: LifecycleMetaEvent) -> bool:
     return True
 
@@ -34,6 +32,7 @@ async def _():
     if not scheduler.running:
         try:
             scheduler.start()
+            logger.success("scheduler已启动.")
         except Exception as e:
             logger.error(f"scheduler启动失败!\n{repr(e)}")
 

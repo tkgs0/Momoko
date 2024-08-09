@@ -3,10 +3,15 @@ from pathlib import Path
 import ujson as json
 from binance.spot import Spot
 from binance.error import ClientError
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
-from nonebot import on_metaevent, on_command, on_regex, logger, get_bot, get_plugin_config
+from nonebot import (
+    on_metaevent,
+    on_command,
+    on_regex,
+    logger,
+    get_bot,
+    get_plugin_config,
+    require
+)
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
@@ -18,8 +23,10 @@ from nonebot.adapters.onebot.v11 import (
     LifecycleMetaEvent,
     ActionFailed,
     GROUP_ADMIN,
-    GROUP_OWNER,
+    GROUP_OWNER
 )
+require("nonebot_plugin_apscheduler")
+from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 
@@ -79,9 +86,6 @@ client = (
 )
 
 
-scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
-
-
 def check_first_connect(_: LifecycleMetaEvent) -> bool:
     return True
 
@@ -90,6 +94,7 @@ async def _():
     if not scheduler.running:
         try:
             scheduler.start()
+            logger.success("scheduler已启动.")
         except Exception as e:
             logger.error(f"scheduler启动失败!\n{repr(e)}")
 
