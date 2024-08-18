@@ -15,7 +15,6 @@ plugins = [
     "nonebot_plugin_antiinsult",
     "nonebot_plugin_looklike",
     "nonebot_plugin_repesix",
-    "nonebot_plugin_guild_patch"
 ]
 plugin_dirs = [
     "basic_plugins",
