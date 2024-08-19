@@ -23,12 +23,12 @@ class Config(BaseModel):
 
 usage='''
 
-/api url
+call url
 params:
   xxx: xxx
 
 example:
-  /api http://127.0.0.1:8080/send_msg
+  call http://127.0.0.1:8080/send_msg
   params:
     token: XXX
     user_id: 123456
@@ -40,7 +40,7 @@ example:
     session: xxx
   timeout: 60.0
 
-ⓘ暂不支持ws/wss
+ⓘ仅支持http(s)
 
 '''.strip()
 
@@ -54,10 +54,10 @@ __plugin_meta__ = PluginMetadata(
 
 
 callapi = on_command(
-    '/api',
+    'call',
     permission=SUPERUSER,
     priority=1,
-    block=True
+    block=False
 )
 
 @callapi.handle()
