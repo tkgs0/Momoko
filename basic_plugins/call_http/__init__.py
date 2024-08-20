@@ -6,14 +6,17 @@ try:
     import ujson as json
 except ModuleNotFoundError:
     import json
-from nonebot import on_command
+from nonebot import on_command, get_plugin_config
+from nonebot.config import Config as nonebotConfig
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
+from .config import Config
 
-class Config(BaseModel):
+
+class Model(BaseModel):
     model_config = ConfigDict(extra="ignore")
     params: Dict | None = None
     headers: Dict | None = None
@@ -21,14 +24,17 @@ class Config(BaseModel):
     timeout: float | None = 60.0
 
 
-usage='''
+cmd: str = get_plugin_config(Config).call_http_call
+cmd_start: str = min(list(get_plugin_config(nonebotConfig).command_start))
 
-call url
+usage= f'''
+
+{cmd_start}{cmd} url
 params:
   xxx: xxx
 
 example:
-  call http://127.0.0.1:8080/send_msg
+  {cmd_start}{cmd} http://127.0.0.1:8080/send_msg
   params:
     token: XXX
     user_id: 123456
@@ -46,7 +52,7 @@ example:
 
 
 __plugin_meta__ = PluginMetadata(
-    name="call_api",
+    name="call_http",
     description="call call 你的API🥵",
     usage=usage,
     type="application"
@@ -54,7 +60,7 @@ __plugin_meta__ = PluginMetadata(
 
 
 callapi = on_command(
-    'call',
+    cmd,
     permission=SUPERUSER,
     priority=1,
     block=False
@@ -77,7 +83,7 @@ async def _(args: Message = CommandArg()):
 
 def handle_params(msg: str) -> Tuple:
     conf = yaml.safe_load(msg)
-    config = Config.model_validate(conf)
+    config = Model.model_validate(conf)
     return config.params, config.headers, config.cookies, config.timeout
 
 
