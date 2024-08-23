@@ -63,7 +63,7 @@ callapi = on_command(
     cmd,
     permission=SUPERUSER,
     priority=1,
-    block=False
+    block=True
 )
 
 @callapi.handle()
