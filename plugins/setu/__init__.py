@@ -6,7 +6,7 @@ import asyncio
 from nonebot import logger, on_command, get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
-from nonebot.message import event_preprocessor
+from nonebot.message import run_preprocessor
 from nonebot.params import CommandArg, ArgStr
 from nonebot.permission import SUPERUSER
 from nonebot.exception import IgnoredException
@@ -112,7 +112,7 @@ def is_number(s: str) -> bool:
     return False
 
 
-@event_preprocessor
+@run_preprocessor
 def setu_processor(matcher: Matcher, event: MessageEvent):
     gid: int = event.group_id if isinstance(event, GroupMessageEvent) else 0
     uid: int = event.user_id if not gid else 0
