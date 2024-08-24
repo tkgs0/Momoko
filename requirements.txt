@@ -5,6 +5,7 @@ nonebot-plugin-alconna
 nonebot-plugin-antiinsult
 nonebot-plugin-apscheduler
 nonebot-plugin-blacklist
+nonebot-plugin-eavesdropper
 nonebot-plugin-looklike
 nonebot-plugin-repesix
 nonebot-plugin-send-anything-anywhere

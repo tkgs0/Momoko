@@ -12,6 +12,7 @@ adapters = [
 plugins = [
     "nonebot_plugin_system_command",
     "nonebot_plugin_blacklist",
+    "nonebot_plugin_eavesdropper",
     "nonebot_plugin_antiinsult",
     "nonebot_plugin_looklike",
     "nonebot_plugin_repesix",
@@ -42,6 +43,7 @@ nonebot-plugin-alconna = ">=0.40.1"
 nonebot-plugin-antiinsult = ">=0.7.0"
 nonebot-plugin-apscheduler = ">=0.4.0"
 nonebot-plugin-blacklist = ">=1.4.2"
+nonebot-plugin-eavesdropper = ">=0.0.1"
 nonebot-plugin-looklike = ">=0.0.2"
 nonebot-plugin-repesix =">=0.0.3"
 nonebot-plugin-send-anything-anywhere = ">=0.6.1"
