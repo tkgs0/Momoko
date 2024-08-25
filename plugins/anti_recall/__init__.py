@@ -291,7 +291,7 @@ async def _(bot: Bot, event: FriendRecallNoticeEvent):
     self_id = check_self_id(event.self_id)
     user = str(event.user_id)
     for i in switch[self_id]:
-        if not event.is_tome() and (switch[self_id][i]['enable'] or user in switch[self_id][i]['private']):
+        if not event.is_tome() and switch[self_id][i]['enable'] and user in switch[self_id][i]['private']:
             await send_msg(bot, i, event, "私聊", user)
 
 
@@ -301,7 +301,7 @@ async def _(bot: Bot, event: GroupRecallNoticeEvent):
     user = str(event.user_id)
     group = str(event.group_id)
     for i in switch[self_id]:
-        if not event.is_tome() and (switch[self_id][i]['enable'] or user in switch[self_id][i]['group']):
+        if not event.is_tome() and switch[self_id][i]['enable'] and group in switch[self_id][i]['group']:
             await send_msg(bot, i, event, "群聊", user, group)
 
 
