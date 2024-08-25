@@ -305,7 +305,7 @@ async def _(bot: Bot, event: GroupRecallNoticeEvent):
             await send_msg(bot, event, "群聊", user, group)
 
 
-async def check_msg(repo: dict):
+def check_msg(repo: dict):
     try:
         return recall_msg_dealer(repo)
     except Exception:
