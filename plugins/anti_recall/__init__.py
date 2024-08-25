@@ -2,12 +2,13 @@ import unicodedata
 import ujson as json
 from pathlib import Path
 from typing import Literal
-from nonebot import on_notice, on_command
+from nonebot import on_command
 from nonebot.log import logger
 from nonebot.plugin import PluginMetadata
 from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
+from nonebot.message import event_preprocessor
 from nonebot.adapters.onebot.v11 import (
     Bot,
     MessageEvent,
@@ -67,26 +68,38 @@ def save_switch() -> None:
 
 def check_self_id(self_id) -> str:
     self_id = f'{self_id}'
-    temp: dict = {}
-    temp.update(template)
-
-    try:
-        if not switch.get(self_id):
-            switch.update({
-                self_id: temp
-            })
-            save_switch()
-        for i in template:
-            if switch[self_id].get(i) == None:
-                switch[self_id].update({i: temp[i]})
-                save_switch()
-    except Exception:
+    if switch.get(self_id) == None:
         switch.update({
-            self_id: temp
+            self_id: {}
         })
         save_switch()
 
     return self_id
+
+
+def check_master(self_id, master_id) -> tuple[str, str]:
+    self_id = check_self_id(self_id)
+    master_id = f'{master_id}'
+    temp: dict = {}
+    temp.update(template)
+
+    try:
+        if not switch[self_id].get(master_id):
+            switch[self_id].update({
+                master_id: temp
+            })
+            save_switch()
+        for i in template:
+            if switch[self_id][master_id].get(i) == None:
+                switch[self_id][master_id].update({i: temp[i]})
+                save_switch()
+    except Exception:
+        switch[self_id].update({
+            master_id: temp
+        })
+        save_switch()
+
+    return self_id, master_id
 
 
 def is_number(s: str) -> bool:
@@ -103,6 +116,47 @@ def is_number(s: str) -> bool:
     return False
 
 
+def handle_msg(
+    self_id,
+    master_id,
+    arg: Message,
+    mode: bool,
+    type_: Literal['group', 'private'],
+) -> str:
+    uids = arg.extract_plain_text().strip().split()
+    if not uids:
+        return '用法: \n禁用(启用)私聊(群聊)反撤回 qq qq1 qq2 ...'
+    for uid in uids:
+        if not is_number(uid):
+            return '参数错误, id必须是数字..'
+    return handle_switch(self_id, master_id, uids, mode, type_)
+
+
+def handle_switch(
+    self_id,
+    master_id,
+    uids: list,
+    mode: bool,
+    type_: Literal['group', 'private'],
+) -> str:
+    self_id, master_id = check_master(self_id, master_id)
+
+    types = {
+        'group': '群聊',
+        'private': '私聊',
+    }
+
+    if mode:
+        switch[self_id][master_id][type_].extend(uids)
+        switch[self_id][master_id][type_] = list(set(switch[self_id][master_id][type_]))
+        _mode = '启用'
+    else:
+        switch[self_id][master_id][type_] = [uid for uid in switch[self_id][master_id][type_] if uid not in uids]
+        _mode = '禁用'
+    save_switch()
+    return f"已对 {len(uids)} 个{types[type_]}{_mode}反撤回: {', '.join(uids)}"
+
+
 enable_anti_recall = on_command(
     '开启防撤回',
     aliases={'开启反撤回', '启用防撤回', '启用反撤回'},
@@ -113,8 +167,8 @@ enable_anti_recall = on_command(
 
 @enable_anti_recall.handle()
 async def _(event: MessageEvent):
-    self_id = check_self_id(event.self_id)
-    switch[self_id]['enable'] = True
+    self_id, master_id = check_master(event.self_id, event.user_id)
+    switch[self_id][master_id]['enable'] = True
     save_switch()
     await enable_anti_recall.finish('反撤回已开启.')
 
@@ -129,8 +183,8 @@ disable_anti_recall = on_command(
 
 @disable_anti_recall.handle()
 async def _(event: MessageEvent):
-    self_id = check_self_id(event.self_id)
-    switch[self_id]['enable'] = False
+    self_id, master_id = check_master(event.self_id, event.user_id)
+    switch[self_id][master_id]['enable'] = False
     save_switch()
     await disable_anti_recall.finish('反撤回已关闭.')
 
@@ -145,7 +199,7 @@ add_private = on_command(
 
 @add_private.handle()
 async def add_user_list(event: MessageEvent, arg: Message = CommandArg()):
-    msg = handle_msg(event.self_id, arg, 'add', 'private')
+    msg = handle_msg(event.self_id, event.user_id, arg, True, 'private')
     await add_private.finish(msg)
 
 
@@ -159,7 +213,7 @@ del_private = on_command(
 
 @del_private.handle()
 async def del_user_list(event: MessageEvent, arg: Message = CommandArg()):
-    msg = handle_msg(event.self_id, arg, 'del', 'private')
+    msg = handle_msg(event.self_id, event.user_id, arg, False, 'private')
     await del_private.finish(msg)
 
 
@@ -173,7 +227,7 @@ add_group = on_command(
 
 @add_group.handle()
 async def add_group_list(event: MessageEvent, arg: Message = CommandArg()):
-    msg = handle_msg(event.self_id, arg, 'add', 'group')
+    msg = handle_msg(event.self_id, event.user_id, arg, True, 'group')
     await add_group.finish(msg)
 
 
@@ -187,20 +241,29 @@ del_group = on_command(
 
 @del_group.handle()
 async def del_group_list(event: MessageEvent, arg: Message = CommandArg()):
-    msg = handle_msg(event.self_id, arg, 'del', 'group')
+    msg = handle_msg(event.self_id, event.user_id, arg, False, 'group')
     await del_group.finish(msg)
 
 
-reset_switch = on_command('重置反撤回', permission=SUPERUSER, priority=1, block=True)
+reset_switch = on_command('重置反撤回', aliases={"重置防撤回"}, permission=SUPERUSER, priority=1, block=True)
+
+@reset_switch.handle()
+async def _(matcher: Matcher, args: Message = CommandArg()):
+    if (arg := args.extract_plain_text().strip().lower()) in ['all', '--all']:
+        await reset_switch.send(f"检测到 '{arg}' , 将重置当前Bot所有SUPERUSER设置的反撤回服务")
+        matcher.state['DELETE_ALL'] = True
 
 @reset_switch.got('FLAG', prompt='确定重置反撤回服务? (y/n)')
 async def reset_list(event: MessageEvent, matcher: Matcher):
     flag = matcher.state['FLAG'].extract_plain_text().strip()
 
-    uid = check_self_id(event.self_id)
+    self_id, master_id = check_master(event.self_id, event.user_id)
 
     if flag.lower() in ['y', 'yes', 'true']:
-        switch.pop(uid)
+        if matcher.state.get('DELETE_ALL'):
+            switch.pop(self_id)
+        else:
+            switch[self_id].pop(master_id)
         save_switch()
         await reset_switch.finish(f'已重置反撤回服务.')
     else:
@@ -217,53 +280,41 @@ check_private = on_command(
 
 @check_private.handle()
 async def check_user_list(event: MessageEvent):
-    self_id = check_self_id(event.self_id)
-    uids = switch[self_id]['private']
-    gids = switch[self_id]['group']
-    msg = f"服务状态: {'启用' if switch[self_id]['enable'] else '禁用'}\nprivate: {', '.join(uids)}\ngroup: {', '.join(gids)}"
+    self_id, master_id = check_master(event.self_id, event.user_id)
+    msg = f"服务状态: {'启用' if switch[self_id][master_id]['enable'] else '禁用'}\nprivate: {', '.join(switch[self_id][master_id]['private'])}\ngroup: {', '.join(switch[self_id][master_id]['group'])}"
     await check_private.finish(msg)
 
 
-recall_event = on_notice(priority=1, block=False)
 
-@recall_event.handle()
+@event_preprocessor
 async def _(bot: Bot, event: FriendRecallNoticeEvent):
     self_id = check_self_id(event.self_id)
     user = str(event.user_id)
-
-    if not switch[self_id]['enable'] or not user in switch[self_id]['private'] or event.is_tome():
-        return
-
-    try:
-        repo = await bot.get_msg(message_id=event.message_id)
-    except Exception:
-        return
-
-    logger.debug(f"Recall raw msg:\n{repo}")
-    repo = repo["message"]
-
-    try:
-        m = recall_msg_dealer(repo)
-    except Exception:
-        check = MessageChecker(repo).check_cq_code
-        if not check:
-            m = repo
-        else:
-            return
-    msg = f"{user}@[私聊]\n撤回了\n{m}"
-    for superuser in bot.config.superusers:
-        await bot.send_private_msg(user_id=int(superuser), message=Message(msg))
+    for i in switch[self_id]:
+        if not event.is_tome() and (switch[self_id][i]['enable'] or user in switch[self_id][i]['private']):
+            await send_msg(bot, event, "私聊", user)
 
 
-@recall_event.handle()
+@event_preprocessor
 async def _(bot: Bot, event: GroupRecallNoticeEvent):
     self_id = check_self_id(event.self_id)
     user = str(event.user_id)
     group = str(event.group_id)
+    for i in switch[self_id]:
+        if not event.is_tome() and (switch[self_id][i]['enable'] or user in switch[self_id][i]['group']):
+            await send_msg(bot, event, "群聊", user, group)
 
-    if not switch[self_id]['enable'] or not group in switch[self_id]['group'] or event.is_tome():
-        return
 
+async def check_msg(repo: dict):
+    try:
+        return recall_msg_dealer(repo)
+    except Exception:
+        if not MessageChecker(repr(repo)).check_cq_code:
+            return repo
+    return
+
+
+async def send_msg(bot: Bot, event, session_type: Literal["群聊", "私聊"], user, group=''):
     try:
         repo = await bot.get_msg(message_id=event.message_id)
     except Exception:
@@ -272,55 +323,6 @@ async def _(bot: Bot, event: GroupRecallNoticeEvent):
     logger.debug(f"Recall raw msg:\n{repo}")
     repo = repo["message"]
 
-    try:
-        m = recall_msg_dealer(repo)
-    except Exception:
-        check = MessageChecker(repo).check_cq_code
-        if not check:
-            m = repo
-        else:
-            return
-    msg = f"{user}@[群聊:{group}]\n撤回了\n{m}"
+    msg = f"[{user}][{session_type}{group}]\n撤回了:\n{check_msg(repo)}"
     for superuser in bot.config.superusers:
         await bot.send_private_msg(user_id=int(superuser), message=Message(msg))
-
-
-def handle_msg(
-    self_id,
-    arg,
-    mode: Literal['add', 'del'],
-    type_: Literal['group', 'private'],
-) -> str:
-    uids = arg.extract_plain_text().strip().split()
-    if not uids:
-        return '用法: \n禁用(启用)私聊(群聊)反撤回 qq qq1 qq2 ...'
-    for uid in uids:
-        if not is_number(uid):
-            return '参数错误, id必须是数字..'
-    msg = handle_switch(self_id, uids, mode, type_)
-    return msg
-
-
-def handle_switch(
-    self_id,
-    uids: list,
-    mode: Literal['add', 'del'],
-    type_: Literal['group', 'private'],
-) -> str:
-    self_id = check_self_id(self_id)
-
-    types = {
-        'group': '群聊',
-        'private': '私聊',
-    }
-
-    if mode == 'add':
-        switch[self_id][type_].extend(uids)
-        switch[self_id][type_] = list(set(switch[self_id][type_]))
-        _mode = '启用'
-    elif mode == 'del':
-        switch[self_id][type_] = [uid for uid in switch[self_id][type_] if uid not in uids]
-        _mode = '禁用'
-    save_switch()
-    _type = types[type_]
-    return f"已对 {len(uids)} 个{_type}{_mode}反撤回: {', '.join(uids)}"
