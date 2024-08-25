@@ -292,7 +292,7 @@ async def _(bot: Bot, event: FriendRecallNoticeEvent):
     user = str(event.user_id)
     for i in switch[self_id]:
         if not event.is_tome() and (switch[self_id][i]['enable'] or user in switch[self_id][i]['private']):
-            await send_msg(bot, event, "私聊", user)
+            await send_msg(bot, i, event, "私聊", user)
 
 
 @event_preprocessor
@@ -302,7 +302,7 @@ async def _(bot: Bot, event: GroupRecallNoticeEvent):
     group = str(event.group_id)
     for i in switch[self_id]:
         if not event.is_tome() and (switch[self_id][i]['enable'] or user in switch[self_id][i]['group']):
-            await send_msg(bot, event, "群聊", user, group)
+            await send_msg(bot, i, event, "群聊", user, group)
 
 
 def check_msg(repo: dict):
@@ -314,7 +314,14 @@ def check_msg(repo: dict):
     return
 
 
-async def send_msg(bot: Bot, event, session_type: Literal["群聊", "私聊"], user, group=''):
+async def send_msg(
+    bot: Bot,
+    master_id: str,
+    event,
+    session_type: Literal["群聊", "私聊"],
+    user,
+    group=''
+):
     try:
         repo = await bot.get_msg(message_id=event.message_id)
     except Exception:
@@ -323,6 +330,7 @@ async def send_msg(bot: Bot, event, session_type: Literal["群聊", "私聊"], u
     logger.debug(f"Recall raw msg:\n{repo}")
     repo = repo["message"]
 
-    msg = f"[{user}][{session_type}{group}]\n撤回了:\n{check_msg(repo)}"
-    for superuser in bot.config.superusers:
-        await bot.send_private_msg(user_id=int(superuser), message=Message(msg))
+    if master_id in bot.config.superusers:
+        await bot.send_private_msg(user_id=int(master_id), message=Message(f"[{user}][{session_type}{group}]\n撤回了:\n{check_msg(repo)}"))
+
+    return
