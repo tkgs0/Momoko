@@ -74,7 +74,7 @@ def ban_time(arg: Message = CommandArg()) -> int:
         time1 = int(time1)
         if '月' in time2:
             return 2591940
-        elif '天' in time2:
+        elif '天' in time2 or '日' in time2:
             time3 = time1*60*60*24
         elif '时' in time2 or '時' in time2:
             time3 = time1*60*60
