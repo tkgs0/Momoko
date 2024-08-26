@@ -324,10 +324,12 @@ async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
 
     ban: list = []
     if msg:
-        ban.extend([ i[0] for i in kwd_db.execute(f'''
+        for i in kwd_db.execute(f'''
             select BAN_TIME from kwd_list
-            where GROUP_ID={gid} and CONTENT='{msg}';
-        '''.strip()) ])
+            where GROUP_ID={gid}';
+        '''.strip()):
+            if re.search(i[0], msg):
+                ban.append(i[1])
 
         for i in kwd_db.execute(f'''
             select CONTENT, BAN_TIME from regex_list
@@ -340,10 +342,12 @@ async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
         for i in string.whitespace:
             x = x.replace(i, x)
         if x:
-            ban.extend([ i[0] for i in kwd_db.execute(f'''
+            for i in kwd_db.execute(f'''
                 select BAN_TIME from kwd_list
-                where GROUP_ID={gid} and CONTENT='{x}' and OCR=1;
-            '''.strip()) ])
+                where GROUP_ID={gid} and OCR=1;
+            '''.strip()):
+                if re.search(i[0], x):
+                    ban.append(i[1])
 
             for i in kwd_db.execute(f'''
                 select CONTENT, BAN_TIME from regex_list
@@ -352,9 +356,7 @@ async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
                 if re.search(i[0], x):
                     ban.append(i[1])
 
-    ban_time: int = 0
-    for i in ban:
-        ban_time: int = i if i > ban_time else ban_time
+    ban_time: int = max(ban)
 
     if ban_time:
         await ban_user(bot, gid, [uid], ban_time, flag)
