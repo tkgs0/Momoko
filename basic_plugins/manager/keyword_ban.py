@@ -325,7 +325,7 @@ async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
     ban: list = []
     if msg:
         for i in kwd_db.execute(f'''
-            select BAN_TIME from kwd_list
+            select CONTENT, BAN_TIME from kwd_list
             where GROUP_ID={gid};
         '''.strip()):
             if re.search(i[0], msg):
@@ -343,7 +343,7 @@ async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
             x = x.replace(i, x)
         if x:
             for i in kwd_db.execute(f'''
-                select BAN_TIME from kwd_list
+                select CONTENT, BAN_TIME from kwd_list
                 where GROUP_ID={gid} and OCR=1;
             '''.strip()):
                 if re.search(i[0], x):
