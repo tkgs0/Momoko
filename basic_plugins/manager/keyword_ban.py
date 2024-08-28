@@ -310,7 +310,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
 
 async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
     gid: int = event.group_id
-    msg: str = event.get_plaintext()
+    msg: str = str(event.get_message())
     uid, flag = event.user_id, nm.flag if (nm := event.anonymous) else None
     ocr_text: list = []
 
