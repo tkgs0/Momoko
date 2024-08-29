@@ -13,7 +13,8 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     GROUP_OWNER,
     GROUP_ADMIN,
-    ActionFailed
+    ActionFailed,
+    unescape
 )
 
 from .utils import is_number, err_info, datapath,  ban_user, ban_time as b_time
@@ -310,7 +311,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
 
 async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
     gid: int = event.group_id
-    msg: str = str(event.get_message())
+    msg: str = unescape(str(event.get_message()))
     uid, flag = event.user_id, nm.flag if (nm := event.anonymous) else None
     ocr_text: list = []
 
