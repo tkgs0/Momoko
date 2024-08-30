@@ -357,10 +357,8 @@ async def get_ban(bot: Bot, event: GroupMessageEvent) -> None:
                 if re.search(i[0], x):
                     ban.append(i[1])
 
-    ban_time: int = max(ban)
-
-    if ban_time:
-        await ban_user(bot, gid, [uid], ban_time, flag)
+    if ban:
+        await ban_user(bot, gid, [uid], max(ban), flag)
 
 
 async def ocr_image(bot: Bot, i) -> list:
