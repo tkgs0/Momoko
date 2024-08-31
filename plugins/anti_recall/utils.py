@@ -46,9 +46,9 @@ class MessageChecker:
         _type = re.findall(r"CQ:(.*?),", self.text)
         for i in _type:
             if i == "image":
-                result = re.findall(r"url=(.*?)]", self.text)
-                url = "" if not result else result[0]
-                if self.tenc_gchat_url not in url:
+                result = re.findall(r"url=https?://(.*?)]", self.text)
+                url = result[0] if result else ""
+                if not url.startswith(self.tenc_gchat_url):
                     return False
                 else:
                     return True
