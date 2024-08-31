@@ -12,7 +12,10 @@ def msg_checker(message: Union[Message, dict, str]) -> Message | str:
         _type = i.get("type")
         _data = i.get("data")
         if _type == "text":
-            cache_list.append(_data["text"])
+            if check_cq_code(_data["text"]):
+                cache_list.append(_data["text"])
+            else:
+                cache_list.append(escape(_data["text"]))
         elif _type == "image":
             file, url = _data.get("file"), _data.get("url")
             check = check_image_url(file, url)
