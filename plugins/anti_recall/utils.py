@@ -37,7 +37,7 @@ may_inject_keys: list = ["record", "video", "music", "xml", "json"]
 检查所传回的信息是否被注入
 """
 def check_cq_code(text: str) -> bool:
-    _type = re.findall(r"CQ:(.*?),", text)
+    _type = re.findall(r"CQ:(.*?),", text, re.I)
     for i in _type:
         if i == "image":
             if (t := re.findall(r"file=(.*?)[,\]]", text, re.I)) and re.match(r"[A-z0-9]+://", t[0], re.I):
