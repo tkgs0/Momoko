@@ -17,7 +17,7 @@ from nonebot.adapters.onebot.v11 import (
     Message,
 )
 
-from .utils import recall_msg_dealer, MessageChecker
+from .utils import msg_checker
 
 
 usage: str = """
@@ -307,11 +307,10 @@ async def _(bot: Bot, event: GroupRecallNoticeEvent):
 
 def check_msg(repo: dict):
     try:
-        return recall_msg_dealer(repo)
-    except Exception:
-        if not MessageChecker(repr(repo)).check_cq_code:
-            return repo
-    return
+        return msg_checker(repo)
+    except Exception as e:
+        logger.error(e)
+        return
 
 
 async def send_msg(
