@@ -5,10 +5,16 @@ from nonebot import on_regex, logger, require
 from nonebot.adapters import Event
 from nonebot.rule import Rule
 from nonebot.plugin import PluginMetadata
+from nonebot.params import RegexStr
 from .analysis_bilibili import config, b23_extract, bili_keyword, search_bili_by_title
 
 require("nonebot_plugin_saa")
-from nonebot_plugin_saa import MessageFactory, MessageSegmentFactory, Text, Image  # noqa: E402
+from nonebot_plugin_saa import (
+    MessageFactory,
+    MessageSegmentFactory,
+    Text,
+    Image,
+)
 
 __plugin_meta__ = PluginMetadata(
     name="analysis_bilibili",
@@ -19,9 +25,11 @@ __plugin_meta__ = PluginMetadata(
 )
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.69"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0"
 }
 
+whitelist = [str(i) for i in getattr(config, "analysis_whitelist", [])]
+group_whitelist = [str(i) for i in getattr(config, "analysis_group_whitelist", [])]
 blacklist = [str(i) for i in getattr(config, "analysis_blacklist", [])]
 group_blacklist = [str(i) for i in getattr(config, "analysis_group_blacklist", [])]
 desc_blacklist = [str(i) for i in getattr(config, "analysis_desc_blacklist", [])]
@@ -34,9 +42,7 @@ async def is_enable_search() -> bool:
 
 
 async def is_normal(event: Event) -> bool:
-    if blacklist and str(event.get_user_id()) in blacklist:
-        return False
-
+    user_id = str(event.get_user_id())
     group_id = str(
         event.group_id
         if hasattr(event, "group_id")
@@ -45,21 +51,27 @@ async def is_normal(event: Event) -> bool:
         else None
     )
 
-    if group_id in group_blacklist:
+    if user_id in whitelist or group_id in group_whitelist:
+        return True
+
+    if len(whitelist) > 0 or len(group_whitelist) > 0:
+        return False
+
+    if user_id in blacklist or group_id in group_blacklist:
         return False
 
     return True
 
 
 analysis_bili = on_regex(
-    r"(b23.tv)|(bili(22|23|33|2233).cn)|(.bilibili.com)|(^(av|cv)(\d+))|(^BV([a-zA-Z0-9]{10})+)|"
-    r"(\[\[QQ小程序\]哔哩哔哩\])|(QQ小程序&amp;#93;哔哩哔哩)|(QQ小程序&#93;哔哩哔哩)",
+    r".*((b23.tv)|(bili(22|23|33|2233).cn)|(.bilibili.com)|(^(av|cv)(\d+))|(^BV([a-zA-Z0-9]{10})+)|"
+    r"(\[\[QQ小程序\]哔哩哔哩\])|(QQ小程序&amp;#93;哔哩哔哩)|(QQ小程序&#93;哔哩哔哩)).*",
     flags=re.I,
     rule=is_normal,
 )
 
 rule = Rule(is_enable_search, is_normal)
-search_bili = on_regex(r"^搜视频", rule=rule)
+search_bili = on_regex(r"^搜视频.*", rule=rule)
 
 
 def is_image(msg: str) -> bool:
@@ -99,7 +111,9 @@ def format_msg(msg_list: List[Union[List[str], str]], is_plain_text: bool = Fals
     return msg
 
 
-async def send_msg(msg_list: List[Union[List[str], str]]) -> None:
+async def send_msg(msg_list: List[Union[List[str], str, bool]]) -> None:
+    if msg_list is False:
+        return
     if msg_list is None:
         logger.warning("此次解析的内容为空，接口可能被修改，需要更新！")
         return
@@ -113,7 +127,9 @@ async def send_msg(msg_list: List[Union[List[str], str]]) -> None:
         logger.warning(f"{msg_list}\n此次解析的内容可能被风控！")
 
 
-async def get_msg(event: Event, text: str, search: bool = False) -> List[str]:
+async def get_msg(
+    event: Event, text: str, search: bool = False
+) -> Union[List[str], bool]:
     group_id = str(
         event.group_id
         if hasattr(event, "group_id")
@@ -137,22 +153,20 @@ async def get_msg(event: Event, text: str, search: bool = False) -> List[str]:
             # 说明是错误信息
             await analysis_bili.finish(msg)
 
-        if group_id in desc_blacklist:
+        if True:  # if group_id in desc_blacklist:
             if msg[-1].startswith("简介"):
                 msg[-1] = ""
 
-        return msg
+    return msg
 
 
 @analysis_bili.handle()
-async def handle_analysis(event: Event) -> None:
-    text = str(event.message).strip()
-    msg = await get_msg(event, text)
+async def handle_analysis(event: Event, message=RegexStr()) -> None:
+    msg = await get_msg(event, message)
     await send_msg(msg)
 
 
 @search_bili.handle()
-async def handle_search(event: Event) -> None:
-    text = str(event.message)[3:].strip()
-    msg = await get_msg(event, text, search=True)
+async def handle_search(event: Event, message=RegexStr()) -> None:
+    msg = await get_msg(event, message[3:].strip(), search=True)
     await send_msg(msg)

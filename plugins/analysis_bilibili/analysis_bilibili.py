@@ -1,22 +1,22 @@
 import re
-import json
 import nonebot
 
-from time import localtime, strftime
+from time import time, localtime, strftime
 from typing import Dict, List, Optional, Tuple, Union
 from aiohttp import ClientSession
 
 from .wbi import get_query
 
 
-# group_id : last_vurl
-analysis_stat: Dict[int, str] = {}
+# group_id : [last_vurl, last_analysis_time]
+analysis_stat: Dict[int, List] = {}
 
 config = nonebot.get_driver().config
 analysis_display_image = getattr(config, "analysis_display_image", False)
 analysis_display_image_list = getattr(config, "analysis_display_image_list", [])
 images_size = getattr(config, "analysis_images_size", "")
 cover_images_size = getattr(config, "analysis_cover_images_size", "")
+reanalysis_time = getattr(config, "analysis_reanalysis_time", 0)
 
 
 def resize_image(src: str, is_cover=False) -> str:
@@ -30,7 +30,7 @@ def resize_image(src: str, is_cover=False) -> str:
 
 async def bili_keyword(
     group_id: Optional[int], text: str, session: ClientSession
-) -> Union[List[Union[List[str], str]], str]:
+) -> Union[List[Union[List[str], str]], str, bool]:
     try:
         # 提取url
         url, page, time_location = extract(text)
@@ -47,7 +47,7 @@ async def bili_keyword(
             msg, vurl = await video_detail(
                 url, page=page, time_location=time_location, session=session
             )
-        elif "bangumi" in url:
+        elif "pgc" in url:
             msg, vurl = await bangumi_detail(url, time_location, session)
         elif "xlive" in url:
             msg, vurl = await live_detail(url, session)
@@ -58,9 +58,12 @@ async def bili_keyword(
 
         # 避免多个机器人解析重复推送
         if group_id:
-            if group_id in analysis_stat and analysis_stat[group_id] == vurl:
-                return ""
-            analysis_stat[group_id] = vurl
+            if group_id in analysis_stat and analysis_stat[group_id][0] == vurl:
+                if not reanalysis_time or analysis_stat[group_id][1] + int(
+                    reanalysis_time
+                ) > int(time()):
+                    return False
+            analysis_stat[group_id] = [vurl, int(time())]
     except Exception as e:
         msg = "bili_keyword Error: {}".format(type(e))
     return msg
@@ -104,19 +107,19 @@ def extract(text: str) -> Tuple[str, Optional[str], Optional[str]]:
             r"(t|m).bilibili.com/(\d+)\?(.*?)(&|&amp;)type=2", re.I
         ).search(text)
         # 动态
-        dynamic_id = re.compile(r"(t|m).bilibili.com/(\d+)", re.I).search(text)
+        dynamic_id = re.compile(r"(t|m).bilibili.com/(opus/)?(\d+)", re.I).search(text)
         if bvid:
             url = f"https://api.bilibili.com/x/web-interface/view?bvid={bvid[0]}"
         elif aid:
             url = f"https://api.bilibili.com/x/web-interface/view?aid={aid[0][2:]}"
         elif epid:
-            url = (
-                f"https://bangumi.bilibili.com/view/web_api/season?ep_id={epid[0][2:]}"
-            )
+            url = f"https://api.bilibili.com/pgc/view/web/season?ep_id={epid[0][2:]}"
         elif ssid:
-            url = f"https://bangumi.bilibili.com/view/web_api/season?season_id={ssid[0][2:]}"
+            url = (
+                f"https://api.bilibili.com/pgc/view/web/season?season_id={ssid[0][2:]}"
+            )
         elif mdid:
-            url = f"https://bangumi.bilibili.com/view/web_api/season?media_id={mdid[0][2:]}"
+            url = f"https://api.bilibili.com/pgc/review/user?media_id={mdid[0][2:]}"
         elif room_id:
             url = f"https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id={room_id[2]}"
         elif cvid:
@@ -125,7 +128,7 @@ def extract(text: str) -> Tuple[str, Optional[str], Optional[str]]:
         elif dynamic_id_type2:
             url = f"https://api.bilibili.com/x/polymer/web-dynamic/v1/detail?rid={dynamic_id_type2[2]}&type=2"
         elif dynamic_id:
-            url = f"https://api.bilibili.com/x/polymer/web-dynamic/v1/detail?id={dynamic_id[2]}"
+            url = f"https://api.bilibili.com/x/polymer/web-dynamic/v1/detail?id={dynamic_id[3]}"
         return url, page, time
     except Exception:
         return "", None, None
@@ -213,6 +216,15 @@ async def bangumi_detail(
     url: str, time_location: str, session: ClientSession
 ) -> Tuple[List[str], str]:
     try:
+        is_media = False
+        if "media_id" in url:
+            is_media = True
+            async with session.get(url) as resp:
+                ssid = (await resp.json()).get("result").get("media").get("season_id")
+                if not ssid:
+                    return None, None
+            url = f"https://api.bilibili.com/pgc/view/web/season?season_id={ssid}"
+
         async with session.get(url) as resp:
             res = (await resp.json()).get("result")
             if not res:
@@ -224,27 +236,27 @@ async def bangumi_detail(
 
         cover = resize_image(res["cover"], is_cover=True) if has_image else ""
         title = f"番剧：{res['title']}\n"
-        desc = f"{res['newest_ep']['desc']}\n"
-        index_title = ""
-        style = "".join(f"{i}," for i in res["style"])
-        style = f"类型：{style[:-1]}\n"
+        desc = f"{res['new_ep']['desc']}\n"
+        long_title = ""
+        styles = "".join(f"{i}," for i in res["styles"])
+        styles = f"类型：{styles[:-1]}\n"
         evaluate = f"简介：{res['evaluate']}\n"
-        if "season_id" in url:
-            vurl = f"https://www.bilibili.com/bangumi/play/ss{res['season_id']}"
-        elif "media_id" in url:
+        if is_media:
             vurl = f"https://www.bilibili.com/bangumi/media/md{res['media_id']}"
+        elif "season_id" in url:
+            vurl = f"https://www.bilibili.com/bangumi/play/ss{res['season_id']}"
         else:
             epid = re.compile(r"ep_id=\d+").search(url)[0][len("ep_id=") :]
             for i in res["episodes"]:
                 if str(i["ep_id"]) == epid:
-                    index_title = f"标题：{i['index_title']}\n"
+                    long_title = f"标题：{i['long_title']}\n"
                     break
             vurl = f"https://www.bilibili.com/bangumi/play/ep{epid}"
         if time_location:
             time_location = time_location[0].replace("&amp;", "&")[3:]
             vurl += f"?t={time_location}"
         vurl = "\n" + vurl if cover else vurl
-        msg = [cover, f"{vurl}\n", title, index_title, desc, style, evaluate]
+        msg = [cover, f"{vurl}\n", title, long_title, desc, styles, evaluate]
         return msg, vurl
     except Exception as e:
         msg = "番剧解析出错--Error: {}".format(type(e))
@@ -289,7 +301,9 @@ async def live_detail(url: str, session: ClientSession) -> Tuple[List[str], str]
         else:
             title = f"[未开播]标题：{title}\n"
         up = f"主播：{uname}  当前分区：{parent_area_name}-{area_name}\n"
-        watch = f"观看：{watched_show}  直播时的人气上一次刷新值：{handle_num(online)}\n"
+        watch = (
+            f"观看：{watched_show}  直播时的人气上一次刷新值：{handle_num(online)}\n"
+        )
         if tags:
             tags = f"标签：{tags}\n"
         if live_status:
@@ -354,7 +368,7 @@ async def dynamic_detail(
         module_type = res["type"]
 
         # 文字信息
-        desc = module_dynamic["desc"]
+        desc = module_dynamic["desc"] if module_dynamic["desc"] else {"text": ""}
         content = desc.get("text").replace("\r", "\n").replace("\n\n", "\n")
 
         has_image = False
@@ -369,7 +383,9 @@ async def dynamic_detail(
             if additional_type == "ADDITIONAL_TYPE_GOODS":
                 items = additional.get("goods", {}).get("items", [])
                 for item in items:
-                    additional_msg.append(f"{item.get('name')}（{item.get('price')}）\n")
+                    additional_msg.append(
+                        f"{item.get('name')}（{item.get('price')}）\n"
+                    )
 
         # DRAW图片/ARCHIVE转发视频/null纯文字
         draws = []
