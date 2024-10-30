@@ -34,10 +34,15 @@ usage: str = """
 
 
 __plugin_meta__ = PluginMetadata(
-    name="每日Wife",
-    description="四斋蒸鹅心",
+    name="每日wife",
+    description="每日随机二次元老婆",
     usage=usage,
-    type="application"
+    type="application",
+    homepage="https://github.com/tkgs0/nonebot-plugin-wife",
+    supported_adapters={"~onebot.v11"},
+    extra={
+        "author": "月ヶ瀬"
+    }
 )
 
 
