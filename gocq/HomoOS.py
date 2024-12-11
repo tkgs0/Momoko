@@ -67,14 +67,14 @@ def run(protocol: int) -> str:
     url: str = f"android-build@{code}.source.android.com"
     
     default: dict = {
-      "display": f"Android {randint(9,13)}",
+      "display": f"Android {randint(9,14)}",
       "product": "Product-ASS",
-      "device": f"Homo X{(i := randint(1,6))}0",
+      "device": f"Homo X{(i := randint(1,8))}0",
       "board": "huawei",
       "model": f"ASS-{mac(i+32).upper()}{randint(1,4)}0",
       "finger_print": f"HOMO/PD1919/PD1919:10/{finger}/{code}:user/release-keys",
       "boot_id": str(uuid3(NAMESPACE_URL, url)),
-      "proc_version": f"Linux version 5.1.4-generic ({url})",
+      "proc_version": f"Linux version 6.1.0-generic ({url})",
       "protocol": protocol,
       "imei": imei,
       "brand": "HOMO",
