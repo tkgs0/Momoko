@@ -341,21 +341,6 @@
 
   </details>
 
-- [x] **B链解析** - analysis bilibili
-
-  <details>
-    <summary>使用方法</summary>
-
-  ［被动插件］
-
-  抄自 [mengshouer](https://github.com/mengshouer)/[analysis\_bilibili](https://github.com/mengshouer/nonebot_plugin_analysis_bilibili) 的 [NekoAria修改版](https://github.com/NekoAria/nonebot_plugin_analysis_bilibili)
-
-  自动解析聊天中发送的 bilibili 小程序/链接
-
-  [▶使用方法](https://github.com/NekoAria/nonebot_plugin_analysis_bilibili#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F)
-
-  </details>
-
 - [x] **反撤回** - anti recall
 
   <details>
