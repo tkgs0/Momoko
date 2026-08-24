@@ -435,17 +435,6 @@
 
   </details>
 
-- [x] **搜图** - PicSearch
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [NekoAria](https://github.com/NekoAria) 的 [YetAnotherPicSearch](https://github.com/NekoAria/YetAnotherPicSearch)
-
-  请参考原插件 [▶使用方法️️](https://github.com/NekoAria/YetAnotherPicSearch/blob/main/docs/%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
-
-  </details>
-
 - [x] **RSS订阅** - rss
 
   <details>
