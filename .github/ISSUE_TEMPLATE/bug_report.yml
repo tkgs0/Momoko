@@ -55,8 +55,8 @@ body:
 
   - type: input
     attributes:
-      label: go-cqhttp
-      placeholder: 你所使用的 go-cqhttp 版本
+      label: OneBot.v11协议端
+      placeholder: 你所使用的 OneBot.v11协议端 名称以及版本
     validations:
       required: true
 
