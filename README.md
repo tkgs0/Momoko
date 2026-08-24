@@ -1,6 +1,6 @@
 
 # 桃桃Bot
-此项目是基于 [NoneBot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊娱乐机器人  
+此项目是基于 [NoneBot2](https://github.com/nonebot/nonebot2) 和 [OneBot.v11](https://onebot.adapters.nonebot.dev) 的QQ群聊娱乐机器人  
 借(chao)鉴(xi)了大佬们的代码，实现了一些对群友的娱乐功能和实用功能（大概
 
 <div>
@@ -16,9 +16,6 @@
 </a>
 <a href="https://onebot.adapters.nonebot.dev">
     <img src="https://img.shields.io/badge/OneBot-v11-black.svg" alt="OneBot">
-</a>
-<a href="https://github.com/Mrs4s/go-cqhttp">
-    <img src="https://img.shields.io/badge/gocq-1.1.0+-blueviolet.svg" alt="go-cqhttp">
 </a>
 
 </div>
@@ -564,7 +561,7 @@
 
    </details>
 
-9. 另开一个命令行窗口, 配置适用于你的 **协议端**. 
+9. 另开一个命令行窗口, 配置 **兼容 OneBot.v11 的协议端**. 
    至于什么是 *协议端* ? 由于某些不可抗力, 我不能给大伙细说, 请自行探索.
 
 10. 在你的协议端配置 `反向ws` **监听地址** 以及 **Token**, 
