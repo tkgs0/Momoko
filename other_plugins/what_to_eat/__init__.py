@@ -30,7 +30,7 @@ usage: str = """
 
 
 __plugin_meta__ = PluginMetadata(
-    name="what_to_eat",
+    name="吃什么",
     description="",
     usage=usage,
     type="application"

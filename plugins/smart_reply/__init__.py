@@ -2,6 +2,7 @@ from nonebot import on_command, on_message, on_notice
 from nonebot.rule import Rule, to_me
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
+from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import (
     Message,
     MessageEvent,
@@ -17,6 +18,21 @@ from .utils import (
     hello__reply,
     get_chat_result
 )
+
+
+
+usage: str = """
+    高情商(?)自动回复聊天消息
+""".strip()
+
+
+__plugin_meta__ = PluginMetadata(
+    name="聊天",
+    description="智能(?)陪聊系统",
+    usage=usage,
+    type="application"
+)
+
 
 
 confpath: Path = Path() / 'data' / 'smart_reply' / 'reply.json'
