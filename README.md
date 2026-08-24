@@ -400,17 +400,6 @@
 
   </details>
 
-- [x] **群文件直链提取** - direct linker
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [ninthseason](https://github.com/ninthseason) 的 [DirectLinker](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker)
-
-  [▶使用方法](https://github.com/Utmost-Happiness-Planet/nonebot-plugin-directlinker#%E7%94%A8%E6%B3%95)
-
-  </details>
-
 - [x] **合并转发** - fake msg
 
   <details>
@@ -465,27 +454,6 @@
   抄自 [Quan666](https://github.com/Quan666) 的 [ELF\_RSS](https://github.com/Quan666/ELF_RSS)
 
   [▶使用方法](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
-
-  </details>
-
-- [x] **点歌** - simplemusic
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [wq佬](https://github.com/MeetWq) 的 [SimpleMusic](https://github.com/noneplugin/nonebot-plugin-simplemusic)
-
-  ```
-  点歌/qq点歌/网易点歌/酷我点歌/酷狗点歌/咪咕点歌/b站点歌 + 关键词
-  ```
-
-  示例:
-
-  ```
-  点歌 朝你大胯捏一把
-  ```
-
-  默认为qq点歌
 
   </details>
 
