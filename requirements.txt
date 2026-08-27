@@ -25,7 +25,6 @@ feedparser
 imagehash
 langid
 magneturi
-picimagesearch
 pikpakapi
 pil-utils
 psutil
