@@ -399,17 +399,6 @@
 
   </details>
 
-- [x] **RSS订阅** - rss
-
-  <details>
-    <summary>使用方法</summary>
-
-  抄自 [Quan666](https://github.com/Quan666) 的 [ELF\_RSS](https://github.com/Quan666/ELF_RSS)
-
-  [▶使用方法](https://github.com/Quan666/ELF_RSS/blob/2.0/docs/2.0%20%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B.md)
-
-  </details>
-
 - [x] **闲聊** - smart reply
 
   <details>
