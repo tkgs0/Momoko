@@ -13,7 +13,7 @@ plugins = [
     "nonebot_plugin_system_command",
     "nonebot_plugin_blacklist",
     "nonebot_plugin_eavesdropper",
-    "nonebot_plugin_antiinsult",
+    # "nonebot_plugin_antiinsult",
     "nonebot_plugin_looklike",
     "nonebot_plugin_repesix",
 ]

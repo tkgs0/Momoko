@@ -1,7 +1,6 @@
 nb-cli>=1.4.1
 nonebot2[fastapi]>=2.2.1
 nonebot-adapter-onebot>=2.4.1
-nonebot-plugin-antiinsult
 nonebot-plugin-apscheduler
 nonebot-plugin-blacklist
 nonebot-plugin-eavesdropper
