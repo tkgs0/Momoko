@@ -438,7 +438,7 @@
    | Windows 10 以上 | CentOS |
    | MacOS | |
 
-2. 安装3.10版本以上的Python, 安装 **ffmpeg**, 以及 **libEGL** 
+2. 安装3.10版本以上的Python, 安装 **ffmpeg**, 以及 **libEGL**  
    并正确配置环境变量
 
 3. 下载本项目到本地
