@@ -64,7 +64,7 @@ _status_lock = asyncio.Lock()
 )
 async def _() -> None:
     if _status_lock.locked():
-        logger.warning("上一次状态检查尚未结束，跳过本次检查")
+        logger.warning("上一次状态检查尚未结束, 跳过本次检查...")
         return
 
     async with _status_lock:
