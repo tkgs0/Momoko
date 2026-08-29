@@ -1,3 +1,4 @@
+import asyncio
 from nonebot import on_metaevent, on_command, get_bot, require
 from nonebot.log import logger
 from nonebot.plugin import PluginMetadata
@@ -52,6 +53,8 @@ async def _():
     await status.finish(msg)
 
 
+_status_lock = asyncio.Lock()
+
 @scheduler.scheduled_job(
     "interval",
     id="状态检查",
@@ -59,20 +62,33 @@ async def _():
     minutes=30,
     misfire_grace_time=15
 )
-async def _():
-    logger.info("检查资源消耗中...")
-    msg, stat = await get_status()
-    if not stat:
-        logger.warning(msg)
-        try:
-            bot = get_bot()
-        except Exception:
-            bot = None
-        try:
+async def _() -> None:
+    if _status_lock.locked():
+        logger.warning("上一次状态检查尚未结束，跳过本次检查")
+        return
+
+    async with _status_lock:
+        logger.info("检查资源消耗中...")
+
+        msg, stat = await get_status()
+
+        if not stat:
+            logger.warning(msg)
+
+            try:
+                bot = get_bot()
+            except Exception:
+                bot = None
+
             if bot:
-                for superuser in bot.config.superusers:
-                    await bot.send_private_msg(user_id=int(superuser), message=msg)
-        except Exception:
-            return
-    else:
-        logger.info("资源消耗正常")
+                try:
+                    for superuser in bot.config.superusers:
+                        await bot.send_private_msg(
+                            user_id=int(superuser),
+                            message=msg,
+                        )
+                except Exception as e:
+                    logger.exception(e)
+                    return
+        else:
+            logger.info("资源消耗正常")

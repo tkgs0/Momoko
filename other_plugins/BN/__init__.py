@@ -1,4 +1,4 @@
-import time, re, unicodedata
+import asyncio, time, re, unicodedata
 from pathlib import Path
 import ujson as json
 from binance.spot import Spot
@@ -235,6 +235,9 @@ class _cron:
     second, minute, hour, day, month = account.binance_cron.split()
 
 
+_status_lock = asyncio.Lock()
+
+
 @scheduler.scheduled_job(
     "cron",
     id="BN推送",
@@ -247,44 +250,59 @@ class _cron:
     misfire_grace_time=15
 )
 async def _():
-    logger.info("正在推送BN币价...")
-    for self_id in enabled:
-        try:
-            bot = get_bot(self_id)
-        except Exception:
-            bot = None
+    if _status_lock.locked():
+        logger.warning("上一次BN推送尚未结束, 跳过本次推送...")
+        return
 
-        if bot:
-            for uid in enabled[self_id]:
-                if not enabled[self_id][uid]:
-                    continue
-                try:
-                    node = []
-                    for symbol in enabled[self_id][uid]:
-                        try:
-                            res: str = client.ticker_price(symbol.replace("/", ""))["price"]
-                            node.append(
-                                MessageSegment.node_custom(
-                                    2854196310,
-                                    "Q群管家",
-                                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n{symbol}: {res}"
+    async with _status_lock:
+        logger.info("正在推送BN币价...")
+
+        now = time.strftime("%Y-%m-%d %H:%M:%S")
+
+        for self_id in enabled:
+            try:
+                bot = get_bot(self_id)
+            except Exception as e:
+                logger.exception(e)
+                bot = None
+
+            if bot:
+                for uid in list(enabled[self_id]):
+                    if not enabled[self_id][uid]:
+                        continue
+                    try:
+                        node = list()
+                        symbols = [i.replace("/", "") for i in enabled[self_id][uid]]
+                        prices = {
+                            i["symbol"]: i["price"]
+                            for i in client.ticker_price(symbols=symbols)
+                        }
+                        for symbol in prices:
+                            try:
+                                node.append(
+                                    MessageSegment.node_custom(
+                                        2854196310,
+                                        "Q群管家",
+                                        f"{now}\n{symbol}: {prices[symbol]}"
+                                    )
                                 )
-                            )
-                        except Exception as e:
-                            logger.error(e)
+                            except Exception as e:
+                                logger.error(e)
+                                continue
+
+                        if not node:
                             continue
+                        await bot.send_forward_msg(group_id=uid, messages=node)
 
-                    await bot.send_forward_msg(group_id=uid, messages=node)
+                    except ActionFailed as e:
+                        logger.error(e)
+                        if e.info.get('msg') == "GROUP_NOT_FOUND":
+                            enabled[self_id].pop(uid)
+                            save_config()
+                        continue
 
-                except ActionFailed as e:
-                    logger.error(e)
-                    if e.info.get('msg') == "GROUP_NOT_FOUND":
-                        enabled[self_id].pop(uid)
-                        save_config()
-                    continue
+                    except Exception as e:
+                        logger.error(e)
+                        continue
 
-                except Exception as e:
-                    logger.error(e)
-                    continue
-
-    logger.info("BN币价推送完毕...")
+        logger.info("BN币价推送完毕...")
