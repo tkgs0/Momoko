@@ -372,6 +372,26 @@
   </details>
 
 
+- [x] **B链解析** - bv2mp4
+
+  <details>
+    <summary>使用方法</summary>
+
+  将群友分享的B站链接解析为 mp4
+
+  ```
+  b2v:
+      -s  插件开关
+      -c  设置cookies  # 至少需要包含 SESSDATA, bili_jct, DedeUserID, buvid3/buvid4
+      -p  设置清晰度  # 360/480/720/1080, 0 为不限制
+      -x  设置文件限制  # 默认 72 (MB), 0 为不限制
+      -l  查看列表
+      -r  重置列表
+  ```
+
+  </details>
+
+
 ## 部署方式
 1. 安装系统
 
