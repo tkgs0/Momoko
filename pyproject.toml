@@ -59,6 +59,7 @@ pil-utils = ">=0.1.10"
 psutil = ">=5.9.8"
 pydub = ">=0.25.1"
 ujson = ">=5.9.0"
+yt_dlp = ">=2023.3.4"
 
 [tool.poetry.dev-dependencies]
 

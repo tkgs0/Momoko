@@ -20,3 +20,4 @@ pil-utils
 psutil
 pydub
 ujson
+yt_dlp
