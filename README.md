@@ -377,9 +377,9 @@
   <details>
     <summary>使用方法</summary>
 
-  将群友分享的B站链接解析为 mp4
-  <br><br>
   基于 [汣度](https://github.com/j1udu) 的 [bili2mp4](https://github.com/j1udu/nonebot-plugin-bili2mp4) 魔改的 bv2mp4
+  <br><br>
+  将群友分享的B站链接解析为视频文件并发送
 
   ```
   b2v:
