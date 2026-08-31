@@ -1,4 +1,4 @@
-import asyncio, os, re, shutil, subprocess, time, httpx
+import asyncio, re, shutil, subprocess, time, httpx
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -475,7 +475,7 @@ def _locate_final_file(ydl, info) -> Optional[str]:
         if isinstance(arr, list):
             for it in arr:
                 fp = it.get("filepath")
-                if fp and os.path.exists(fp):
+                if fp and Path(fp).exists():
                     return fp
     for key in ("filepath", "_filename"):
         fp = info.get(key)
@@ -487,17 +487,23 @@ def _locate_final_file(ydl, info) -> Optional[str]:
     candidate = root + ".mp4"
     if Path(candidate).exists():
         return candidate
+
     # 兜底：按视频ID在目录中搜
-    vid = info.get("id") or ""
-    if vid:
-        try:
-            files = [BV_DIR / f.name for f in Path(BV_DIR).iterdir() if vid in f.name]
-            if files:
-                files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-                return str(files[0])
-        except Exception:
-            pass
-    return None
+    vid = info.get("id")
+    if not vid:
+        return None
+
+    dirpath = Path(base).parent
+
+    try:
+        file = max(
+            (p for p in dirpath.iterdir() if vid in p.name),
+            key=lambda p: p.stat().st_mtime,
+            default=None,
+        )
+        return str(file) if file else None
+    except OSError:
+        return None
 
 
 _ytdlp_executor = ThreadPoolExecutor(
