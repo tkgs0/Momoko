@@ -283,7 +283,7 @@ async def _():
                                     MessageSegment.node_custom(
                                         2854196310,
                                         "Q群管家",
-                                        f"{now}\n{symbol}: {prices[symbol]}"
+                                        f"{symbol}: {prices[symbol]}\n{now}"
                                     )
                                 )
                             except Exception as e:
